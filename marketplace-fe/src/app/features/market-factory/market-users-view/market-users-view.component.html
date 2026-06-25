@@ -1,0 +1,62 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ data.market.name }}</h2>
+    <button mat-icon-button class="close-button" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">Loading users...</p>
+    </div>
+
+    <!-- Users List -->
+    <div *ngIf="!loading && users.length > 0" class="users-list">
+      <div *ngFor="let user of users; let last = last" class="user-item">
+        <div class="user-content">
+          <div class="user-header">
+            <mat-icon class="user-icon">person</mat-icon>
+            <div class="user-info">
+              <div class="user-name">{{ getUserDisplayName(user) }}</div>
+              <div class="user-email">{{ user.email }}</div>
+            </div>
+          </div>
+          <div class="user-role">
+            <mat-chip-set>
+              <mat-chip [color]="getRoleColor(user.role)" selected>
+                {{ user.role }}
+              </mat-chip>
+            </mat-chip-set>
+            <mat-chip-set *ngIf="user.status == 'INACTIVE'">
+              <mat-chip class="deactivated-badge" selected>
+                Deactivated
+              </mat-chip>
+            </mat-chip-set>
+            <mat-icon *ngIf="user.role != 'FMO_LMO' && user.status != 'INACTIVE'" class="remove-button"
+              matTooltip="Deactivate user" (click)="openDeactivateDialog(user.id, user.firstName)">
+              person_remove</mat-icon>
+
+            <mat-icon *ngIf="user.role != 'FMO_LMO' && user.status == 'INACTIVE'" class="reactivate-button"
+              matTooltip="Reactivate user" (click)="openReactivateDialog(user.id, user.firstName)">
+              settings_backup_restore</mat-icon>
+          </div>
+        </div>
+        <mat-divider *ngIf="!last" class="user-divider"></mat-divider>
+      </div>
+    </div>
+
+    <!-- No Users -->
+    <div *ngIf="!loading && users.length === 0" class="no-users">
+      <mat-icon class="empty-icon">people_outline</mat-icon>
+      <h3>No Users</h3>
+      <p>This market has no users assigned yet</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Close</button>
+  </mat-dialog-actions>
+</div>

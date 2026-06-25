@@ -1,0 +1,248 @@
+<div class="dso-panel">
+  <h2>FRP Operations Dashboard</h2>
+  <p class="subtitle">Monitor grid and manage flexibility requests</p>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading market information...</p>
+    </div>
+  </div>
+
+  <!-- Wallet Section -->
+  <div *ngIf="!isLoading" class="wallet-section">
+    <mat-card class="wallet-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>
+        <mat-card-title>Blockchain Wallet</mat-card-title>
+        <mat-card-subtitle>Manage your wallet for trading operations</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Loading State -->
+        <div *ngIf="isCheckingWallet" class="wallet-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Checking wallet status...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="!isCheckingWallet && walletCheckError" class="wallet-error">
+          <mat-icon color="warn">error</mat-icon>
+          <p>Error checking wallet status. Please try again.</p>
+          <button mat-raised-button color="primary" (click)="checkWalletStatus()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+
+        <!-- Has Wallet -->
+        <div *ngIf="!isCheckingWallet && !walletCheckError && walletInfo && walletInfo.hasWallet" class="wallet-info">
+          <div class="wallet-status-good">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>Wallet Active</span>
+          </div>
+          <div class="wallet-details">
+            <div class="address-row">
+              <p><strong>Address:</strong> <span class="address-text">{{ walletInfo.address }}</span></p>
+              <button mat-icon-button class="copy-btn" (click)="copyAddress(walletInfo.address)"
+                matTooltip="Copy address">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Wallet -->
+        <div *ngIf="!isCheckingWallet && !walletCheckError && walletInfo && !walletInfo.hasWallet" class="wallet-info">
+          <div class="wallet-status-warning">
+            <mat-icon color="warn">warning</mat-icon>
+            <span>No Wallet Found</span>
+          </div>
+          <p class="wallet-message">You need a wallet to participate in trading operations.</p>
+          <button mat-raised-button color="primary" (click)="createWallet()">
+            <mat-icon>add</mat-icon>
+            Create Wallet
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- FRP Payment Metrics Section -->
+  <div *ngIf="!isLoading" class="grid-monitoring-section">
+    <div class="monitoring-card payment-card">
+      <div class="card-header">
+        <mat-icon class="header-icon">payment</mat-icon>
+        <h3>Pending Payments</h3>
+      </div>
+      <div *ngIf="isLoadingPayments" class="card-loading">
+        <mat-spinner diameter="30"></mat-spinner>
+      </div>
+      <div *ngIf="!isLoadingPayments" class="status-grid">
+        <div class="status-item clickable" (click)="openPendingPaymentsModal()"
+          [class.has-pending]="pendingPayments.length > 0" matTooltip="Click to view and pay pending requests">
+          <span class="status-label">Pending Requests</span>
+          <span class="status-value" [class.warning]="pendingPayments.length > 0">
+            {{ pendingPayments.length }}
+          </span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Total Pending</span>
+          <span class="status-value">{{ totalPendingAmount }} FLEX</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Sessions</span>
+          <span class="status-value good">{{ sessions.length }}</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Status</span>
+          <span class="status-value" [class.good]="pendingPayments.length === 0"
+            [class.warning]="pendingPayments.length > 0">
+            {{ pendingPayments.length === 0 ? 'All Paid' : 'Action Required' }}
+          </span>
+        </div>
+      </div>
+      <div *ngIf="!isLoadingPayments && pendingPayments.length > 0" class="payment-action">
+        <button class="btn-primary" (click)="openPendingPaymentsModal()">
+          <mat-icon>payments</mat-icon>
+          View & Pay ({{ pendingPayments.length }})
+        </button>
+      </div>
+    </div>
+
+    <div class="monitoring-card">
+      <div class="card-header">
+        <mat-icon class="header-icon">analytics</mat-icon>
+        <h3>Session Overview</h3>
+      </div>
+      <div class="forecast-info">
+        <div class="forecast-metrics">
+          <div class="metric-badge peak">
+            <div class="metric-value">{{ sessions.length }}</div>
+            <div class="metric-unit">Total</div>
+            <div class="metric-label">Sessions</div>
+          </div>
+          <div class="metric-badge flexibility">
+            <div class="metric-value">{{ pendingPayments.length }}</div>
+            <div class="metric-unit">Pending</div>
+            <div class="metric-label">Payment Requests</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-actions" style="margin-top: 16px;">
+        <button class="btn-secondary" (click)="viewSettlements()">
+          <mat-icon>receipt_long</mat-icon>
+          View Settlements
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flexibility Requests Section -->
+  <div class="flexibility-section" *ngIf="!isLoading && associatedMarket">
+    <div class="flexibility-actions">
+      <button class="btn-create-request" (click)="createFlexibilityRequest()" 
+        [disabled]="isMarketDeactivated"
+        [style.opacity]="isMarketDeactivated ? '0.5' : '1'"
+        [style.cursor]="isMarketDeactivated ? 'not-allowed' : 'pointer'"
+        [matTooltip]="isMarketDeactivated ? 'Market is deactivated' : ''"
+        >
+        <mat-icon>add_circle_outline</mat-icon>
+        Create Flexibility Request
+      </button>
+      <button class="btn-secondary" (click)="viewActiveRequests()">
+        <mat-icon>assignment</mat-icon>
+        View Drafts Requests
+      </button>
+    </div>
+  </div>
+
+  <!-- Trading Sessions Section -->
+  <div class="sessions-section" *ngIf="!isLoading && associatedMarket">
+    <h3>Market Sessions Management</h3>
+    <app-active-session-card [sessions]="sessions" [isLoading]="isLoading" [isMarketDeactivated]="isMarketDeactivated"> </app-active-session-card>
+    <!-- <div *ngIf="sessions.length === 0" class="no-sessions">
+      <p>No active sessions in your market</p>
+    </div>
+    <div class="sessions-grid" *ngIf="sessions.length > 0">
+      <div class="session-card" *ngFor="let session of sessions">
+        <div class="session-info">
+          <h4>Session {{ session.name || session.id }}</h4>
+          <span class="session-badge">{{ sessionStateMap[session.currentState] }}</span>
+        </div>
+        <div class="session-actions">
+          <button class="btn-small" (click)="openBidForm(session)">Create Bid</button>
+          <button class="btn-small" (click)="manageSession(session)">Manage</button>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+
+
+  <div *ngIf="!isLoading && !associatedMarket" class="no-market">
+    <mat-icon class="no-market-icon">business</mat-icon>
+    <p>You do not have an associated market.</p>
+    <p class="hint">Contact the platform administrator to be assigned to a market.</p>
+  </div>
+
+  <!-- Bid Form -->
+  <div *ngIf="showBidForm" class="bid-form-modal">
+    <form (ngSubmit)="onSubmitBid()" #bidForm="ngForm" class="bid-form">
+      <h4>Create Flexibility request for session: {{ selectedSession.name || selectedSession.id }}</h4>
+      <label>
+        Quantity:
+        <input type="number" name="quantity" [(ngModel)]="bidData.quantity" required>
+      </label>
+      <label>
+        Price:
+        <input type="number" name="price" [(ngModel)]="bidData.price" required>
+      </label>
+      <label>
+        Start:
+        <input type="datetime-local" name="startDTime" [(ngModel)]="bidData.startDTime" required>
+      </label>
+      <label>
+        End:
+        <input type="datetime-local" name="endDTime" [(ngModel)]="bidData.endDTime" required>
+      </label>
+      <label>
+        Flexibility type:
+        <select name="flexType" [(ngModel)]="bidData.flexType" required>
+          <option value="UP">UP</option>
+          <option value="DOWN">DOWN</option>
+        </select>
+      </label>
+      <div class="bid-form-buttons">
+        <button type="submit" [disabled]="!bidForm.form.valid">Submit Flexibility request</button>
+        <button type="button" (click)="cancelBid()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="manageSessionModal" class="manage-session-modal">
+    <div class="manage-session-content">
+      <h4>Session management: {{ sessionToManage.name || sessionToManage.id }}</h4>
+      <p>Current state: <strong>{{ sessionState }}</strong></p>
+      <div class="manage-session-actions">
+        <button *ngIf="sessionState === 'Created'" (click)="openBidSession()">Open Flexibility request Session</button>
+        <button *ngIf="sessionState === 'BidSessionOpened'" (click)="openOfferSession()">Open Offer Session</button>
+        <button *ngIf="sessionState === 'BidSessionOpened' || sessionState === 'OfferSessionOpened'"
+          (click)="closeBidSession()">Close Flexibility request Session</button>
+        <button *ngIf="sessionState === 'BidSessionClosed' || sessionState === 'OfferSessionOpened'"
+          (click)="closeOfferSession()">Close Offer Session</button>
+        <button *ngIf="sessionState === 'OfferSessionClosed'" (click)="stopTrading()">Stop Trading</button>
+        <button *ngIf="sessionState === 'TradingStopped'" (click)="doMatch()">Match (doMatch)</button>
+        <button *ngIf="sessionState === 'MatchDone'" (click)="verifyOffers()">Verify Offers</button>
+        <button *ngIf="sessionState === 'OfferVerified'" (click)="executeContract()">Execute Contract</button>
+        <button *ngIf="sessionState === 'ContractExecuted'" (click)="closeSession()">Close Session</button>
+      </div>
+      <div *ngIf="managementMessage" class="management-message">{{ managementMessage }}</div>
+      <button (click)="closeManageSession()">Close</button>
+    </div>
+  </div>
+
+  <!-- Confirmation message -->
+  <div *ngIf="confirmationMessage" class="confirmation-message">
+    {{ confirmationMessage }}
+    <button (click)="closeConfirmation()">Close</button>

@@ -1,0 +1,109 @@
+<div class="prosumer-wallet-modal">
+  <mat-dialog-content>
+    <div class="wallet-header">
+      <mat-icon class="wallet-icon">account_balance_wallet</mat-icon>
+      <h2>Personal Wallet Required</h2>
+    </div>
+
+    <div class="wallet-content">
+      <div class="welcome-message">
+        <p class="primary-message">
+          Welcome <strong>{{ data.userName }}</strong>! To participate in energy markets, you need a personal blockchain wallet.
+        </p>
+      </div>
+
+      <div class="benefits-section" *ngIf="!isCreatingWallet && !walletCreated">
+        <h3>With your personal wallet, you can:</h3>
+        <ul class="benefits-list">
+          <li><mat-icon>check_circle</mat-icon> Participate in energy trading sessions</li>
+          <li><mat-icon>check_circle</mat-icon> Submit flexibility offers and Flexibility requests</li>
+          <li><mat-icon>check_circle</mat-icon> Receive payments for energy services</li>
+          <li><mat-icon>check_circle</mat-icon> Track your flexibility token balance</li>
+          <li><mat-icon>check_circle</mat-icon> View complete transaction history</li>
+        </ul>
+      </div>
+
+      <div class="restrictions-section" *ngIf="!isCreatingWallet && !walletCreated">
+        <div class="restriction-info">
+          <mat-icon class="warning-icon">info</mat-icon>
+          <p><strong>Important:</strong> Without a personal wallet, you cannot participate in any energy market activities or access trading features.</p>
+        </div>
+      </div>
+
+      <div class="loading-section" *ngIf="isCreatingWallet">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Creating your personal wallet...</p>
+        <p class="loading-subtext">Setting up secure blockchain credentials and generating your unique PIN.</p>
+      </div>
+
+      <div class="success-section" *ngIf="walletCreated && createdWallet">
+        <div class="success-header">
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <h3>Your Personal Wallet is Ready!</h3>
+        </div>
+        
+        <div class="success-content">
+          <div class="email-notification">
+            <mat-icon class="email-icon">email</mat-icon>
+            <div class="notification-text">
+              <h4>Wallet Credentials Sent to Your Email</h4>
+              <p>We've securely sent your wallet credentials, including your personal PIN and wallet address, to your registered email address.</p>
+              <p class="email-note">Please check your inbox and save these details in a secure location for future trading activities.</p>
+            </div>
+          </div>
+          
+          <div class="ready-section">
+            <div class="ready-header">
+              <mat-icon class="ready-icon">trending_up</mat-icon>
+              <h4>You're All Set to Start Trading!</h4>
+            </div>
+            <p class="ready-description">Your personal wallet is now configured and ready for all energy market activities.</p>
+            
+            <div class="capabilities-overview">
+              <div class="capability-item">
+                <mat-icon>swap_horiz</mat-icon>
+                <span>Submit flexibility offers and Flexibility requests</span>
+              </div>
+              <div class="capability-item">
+                <mat-icon>account_balance</mat-icon>
+                <span>Receive payments for energy services</span>
+              </div>
+              <div class="capability-item">
+                <mat-icon>analytics</mat-icon>
+                <span>Track your trading performance</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="security-reminder">
+            <mat-icon>security</mat-icon>
+            <div class="security-content">
+              <p><strong>Security Reminder:</strong></p>
+              <p>Your PIN and wallet details have been sent to your email. Keep them secure and never share them with anyone.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="action-buttons" *ngIf="!isCreatingWallet && !walletCreated">
+      <button mat-button (click)="onCancel()">
+        <mat-icon>close</mat-icon>
+        Skip for Now
+      </button>
+      <button mat-raised-button color="primary" (click)="onCreateWallet()">
+        <mat-icon>add_card</mat-icon>
+        Create My Wallet
+      </button>
+    </div>
+
+    <div class="action-buttons" *ngIf="isCreatingWallet">
+      <button mat-button disabled>
+        Creating Wallet...
+        <mat-icon class="sync-icon">sync</mat-icon>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

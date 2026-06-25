@@ -1,0 +1,552 @@
+/* Page Container */
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Back Button */
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00234e;
+  font-weight: 500;
+  margin-bottom: 24px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(0, 35, 78, 0.08);
+}
+
+.back-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.loading-text {
+  margin-top: 24px;
+  color: #00234e;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+::ng-deep .loading-container .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #00234e;
+}
+
+/* Error State */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #f44336;
+  margin-bottom: 16px;
+}
+
+.error-container h3 {
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.error-container p {
+  color: #666;
+  margin: 0 0 24px 0;
+}
+
+/* Header Card */
+.header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.token-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  width: fit-content;
+}
+
+.token-badge mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.certificate-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #00234e;
+  margin: 8px 0 0 0;
+}
+
+.certificate-subtitle {
+  color: #666;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-badge mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.status-badge.status-executed,
+.status-badge.status-finalized {
+  background: rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
+}
+
+.status-badge.status-delivered,
+.status-badge.status-accepted {
+  background: rgba(33, 150, 243, 0.15);
+  color: #1565c0;
+}
+
+.status-badge.status-submitted,
+.status-badge.status-pending {
+  background: rgba(255, 152, 0, 0.15);
+  color: #e65100;
+}
+
+/* Soulbound Badge */
+.soulbound-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.soulbound-badge mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.soulbound-badge.soulbound {
+  background: rgba(156, 39, 176, 0.12);
+  color: #7b1fa2;
+}
+
+.soulbound-badge.transferable {
+  background: rgba(0, 150, 136, 0.12);
+  color: #00796b;
+}
+
+/* Stats Summary */
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 35, 78, 0.08);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.stat-card .stat-icon {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(0, 35, 78, 0.08);
+  color: #00234e;
+}
+
+.stat-card.success .stat-icon {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.stat-card.warning .stat-icon {
+  background: rgba(255, 152, 0, 0.15);
+  color: #ff9800;
+}
+
+.stat-card.error .stat-icon {
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #00234e;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Tab Group */
+.detail-tabs {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+::ng-deep .detail-tabs .mat-mdc-tab-labels {
+  background: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 35, 78, 0.1);
+}
+
+::ng-deep .detail-tabs .mat-mdc-tab {
+  min-width: 160px;
+}
+
+::ng-deep .detail-tabs .mat-mdc-tab .mdc-tab__content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::ng-deep .detail-tabs .mat-mdc-tab .mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+::ng-deep .detail-tabs .mat-mdc-tab-body-wrapper {
+  padding: 0;
+}
+
+/* Tab Content */
+.tab-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Section Card */
+.section-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(0, 35, 78, 0.06);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00234e;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 35, 78, 0.1);
+}
+
+.section-title mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: #003d82;
+}
+
+/* Data Grid */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 35, 78, 0.08);
+}
+
+.data-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.data-label {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.data-value.highlight {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00234e;
+}
+
+.data-value.success {
+  color: #2e7d32;
+}
+
+.data-value.penalty {
+  color: #c62828;
+}
+
+.data-value.warning {
+  color: #e65100;
+}
+
+/* Status Chip in Data Grid */
+.status-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  width: fit-content;
+}
+
+.status-chip.status-executed,
+.status-chip.status-finalized {
+  background: rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
+}
+
+.status-chip.status-delivered,
+.status-chip.status-accepted {
+  background: rgba(33, 150, 243, 0.15);
+  color: #1565c0;
+}
+
+.status-chip.status-submitted,
+.status-chip.status-pending {
+  background: rgba(255, 152, 0, 0.15);
+  color: #e65100;
+}
+
+/* Address Value */
+.address-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.address-value code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #003d82;
+  background: rgba(0, 61, 130, 0.08);
+  padding: 8px 12px;
+  border-radius: 6px;
+  word-break: break-all;
+  flex: 1;
+}
+
+.address-value button {
+  flex-shrink: 0;
+  color: #00234e;
+}
+
+.address-value button:hover {
+  background: rgba(0, 35, 78, 0.1);
+}
+
+/* JSON Section */
+.json-section {
+  position: relative;
+}
+
+.json-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.json-actions button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #00234e;
+}
+
+.json-actions button:hover {
+  background: rgba(0, 35, 78, 0.08);
+}
+
+.json-content {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-height: 500px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .stats-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 16px;
+  }
+
+  .header-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .stats-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .certificate-title {
+    font-size: 1.5rem;
+  }
+
+  .data-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  ::ng-deep .detail-tabs .mat-mdc-tab {
+    min-width: auto;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .token-badge {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .json-content {
+    font-size: 0.75rem;
+    padding: 12px;
+  }
+}

@@ -1,0 +1,228 @@
+h2[mat-dialog-title] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #00234e;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.close-icon {
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.close-icon:hover {
+  color: #00234e;
+  background: rgba(0, 35, 78, 0.08);
+}
+
+.fsp-info {
+  background-color: #f8f9fa;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(0, 35, 78, 0.1);
+}
+
+.fsp-info strong {
+  color: #00234e;
+  font-weight: 600;
+}
+
+.upload-section {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 35, 78, 0.1);
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #00234e;
+  margin-bottom: 14px;
+}
+
+.file-label mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.file-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid #00234e;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #00234e;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.file-button:hover {
+  background: rgba(0, 35, 78, 0.06);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 35, 78, 0.15);
+}
+
+.file-button.has-file {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+.file-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.file-name {
+  font-size: 13px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+.file-name.placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.processing-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+}
+
+.processing-text {
+  margin: 0;
+  color: #274b95;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+::ng-deep .processing-state mat-spinner circle {
+  stroke: #00234e !important;
+}
+
+.result-success {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(46, 125, 50, 0.08);
+  border: 1px solid rgba(46, 125, 50, 0.3);
+  border-left: 4px solid #2e7d32;
+  border-radius: 8px;
+  color: #1b5e20;
+  font-size: 14px;
+}
+
+.result-success mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #2e7d32;
+  flex-shrink: 0;
+}
+
+.result-text strong {
+  color: #1b5e20;
+}
+
+.result-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: #fee;
+  border: 1px solid #d32f2f;
+  border-left: 4px solid #d32f2f;
+  border-radius: 8px;
+  color: #d32f2f;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.result-error mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #d32f2f;
+  flex-shrink: 0;
+}
+
+mat-dialog-actions {
+  padding: 16px 22px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.button-group button {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.upload-button {
+  background: transparent;
+  color: #00234e;
+  border-color: #00234e !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-button:hover:not(:disabled) {
+  background: rgba(0, 35, 78, 0.08) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 35, 78, 0.15);
+}
+
+.upload-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upload-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

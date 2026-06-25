@@ -1,0 +1,146 @@
+.wallet-info-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.wallet-info-container.loading,
+.wallet-info-container.disconnected {
+  gap: 8px;
+  opacity: 0.7;
+}
+
+.wallet-address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.wallet-address:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.wallet-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.address-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.copy-button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.copy-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  transition: all 0.2s;
+}
+
+.copy-button mat-icon.copied {
+  color: #4caf50;
+  transform: scale(1.2);
+}
+
+.wallet-balance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: rgba(63, 81, 181, 0.15);
+  border-radius: 20px;
+  border: 1px solid rgba(63, 81, 181, 0.3);
+}
+
+.wallet-balance mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #3f51b5;
+}
+
+.balance-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #3f51b5;
+}
+
+.network-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+}
+
+.connection-status {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.network-text {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wallet-info-container {
+    gap: 8px;
+    padding: 6px 12px;
+  }
+
+  .address-text {
+    font-size: 0.8rem;
+  }
+
+  .balance-text {
+    font-size: 0.8rem;
+  }
+
+  .network-text {
+    display: none;
+  }
+
+  .network-indicator {
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-balance {
+    padding: 4px 8px;
+  }
+
+  .balance-text {
+    display: none;
+  }
+}

@@ -1,0 +1,202 @@
+.details-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 2em;
+  background: #F2F3FF;
+  gap: 2em;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2em;
+  min-width: 0;
+}
+
+.details-header-left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.details-header-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  justify-content: flex-end;
+}
+
+.badge-new {
+  background: #D6E3FF;
+  color: #00468B;
+}
+
+.badge-translated {
+  background: #EADDFF;
+  color: #5A00C6;
+}
+
+.badge-error {
+  background: #FFDAD6;
+  color: #93000A;
+}
+
+.badge-synchronized {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.4em 0.8em;
+  border-radius: 2em;
+  font-size: 0.8em;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.status-badge::before {
+  content: '●';
+  margin-right: 0.5em;
+}
+
+.details-header-right button {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1em;
+  cursor: pointer;
+  text-wrap: wrap;
+  gap: 2em;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(194, 198, 212, 0.15);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.details-header-right button:hover{
+  background-color: #E5E7EB;
+}
+
+.details-header-right .delete-button{
+  color: white;
+  background-color: #BA1A1A;
+}
+
+.details-header-right .delete-button:hover{
+  background-color: #93000A;
+}
+
+.details-header-right button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.details-header-right button svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.status-section{
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+h2 {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5em;
+  line-height: 2em;
+  margin: 0;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100vh - 3.5em;
+}
+
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid #514b82;
+  animation:
+    l20-1 0.8s infinite linear alternate,
+    l20-2 1.6s infinite linear;
+}
+
+.snack-success {
+  background-color: #1A6B3A;
+  color: white;
+}
+
+.snack-error {
+  background-color: #BA1A1A;
+  color: white;
+}
+
+.snack-success .mat-mdc-button,
+.snack-error .mat-mdc-button {
+  color: white !important;
+}
+
+@keyframes l20-1 {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%)
+  }
+
+  12.5% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%)
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
+  }
+
+  62.5% {
+    clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%)
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%)
+  }
+}
+
+@keyframes l20-2 {
+  0% {
+    transform: scaleY(1) rotate(0deg)
+  }
+
+  49.99% {
+    transform: scaleY(1) rotate(135deg)
+  }
+
+  50% {
+    transform: scaleY(-1) rotate(0deg)
+  }
+
+  100% {
+    transform: scaleY(-1) rotate(-135deg)
+  }
+}

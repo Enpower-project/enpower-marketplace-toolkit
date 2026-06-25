@@ -1,0 +1,59 @@
+<div class="home-container">
+
+  @if(isLoading()){
+  <div class="loading-container">
+    <div class="loader"></div>
+  </div>
+  } @else {
+  <!-- Stats row -->
+  <div class="stats-row">
+    <app-stat-card title="Total Entries" [count]="totalCount()" subtext="Across all offerings" accentColor="#005FB8">
+      <svg icon width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="12" cy="5" rx="9" ry="3" stroke="#515F74" stroke-width="1.5" />
+        <path d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5" stroke="#515F74" stroke-width="1.5" />
+        <path d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3" stroke="#515F74" stroke-width="1.5" />
+      </svg>
+    </app-stat-card>
+
+    <app-stat-card title="New" [count]="newCount()" badge="NEW" accentColor="#22C55E">
+      <svg icon width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="8" height="8" rx="1" stroke="#515F74" stroke-width="1.5" />
+        <rect x="13" y="3" width="8" height="8" rx="1" stroke="#515F74" stroke-width="1.5" />
+        <rect x="3" y="13" width="8" height="8" rx="1" stroke="#515F74" stroke-width="1.5" />
+        <path d="M17 13v8M13 17h8" stroke="#515F74" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+    </app-stat-card>
+
+    <app-stat-card title="Synchronized" [count]="synchronizedCount()" badge="SYNCHRONIZED" accentColor="#22C55E">
+      <svg icon width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 12A8 8 0 105.33 17.33M20 12v4h-4" stroke="#515F74" stroke-width="1.5" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+    </app-stat-card>
+
+    <app-stat-card title="Error" [count]="errorCount()" badge="ERROR" variant="error">
+      <svg icon width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9" stroke="#BA1A1A" stroke-width="1.5" />
+        <path d="M12 8v4m0 4h.01" stroke="#BA1A1A" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+    </app-stat-card>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+
+    <!-- Left column -->
+    <div class="left-column">
+      <app-attention-required [oldestNew]="oldestNew()" [oldestTranslated]="oldestTranslated()"
+        [newCount]="newCount() ?? 0" [errorCount]="errorCount() ?? 0" [translatedCount]="translatedCount() ?? 0" />
+    </div>
+
+    <!-- Right column -->
+    <div class="right-column">
+      <app-recent-activity [entries]="recentEntries()" />
+      <app-offering-performance [offerings]="offerings()" [grandTotal]="totalCount() ?? 1" />
+    </div>
+
+  </div>
+  }
+</div>

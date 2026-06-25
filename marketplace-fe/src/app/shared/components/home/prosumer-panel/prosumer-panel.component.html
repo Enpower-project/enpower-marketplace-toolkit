@@ -1,0 +1,338 @@
+<div class="prosumer-panel">
+  <h2>FSP Dashboard</h2>
+  <p class="subtitle">Manage your energy flexibility participation</p>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading market information...</p>
+    </div>
+  </div>
+
+  <!-- Wallet Status Card -->
+  <mat-card class="wallet-status-card" *ngIf="!isLoading">
+    <mat-card-header>
+      <mat-icon mat-card-avatar [class]="walletInfo?.hasWallet ? 'wallet-active' : 'wallet-inactive'">
+        {{ walletInfo?.hasWallet ? 'account_balance_wallet' : 'wallet' }}
+      </mat-icon>
+      <mat-card-title class="card-title-styled">Personal Wallet Status</mat-card-title>
+      <mat-card-subtitle>Your blockchain wallet for energy trading</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="isCheckingWallet" class="wallet-loading">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span>Checking wallet status...</span>
+      </div>
+
+      <!-- Wallet Configured -->
+      <div *ngIf="!isCheckingWallet && walletInfo?.hasWallet" class="wallet-configured">
+        <div class="status-indicator success">
+          <mat-icon>check_circle</mat-icon>
+          <span class="status-text">Personal Wallet Active</span>
+        </div>
+        <div class="wallet-address" *ngIf="walletInfo.address">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <div class="address-info">
+            <span class="address-label">Wallet Address</span>
+            <span class="address-value">{{ walletInfo.address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Wallet -->
+      <div *ngIf="!isCheckingWallet && !walletInfo?.hasWallet" class="wallet-missing">
+        <div class="status-indicator warning">
+          <mat-icon>error</mat-icon>
+          <span class="status-text">No Personal Wallet</span>
+        </div>
+        <div class="missing-wallet-info">
+          <div class="warning-content">
+            <p class="warning-title">Trading Participation Restricted</p>
+            <p class="warning-description">
+              Without a personal wallet, you cannot participate in energy trading activities or submit flexibility
+              offers.
+            </p>
+          </div>
+          <div class="wallet-creation-section">
+            <button mat-raised-button color="primary" (click)="createWallet()" [disabled]="isCheckingWallet"
+              class="create-wallet-btn">
+              <mat-icon>add_card</mat-icon>
+              Create Personal Wallet
+            </button>
+            <p class="creation-note">Set up your secure blockchain wallet to start energy trading.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="walletCheckError" class="wallet-error">
+        <div class="status-indicator error">
+          <mat-icon>error_outline</mat-icon>
+          <span class="status-text">Unable to Check Wallet Status</span>
+        </div>
+        <button mat-stroked-button (click)="checkWalletStatus()" class="retry-btn">
+          <mat-icon>refresh</mat-icon>
+          Retry
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Market Information Card -->
+  <mat-card class="market-info-card" *ngIf="!isLoading && associatedMarket">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="market-icon">business</mat-icon>
+      <mat-card-title>Associated Market</mat-card-title>
+      <mat-card-subtitle>Your current trading market</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="market-summary">
+        <div class="market-name-section">
+          <mat-icon>label</mat-icon>
+          <div class="market-info-text">
+            <span class="market-name-label">{{ associatedMarket.name || getMarketDisplayName(associatedMarket.id || associatedMarket._id) }}</span>
+            <span class="market-id" *ngIf="associatedMarket.id || associatedMarket._id">
+              ID: {{ associatedMarket.id || associatedMarket._id }}
+            </span>
+            <span class="market-region" *ngIf="associatedMarket.region">
+              Region: {{ associatedMarket.region }}
+            </span>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" routerLink="/market-info" class="view-details-btn">
+          <mat-icon>info</mat-icon>
+          View Details
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Multiple Markets Switcher (only shown if user has more than one market) -->
+  <mat-card class="markets-switcher-card" *ngIf="!isLoading && hasMultipleMarkets()">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="switcher-icon">swap_horiz</mat-icon>
+      <mat-card-title class="card-title-styled">Your Markets</mat-card-title>
+      <mat-card-subtitle>Switch between your accessible markets</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="isLoadingMarkets" class="loading-markets">
+        <mat-spinner diameter="30"></mat-spinner>
+        <span>Loading markets...</span>
+      </div>
+      <div *ngIf="!isLoadingMarkets" class="markets-list">
+        <div *ngFor="let market of availableMarkets" 
+             class="market-item"
+             [class.active-market]="isCurrentMarket(market.id)">
+          <div class="market-item-info">
+            <mat-icon class="market-item-icon">business</mat-icon>
+            <div class="market-item-details">
+              <span class="market-item-name">{{ market.name }}</span>
+              <span class="market-item-id">ID: {{ market.id }}</span>
+            </div>
+          </div>
+          <button 
+            mat-raised-button 
+            [disabled]="isCurrentMarket(market.id) || isSwitchingToMarket(market.id)"
+            (click)="switchToMarket(market.id)"
+            class="select-market-btn"
+            [class.switching]="isSwitchingToMarket(market.id)"
+            [class.current]="isCurrentMarket(market.id)">
+            <mat-spinner *ngIf="isSwitchingToMarket(market.id)" diameter="18" class="button-spinner"></mat-spinner>
+            <mat-icon *ngIf="isCurrentMarket(market.id) && !isSwitchingToMarket(market.id)">check</mat-icon>
+            <span *ngIf="!isCurrentMarket(market.id) && !isSwitchingToMarket(market.id)">Select</span>
+            <span *ngIf="isCurrentMarket(market.id) && !isSwitchingToMarket(market.id)">Current</span>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- FSP Earnings & Performance Section -->
+  <div *ngIf="!isLoading && canParticipateInTrading()" class="earnings-section">
+    <!-- Loading Overlay -->
+    <div *ngIf="isLoadingSettlements" class="earnings-loading-overlay">
+      <div class="loading-spinner"></div>
+      <span class="loading-text">Refreshing earnings data...</span>
+    </div>
+    
+    <div class="earnings-grid">
+      <!-- Total Earnings Card -->
+      <div class="metric-card earnings-card">
+        <div class="metric-header">
+          <mat-icon class="metric-icon">payments</mat-icon>
+          <h3>Total Earnings</h3>
+        </div>
+        <div *ngIf="isLoadingSettlements" class="metric-loading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+        <div *ngIf="!isLoadingSettlements" class="metric-content">
+          <span class="metric-value">{{ totalEarnings }}</span>
+          <span class="metric-unit">FLEX</span>
+        </div>
+        <div class="metric-footer" *ngIf="!isLoadingSettlements">
+          <span>From {{ executedSettlementsCount }} executed settlements</span>
+        </div>
+      </div>
+
+      <!-- Performance Card -->
+      <div class="metric-card performance-card">
+        <div class="metric-header">
+          <mat-icon class="metric-icon">speed</mat-icon>
+          <h3>Avg. Performance</h3>
+        </div>
+        <div *ngIf="isLoadingSettlements" class="metric-loading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+        <div *ngIf="!isLoadingSettlements" class="metric-content">
+          <span class="metric-value" [ngClass]="getPerformanceColorClass()">{{ averagePerformance }}%</span>
+          <span class="metric-label">Delivery Rate</span>
+        </div>
+        <div class="metric-footer" *ngIf="!isLoadingSettlements">
+          <span [ngClass]="getPerformanceColorClass()">
+            {{ averagePerformance >= 90 ? 'Excellent' : averagePerformance >= 70 ? 'Good' : 'Needs Improvement' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Collateral Status Card -->
+      <div class="metric-card collateral-card">
+        <div class="metric-header">
+          <mat-icon class="metric-icon">lock</mat-icon>
+          <h3>Collateral Status</h3>
+        </div>
+        <div *ngIf="isLoadingTreasury" class="metric-loading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+        <div *ngIf="!isLoadingTreasury && treasuryBalance" class="metric-content collateral-content">
+          <div class="collateral-row">
+            <span class="collateral-label">Locked:</span>
+            <span class="collateral-value locked">{{ formatFlexAmount(treasuryBalance.collateralLocked) }} FLEX</span>
+          </div>
+          <div class="collateral-row">
+            <span class="collateral-label">Available:</span>
+            <span class="collateral-value available">{{ formatFlexAmount(treasuryBalance.availableBalance) }} FLEX</span>
+          </div>
+        </div>
+        <div *ngIf="!isLoadingTreasury && !treasuryBalance" class="metric-content">
+          <span class="metric-value">--</span>
+          <span class="metric-label">No data</span>
+        </div>
+      </div>
+
+      <!-- Penalties Card -->
+      <div class="metric-card penalties-card">
+        <div class="metric-header">
+          <mat-icon class="metric-icon">gavel</mat-icon>
+          <h3>Penalties</h3>
+        </div>
+        <div *ngIf="isLoadingSettlements" class="metric-loading">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+        <div *ngIf="!isLoadingSettlements" class="metric-content">
+          <span class="metric-value" [class.has-penalties]="totalPenalties !== '0'">{{ totalPenalties }}</span>
+          <span class="metric-unit">FLEX</span>
+        </div>
+        <div class="metric-footer" *ngIf="!isLoadingSettlements">
+          <span>Collateral forfeited</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button mat-raised-button color="primary" (click)="viewSettlements()" class="action-btn">
+        <mat-icon>receipt_long</mat-icon>
+        View My Settlements
+      </button>
+      <button mat-raised-button (click)="loadMySettlements()" class="action-btn refresh-btn" matTooltip="Refresh data">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sessions active-->
+   <div class="sessions-section" *ngIf="!isLoading">
+      <h3>Market Sessions Management</h3>
+      <app-prosumer-sessions-container [sessions]="sessions" [isLoading]="isLoading" [isMarketDeactivated]="isMarketDeactivated"></app-prosumer-sessions-container>
+   </div>
+
+  <!-- No Associated Market Card (shown when no market selected) -->
+  <div *ngIf="!associatedMarket && !isLoading">
+    <mat-card class="no-market-card">
+      <mat-card-content>
+        <div class="no-market-info">
+          <mat-icon>store_mall_directory</mat-icon>
+          <div class="no-market-text">
+            <h4>No Associated Market</h4>
+            <p>You need to subscribe to a market to access trading sessions and create offers.</p>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" (click)="openMarketSelectionModal()" class="select-market-btn">
+          <mat-icon>add_business</mat-icon>
+          Select Market
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Restricted Section -->
+  
+  <div *ngIf="associatedMarket && !canParticipateInTrading()" class="trading-restricted">
+    <mat-card class="restriction-card">
+      <mat-card-content>
+        <div class="restriction-info">
+          <mat-icon class="restriction-icon">block</mat-icon>
+          <div class="restriction-text">
+            <h4>Trading Access Restricted</h4>
+            <p>You need a personal wallet to participate in energy trading sessions.</p>
+            <p>Create your wallet above to access trading features for market: <strong>{{ associatedMarket.name ||
+                associatedMarket.id }}</strong></p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Offer Form Modal -->
+  <div *ngIf="showOfferForm" class="offer-form-modal">
+    <form (ngSubmit)="onSubmitOffer()" #offerForm="ngForm" class="offer-form">
+      <h4>Create Offer for session: {{ selectedSession.name || selectedSession.id }}</h4>
+      <label>
+        Quantity:
+        <input type="number" name="quantity" [(ngModel)]="offerData.quantity" required>
+      </label>
+      <label>
+        Price:
+        <input type="number" name="price" [(ngModel)]="offerData.price" required>
+      </label>
+      <label>
+        Start:
+        <input type="datetime-local" name="startDTime" [(ngModel)]="offerData.startDTime" required>
+      </label>
+      <label>
+        End:
+        <input type="datetime-local" name="endDTime" [(ngModel)]="offerData.endDTime" required>
+      </label>
+      <label>
+        Flexibility type:
+        <select name="flexType" [(ngModel)]="offerData.flexType" required>
+          <option value="UP">UP</option>
+          <option value="DOWN">DOWN</option>
+        </select>
+      </label>
+      <div class="offer-form-buttons">
+        <button type="submit" [disabled]="!offerForm.form.valid">Submit Offer</button>
+        <button type="button" (click)="cancelOffer()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Confirmation message -->
+  <div *ngIf="confirmationMessage" class="confirmation-message">
+    {{ confirmationMessage }}
+    <button (click)="confirmationMessage = ''">Close</button>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<div class="activity-container">
+  <div class="activity-header">
+    <h2>Recent Activity</h2>
+    <a class="activity-view-all" routerLink="/archives">VIEW ALL LOGS</a>
+  </div>
+
+  <table class="activity-table">
+    <thead>
+      <tr>
+        <th>EVENT TYPE</th>
+        <th>RESOURCE ID</th>
+        <th>TIMESTAMP</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows; track row.resourceId) {
+        <tr>
+          <td class="event-type-cell">
+            <span class="event-type-icon" [ngClass]="'event-icon--' + row.status.toLowerCase()">
+              @switch (row.status) {
+                @case ('NEW') {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                }
+                @case ('TRANSLATED') {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="currentColor"/></svg>
+                }
+                @case ('ERROR') {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                }
+                @case ('SYNCHRONIZED') {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 105.33 17.33M20 12v4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                }
+              }
+            </span>
+            {{ row.eventType }}
+          </td>
+          <td class="resource-id-cell">{{ row.resourceId }}</td>
+          <td class="timestamp-cell">{{ row.timestamp }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="'status-badge--' + row.status.toLowerCase()">
+              {{ row.status }}
+            </span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

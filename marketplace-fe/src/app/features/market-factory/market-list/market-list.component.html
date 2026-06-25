@@ -1,0 +1,126 @@
+<div class="market-container">
+  <div class="header">
+    <h2>Markets Management</h2>
+    <button mat-stroked-button (click)="createNewMarket()">
+      <mat-icon>add</mat-icon>
+      <span>Create New Market</span>
+    </button>
+  </div>
+
+  <div class="filters">
+    <!-- SELECT + CHIPS -->
+    <div class="filter-container">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter by State</mat-label>
+        <mat-select [(ngModel)]="selectedStates" (selectionChange)="onStateChange()" multiple>
+          <mat-option *ngFor="let state of allStates" [value]="state">{{ state }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="chip-container" *ngIf="selectedStates.length > 0">
+        <div class="chip" *ngFor="let state of selectedStates">
+          {{ state }}
+          <button class="remove-btn" (click)="removeStateFilter(state)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPO DE BÚSQUEDA -->
+    <div class="search-wrapper">
+      <mat-form-field appearance="fill" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (ngModelChange)="filterMarkets()" placeholder="Search by name">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p class="loading-text">Loading markets...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!isLoading" class="table-container">
+    <table mat-table [dataSource]="filteredMarkets" class="markets-table">
+
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Market Name </th>
+        <td mat-cell *matCellDef="let market"> 
+          <span class="cell-content name-cell">{{market.name}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Description -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> Description </th>
+        <td mat-cell *matCellDef="let market"> 
+          <span class="cell-content description-cell">{{market.description}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Region -->
+      <ng-container matColumnDef="region">
+        <th mat-header-cell *matHeaderCellDef> Region </th>
+        <td mat-cell *matCellDef="let market"> 
+          <span class="cell-content">{{market.region}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Market Owner -->
+      <ng-container matColumnDef="owner">
+        <th mat-header-cell *matHeaderCellDef> Market Owner </th>
+        <td mat-cell *matCellDef="let market"> 
+          <span class="cell-content email-cell">{{market.marketOwner?.email}}</span>
+        </td>
+      </ng-container>
+
+      <!-- State -->
+      <ng-container matColumnDef="state">
+        <th mat-header-cell *matHeaderCellDef> State </th>
+        <td mat-cell *matCellDef="let market">
+          <span class="state-badge" [class.active]="market.state === 'Active'" 
+                                     [class.inactive]="market.state === 'Inactive'"
+                                     [class.retired]="market.state === 'Retired'">
+            {{ market.state || 'N/A' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let market">
+          <div class="actions-cell">
+            <button mat-icon-button color="primary" [routerLink]="['/markets/edit', market._id]" matTooltip="Edit Market" class="action-btn" [disabled]="true">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="manageUsers(market)" matTooltip="Manage Users" class="action-btn">
+              <mat-icon>people</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="openInviteModal(market)" matTooltip="Invite Users" class="action-btn" [disabled]="market.state === 'DEACTIVATED'">
+              <mat-icon>person_add</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="delete(market)" matTooltip="Deactivate Market" class="action-btn" [disabled]="market.state === 'DEACTIVATED'">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!isLoading && filteredMarkets.length === 0" class="no-results">
+    <mat-icon>inbox</mat-icon>
+    <h3>No Markets Found</h3>
+    <p>Try adjusting your search or filter criteria</p>
+  </div>
+</div>

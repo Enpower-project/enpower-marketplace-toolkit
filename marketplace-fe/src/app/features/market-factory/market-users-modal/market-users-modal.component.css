@@ -1,0 +1,229 @@
+/* Global icon fixes */
+::ng-deep mat-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Dialog Header with Back Button */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 0 16px;
+}
+
+.back-button {
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(0, 35, 78, 0.08);
+  transform: translateX(-2px);
+}
+
+.back-button mat-icon {
+  color: #00234e;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Dialog Title */
+::ng-deep .mat-mdc-dialog-title {
+  color: #00234e;
+  padding: 0 0 16px 0;
+  margin: 0 0 24px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #00234e;
+  flex: 1;
+}
+
+/* Dialog Content */
+mat-dialog-content {
+  min-width: 500px;
+  max-height: 600px;
+  padding: 0 24px 24px 24px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #00234e;
+}
+
+.section h3 {
+  margin: 0 0 16px 0;
+  color: #00234e;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Expansion Panel */
+.users-expansion {
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  border: 1px solid #e0e0e0;
+}
+
+::ng-deep .users-expansion .mat-expansion-panel-header {
+  padding: 16px 24px;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .users-expansion .mat-expansion-panel-header:hover {
+  background: rgba(0, 35, 78, 0.04);
+}
+
+::ng-deep .users-expansion .mat-expansion-panel-header mat-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #00234e;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+::ng-deep .users-expansion .mat-expansion-panel-header mat-panel-title mat-icon {
+  color: #00234e;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+::ng-deep .users-expansion .mat-expansion-panel-body {
+  padding: 16px;
+}
+
+/* Form Fields */
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+::ng-deep .mat-mdc-form-field {
+  background: white;
+  border-radius: 4px;
+}
+
+::ng-deep .mat-mdc-select {
+  padding-right: 32px;
+}
+
+::ng-deep .mat-mdc-select-trigger {
+  padding: 8px 12px;
+  min-height: 40px;
+}
+
+::ng-deep .mat-mdc-select-arrow-wrapper {
+  padding-left: 12px;
+}
+
+/* Add Button */
+.section button[mat-raised-button] {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 10px 24px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 35, 78, 0.3);
+}
+
+.section button[mat-raised-button]:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 35, 78, 0.3);
+  border-color: #00234e;
+}
+
+.section button[mat-raised-button] mat-icon {
+  flex-shrink: 0;
+}
+
+/* User List */
+::ng-deep mat-list {
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+::ng-deep mat-list-item {
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+::ng-deep mat-list-item:hover {
+  background: rgba(211, 47, 47, 0.04);
+  border-color: rgba(211, 47, 47, 0.3);
+}
+
+::ng-deep mat-list-item mat-icon[matListItemIcon] {
+  color: #00234e;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+::ng-deep .mdc-list-item__primary-text {
+  color: #00234e;
+  font-weight: 500;
+}
+
+::ng-deep .mdc-list-item__secondary-text {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+/* Delete Button */
+::ng-deep mat-list-item button[mat-icon-button] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep mat-list-item button[mat-icon-button] mat-icon {
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+::ng-deep mat-list-item button[mat-icon-button]:hover mat-icon {
+  color: #d32f2f;
+}
+
+/* No Users Message */
+.no-users {
+  color: #666;
+  font-style: italic;
+  padding: 24px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  mat-dialog-content {
+    min-width: 350px;
+  }
+
+  .section {
+    padding: 16px;
+  }
+}

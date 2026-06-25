@@ -1,0 +1,36 @@
+
+@if(items.length != 0){
+    <div class="status-history-list">
+  @for (item of items; track $index) {
+    <div class="history-item">
+
+      <div class="history-icon-column">
+        <div class="history-icon" [ngClass]="'icon-' + item.newStatus.toLowerCase()">
+          <span class="icon-inner" [innerHTML]="item.newStatus | statusIcon"></span>
+        </div>
+        @if (!$last) {
+          <div class="history-connector"></div>
+        }
+      </div>
+
+      <div class="history-content">
+        <p class="history-title">Status changed to <strong>{{ item.newStatus }}</strong></p>
+        @if (item.statusMessage) {
+          <p class="history-message">{{ item.statusMessage }}</p>
+        }
+      </div>
+
+      <div class="history-meta">
+        <p class="history-actor">{{ item.changedBy ?? 'System' }}</p>
+        <p class="history-date">{{ item.timestamp | date: 'MMM d, HH:mm:ss' }}</p>
+      </div>
+
+    </div>
+  }
+</div>
+}@else {
+    <div class="empty-container">
+        <p class="empty-message">Right now there's no history for this entry!</p>
+    </div>
+}
+

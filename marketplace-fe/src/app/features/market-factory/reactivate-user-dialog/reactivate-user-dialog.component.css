@@ -1,0 +1,51 @@
+.reactivate-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  min-width: 450px;
+  min-height: 200px;
+}
+
+.reactivate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.reactivate-header h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #00234e;
+}
+
+.close-button {
+  color: #666;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 5px;
+  border-radius: 2.5em;
+}
+
+.username{
+  color: #00234e;
+  font-weight: bolder;
+}
+
+.reactivate-button{
+  background-color: #00234e;
+  color: white;
+  border-radius: 1em;
+  cursor: pointer;
+  margin-left: 1em;
+  padding: 1em;
+}
+
+.reactivate-button:hover{
+  background-color: #003d82;
+}

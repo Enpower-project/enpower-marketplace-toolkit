@@ -1,0 +1,94 @@
+<div class="my-markets-container">
+  <h2>My Markets</h2>
+
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading your markets...</p>
+    </div>
+  }
+
+  @if (!loading && error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadMyMarkets()">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (!loading && !error) {
+    <div class="markets-grid">
+      @if (markets.length === 0) {
+        <div class="no-markets">
+          <mat-icon>store</mat-icon>
+          <h3>No markets found</h3>
+          <p>You don't have any markets yet.</p>
+          <button mat-raised-button color="primary" (click)="createNewMarket()">
+            <mat-icon>add</mat-icon>
+            Create Market
+          </button>
+        </div>
+      }
+
+      @for (market of markets; track market.id) {
+        <mat-card class="market-card">
+          <mat-card-header>
+            <mat-card-title>{{ market.name }}</mat-card-title>
+            <mat-card-subtitle>{{ market.region }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="market-description">{{ market.description }}</p>
+
+            <div class="market-info">
+              <div class="info-row">
+                <span class="label">Status:</span>
+                <mat-chip [class]="getStatusClass(market.state)">
+                  {{ getStatusLabel(market.state) }}
+                </mat-chip>
+              </div>
+
+              <div class="info-row">
+                <span class="label">Active:</span>
+                <mat-chip [color]="isMarketActive(market) ? 'primary' : 'warn'">
+                  {{ isMarketActive(market) ? 'Yes' : 'No' }}
+                </mat-chip>
+              </div>
+
+              <div class="info-row">
+                <span class="label">Created:</span>
+                <span>{{ formatDate(market.createdAt) }}</span>
+              </div>
+
+              <div class="info-row">
+                <span class="label">Owner:</span>
+                <span>{{ market.marketOwner.username }} ({{ market.marketOwner.email }})</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-button color="primary" (click)="viewMarket(market)">
+              <mat-icon>visibility</mat-icon>
+              View
+            </button>
+            <button mat-button color="accent" (click)="editMarket(market)">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    @if (userInfo) {
+      <div class="user-info">
+        <p><strong>Total Markets:</strong> {{ userInfo.count }}</p>
+        <p><strong>User:</strong> {{ userInfo.userEmail }}</p>
+      </div>
+    }
+  }
+</div>

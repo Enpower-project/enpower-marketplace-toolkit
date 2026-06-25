@@ -1,0 +1,150 @@
+.main-container {
+  background-color: white;
+}
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+.dialog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.dialog-title {
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: #727783;
+}
+
+.required-label {
+  color: #BA1A1A;
+  margin-left: 0.7em;
+  font-weight: 400;
+}
+
+.badge-new {
+  background: #D6E3FF;
+  color: #00468B;
+}
+
+.badge-translated {
+  background: #EADDFF;
+  color: #5A00C6;
+}
+
+.badge-error {
+  background: #FFDAD6;
+  color: #93000A;
+}
+
+.badge-synchronized {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.current-status {
+  display: flex;
+  align-items: center;
+  padding: 0.6em;
+  width: fit-content;
+}
+
+.badge-new::before,
+.badge-translated::before,
+.badge-error::before,
+.badge-synchronized::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.badge-new::before {
+  background-color: #00468B;
+}
+
+.badge-translated::before {
+  background-color: #5A00C6;
+}
+
+.badge-error::before {
+  background-color: #93000A;
+}
+
+.badge-synchronized::before {
+  background-color: #065F46;
+}
+
+select {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0.7em 0.8em;
+  isolation: isolate;
+  background: #FFFFFF;
+  border: 1px solid rgba(194, 198, 212, 0.4);
+  border-radius: 4px;
+}
+
+textarea {
+  min-height: 8em;
+  padding: 1em;
+  background: #FFFFFF;
+  border: 1px solid rgba(194, 198, 212, 0.4);
+  border-radius: 4px;
+}
+
+p {
+  margin: 0;
+}
+
+.buttons-section {
+  display: flex;
+  gap: 0.4em;
+}
+
+.dialog-button {
+  padding: 8px 24px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  padding: 8px 20px;
+  border-radius: 1em;
+  background-color: white;
+  border: none;
+  color: #00488D;
+}
+
+.cancel-btn:hover {
+  background-color: #E5E7EB;
+}
+
+.confirm-btn {
+  background: #00488D;
+  border-radius: 0.2em;
+  color: white;
+}
+
+.confirm-btn:disabled{
+  background: #B0B8C1;
+  border: none;
+  opacity: 0.7;
+  cursor: not-allowed;
+}

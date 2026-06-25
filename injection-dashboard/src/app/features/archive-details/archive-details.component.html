@@ -1,0 +1,57 @@
+@if(isLoading()){
+<div class="loading-container">
+    <div class="loader"></div>
+</div>
+}@else{
+<div class="details-container">
+    <div class="details-header">
+        <div class="details-header-left">
+            <h2>
+                Entry ID: {{entry()?.entryId}}
+            </h2>
+            <div class="status-section">
+                <span class="status-badge" [ngClass]="entry()?.status | statusBadgePipe">{{entry()?.status}}</span>
+                <p>{{entry()?.statusMessage}}</p>
+            </div>
+        </div>
+        <div class="details-header-right">
+            <button (click)="onDownloadOriginal()">
+                <svg width="24" height="24" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M6 9L2.25 5.25L3.3 4.1625L5.25 6.1125V0H6.75V6.1125L8.7 4.1625L9.75 5.25L6 9ZM1.5 12C1.0875 12 0.734375 11.8531 0.440625 11.5594C0.146875 11.2656 0 10.9125 0 10.5V8.25H1.5V10.5H10.5V8.25H12V10.5C12 10.9125 11.8531 11.2656 11.5594 11.5594C11.2656 11.8531 10.9125 12 10.5 12H1.5Z"
+                        fill="#131B2E" />
+                </svg>
+                Download Original
+            </button>
+
+            <button [disabled]="entry()?.status === 'NEW' 
+                || entry()?.status === 'ERROR'" matTooltip="The file is not translated yet"
+                [matTooltipDisabled]="entry()?.status !== 'NEW' && entry()?.status !== 'ERROR'"
+                (click)="onDownloadTranslated()"
+                >
+
+                <svg width="30" height="30" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M8.175 15L11.5875 6H13.1625L16.575 15H15L14.1938 12.7125H10.5562L9.75 15H8.175ZM2.25 12.75L1.2 11.7L4.9875 7.9125C4.55 7.475 4.15312 6.975 3.79688 6.4125C3.44062 5.85 3.1125 5.2125 2.8125 4.5H4.3875C4.6375 4.9875 4.8875 5.4125 5.1375 5.775C5.3875 6.1375 5.6875 6.5 6.0375 6.8625C6.45 6.45 6.87813 5.87188 7.32188 5.12813C7.76562 4.38438 8.1 3.675 8.325 3H0V1.5H5.25V0H6.75V1.5H12V3H9.825C9.5625 3.9 9.16875 4.825 8.64375 5.775C8.11875 6.725 7.6 7.45 7.0875 7.95L8.8875 9.7875L8.325 11.325L6.0375 8.98125L2.25 12.75ZM11.025 11.4H13.725L12.375 7.575L11.025 11.4Z"
+                        fill="#131B2E" />
+                </svg>
+
+                Download Translated
+            </button>
+
+            <button class="delete-button" (click)="onDelete()">
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M2.25 13.5C1.8375 13.5 1.48438 13.3531 1.19062 13.0594C0.896875 12.7656 0.75 12.4125 0.75 12V2.25H0V0.75H3.75V0H8.25V0.75H12V2.25H11.25V12C11.25 12.4125 11.1031 12.7656 10.8094 13.0594C10.5156 13.3531 10.1625 13.5 9.75 13.5H2.25ZM9.75 2.25H2.25V12H9.75V2.25ZM3.75 10.5H5.25V3.75H3.75V10.5ZM6.75 10.5H8.25V3.75H6.75V10.5ZM2.25 2.25V12V2.25Z"
+                        fill="white" />
+                </svg>
+
+                Delete
+            </button>
+        </div>
+    </div>
+
+    <app-archive-details-body [entry]="entry()!" [statusHistoryItems]="statusHistoryItems()" (statusChanged)="onStatusChanged($event)"/>
+
+</div>
+}

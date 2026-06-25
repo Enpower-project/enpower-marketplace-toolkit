@@ -1,0 +1,35 @@
+{
+  "market": {
+    "created": "Mercado creado exitosamente",
+    "creationFailed": "Falló la creación del mercado",
+    "notFound": "Mercado no encontrado",
+    "ownershipCheck": "Propiedad del mercado verificada",
+    "noOwnership": "El usuario no posee ningún mercado",
+    "stateUpdated": "Estado del mercado actualizado exitosamente"
+  },
+  "validation": {
+    "nameRequired": "El nombre del mercado es requerido",
+    "nameMinLength": "El nombre del mercado debe tener al menos 3 caracteres",
+    "descriptionRequired": "La descripción del mercado es requerida",
+    "ownerEmailRequired": "El email del propietario es requerido",
+    "ownerEmailInvalid": "El email del propietario debe ser una dirección de correo válida",
+    "ownerUsernameRequired": "El nombre de usuario del propietario es requerido",
+    "acceptanceRequired": "La aceptación de participación en el mercado es requerida"
+  },
+  "owner": {
+    "created": "Propietario del mercado creado exitosamente",
+    "welcomeEmailSent": "Email de bienvenida enviado al propietario del mercado",
+    "alreadyExists": "El propietario del mercado ya existe"
+  },
+  "accepted": "Participación en el mercado aceptada exitosamente",
+  "acceptanceError": "Falló la aceptación de participación en el mercado",
+  "participation": {
+    "info": "Será asignado para participar en el mercado de flexibilidad",
+    "walletGeneration": "Se generará una nueva billetera exclusivamente para esta plataforma",
+    "securityNotice": "Ni la dirección de la billetera ni la clave privada le serán reveladas",
+    "pinRequired": "Creará un PIN personal para desencriptar los datos de la billetera para transacciones"
+  },
+  "invalidToken": "Token de aceptación inválido o expirado",
+  "tokenExpired": "El enlace de aceptación ha expirado. Por favor contacta a soporte para asistencia",
+  "alreadyAccepted": "La propiedad del mercado ya ha sido aceptada"
+}

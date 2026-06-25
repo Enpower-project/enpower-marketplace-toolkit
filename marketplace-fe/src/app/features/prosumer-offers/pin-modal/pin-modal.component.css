@@ -1,0 +1,362 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 320px;
+  right: 0;
+  width: calc(100% - 320px);
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 85%;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 35, 78, 0.15);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 3px solid #3B7DBF;
+  background: white;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  letter-spacing: 0.5px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+}
+
+.close-button:hover {
+  background: #f8f9fa;
+  color: #3B7DBF;
+}
+
+.close-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-body {
+  padding: 28px;
+}
+
+.message {
+  margin: 0 0 24px 0;
+  font-size: 1rem;
+  color: #6c757d;
+  line-height: 1.6;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 10px;
+  border-left: 4px solid #3B7DBF;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.pin-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.pin-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  font-family: monospace;
+  letter-spacing: 3px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.pin-input:focus {
+  outline: none;
+  border-color: #3B7DBF;
+  box-shadow: 0 0 0 3px rgba(59, 125, 191, 0.15);
+  background: #f8f9fa;
+}
+
+.pin-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.toggle-pin-button {
+  padding: 14px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  min-width: 52px;
+}
+
+.toggle-pin-button mat-icon {
+  font-size: 1.3rem;
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.toggle-pin-button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #3B7DBF;
+  color: #3B7DBF;
+  transform: scale(1.05);
+}
+
+.toggle-pin-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding: 14px 16px;
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-left: 4px solid #f56565;
+  border-radius: 10px;
+  color: #c53030;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.info-message {
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #3B7DBF;
+  border-radius: 10px;
+  color: #1e40af;
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+}
+
+.info-message strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.info-message ol {
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+.info-message li {
+  margin: 4px 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 2px solid #f1f3f5;
+}
+
+.cancel-button,
+.submit-button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button {
+  background: #f8f9fa;
+  color: #495057;
+  border: 2px solid #dee2e6;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+}
+
+.submit-button {
+  background: #3B7DBF;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #5B9BD5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 125, 191, 0.3);
+}
+
+.spinner-small {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.cancel-button:disabled,
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Financial Summary Styles */
+.financial-summary {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 18px 0;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.summary-title {
+  margin: 0 0 16px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid var(--primary-blue, #3B7DBF);
+  padding-bottom: 8px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.summary-row:hover {
+  background-color: #fff;
+}
+
+.summary-label {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c3e50;
+}
+
+.summary-value.fee {
+  color: #dc3545;
+}
+
+.summary-row.highlight-collateral {
+  background-color: #fff3e0;
+  border-left: 4px solid #f0ad4e;
+}
+
+.summary-row.highlight-collateral .summary-label {
+  color: #e65100;
+  font-weight: 600;
+}
+
+.summary-row.highlight-collateral .summary-value {
+  color: #e65100;
+  font-weight: 700;
+}
+
+.summary-row.highlight-tokens {
+  background-color: #e8f5e9;
+  border-left: 4px solid #5CB85C;
+}
+
+.summary-row.highlight-tokens .summary-label {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.summary-row.highlight-tokens .summary-value {
+  color: #2e7d32;
+  font-weight: 700;
+}

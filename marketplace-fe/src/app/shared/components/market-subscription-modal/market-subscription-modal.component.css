@@ -1,0 +1,458 @@
+/* ===========================
+   MODAL ANIMATIONS
+   =========================== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* ===========================
+   HEADER SECTION
+   =========================== */
+.market-subscription-modal h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #274b95;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: -0.3px;
+  margin: 0;
+  padding: 20px 32px;
+  animation: slideIn 0.4s ease-out;
+}
+
+.market-subscription-modal h2 mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #274b95;
+  filter: drop-shadow(0 2px 4px rgba(39, 75, 149, 0.3));
+  flex-shrink: 0;
+}
+
+/* ===========================
+   CONTENT SECTION
+   =========================== */
+mat-dialog-content {
+  padding: 24px 32px !important;
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Custom scrollbar for content */
+mat-dialog-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+mat-dialog-content::-webkit-scrollbar-track {
+  background: rgba(39, 75, 149, 0.05);
+  border-radius: 4px;
+}
+
+mat-dialog-content::-webkit-scrollbar-thumb {
+  background: rgba(39, 75, 149, 0.3);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+mat-dialog-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(39, 75, 149, 0.5);
+}
+
+.description {
+  margin-bottom: 24px;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.05) 0%, rgba(39, 75, 149, 0.02) 100%);
+  border-left: 3px solid #274b95;
+  border-radius: 4px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* ===========================
+   LOADING & ERROR STATES
+   =========================== */
+.loading-container,
+.error-container,
+.no-markets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.loading-container {
+  flex-direction: row;
+  gap: 12px;
+}
+
+.loading-container mat-icon {
+  font-size: 24px;
+  height: 24px;
+  width: 24px;
+  margin-bottom: 0;
+  color: #274b95;
+}
+
+.loading-container p {
+  color: #274b95;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.error-container mat-icon {
+  font-size: 56px;
+  height: 56px;
+  width: 56px;
+  color: #d32f2f;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 2px 6px rgba(211, 47, 47, 0.3));
+  flex-shrink: 0;
+}
+
+.error-container p {
+  color: #d32f2f;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.error-container button {
+  background: transparent !important;
+  color: #274b95 !important;
+  border: 2px solid #274b95 !important;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  padding: 10px 24px;
+}
+
+.error-container button:hover {
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.1) 0%, rgba(39, 75, 149, 0.05) 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 75, 149, 0.3);
+}
+
+.error-container button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.no-markets mat-icon {
+  font-size: 56px;
+  height: 56px;
+  width: 56px;
+  color: #ff9800;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 2px 6px rgba(255, 152, 0, 0.3));
+  flex-shrink: 0;
+}
+
+.no-markets p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* ===========================
+   MARKETS LIST
+   =========================== */
+.markets-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 8px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Remove custom scrollbar from markets-list since parent handles it now */
+/* ===========================
+   MARKET CARDS
+   =========================== */
+.market-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent !important;
+  border: 2px solid #274b95 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.market-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #274b95 0%, rgba(39, 75, 149, 0.6) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.market-card:hover:not(.subscribing) {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(39, 75, 149, 0.25);
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.05) 0%, rgba(39, 75, 149, 0.02) 100%) !important;
+}
+
+.market-card:hover:not(.subscribing)::before {
+  opacity: 1;
+}
+
+.market-card.subscribing {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+/* Card Header */
+.market-card mat-card-header {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.08) 0%, rgba(39, 75, 149, 0.03) 100%);
+  border-bottom: 1px solid rgba(39, 75, 149, 0.2);
+}
+
+.market-card mat-card-header mat-icon {
+  color: #4caf50;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 2px 4px rgba(76, 175, 80, 0.3));
+  flex-shrink: 0;
+}
+
+.deactivated-card mat-card-header mat-icon {
+  color: #c61919 !important;
+}
+
+.market-card mat-card-title {
+  color: #274b95;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.2px;
+}
+
+.market-card mat-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+.market-card mat-card-subtitle mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #ff9800;
+  flex-shrink: 0;
+}
+
+/* Card Content */
+.market-card mat-card-content {
+  padding: 20px;
+}
+
+.market-description {
+  margin: 0 0 16px 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.market-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4caf50;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+  border-radius: 4px;
+  border-left: 3px solid #4caf50;
+}
+
+.deactivated-status {
+  color: #c61919;
+  border-left: 3px solid #c61919;
+  background: #ffcdd2;
+}
+
+.market-status mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  filter: drop-shadow(0 1px 3px rgba(76, 175, 80, 0.3));
+  flex-shrink: 0;
+}
+
+/* Card Actions */
+mat-card-actions {
+  padding: 16px 20px !important;
+  border-top: 1px solid rgba(39, 75, 149, 0.1);
+}
+
+mat-card-actions button {
+  width: 100%;
+  font-weight: 700;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(39, 75, 149, 0.3) !important;
+}
+
+mat-card-actions button:hover:not([disabled]) {
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.1) 0%, rgba(39, 75, 149, 0.05) 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 75, 149, 0.3);
+}
+
+mat-card-actions button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+mat-card-actions button .button-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+mat-card-actions button mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+mat-card-actions button .button-spinner.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===========================
+   DIALOG ACTIONS
+   =========================== */
+mat-dialog-actions {
+  padding: 16px 32px !important;
+  border-top: 2px solid rgba(39, 75, 149, 0.1);
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.03) 0%, rgba(39, 75, 149, 0.01) 100%);
+  position: relative;
+  z-index: 10;
+}
+
+mat-dialog-actions button {
+  background: transparent !important;
+  color: #274b95 !important;
+  border: 2px solid #274b95 !important;
+  font-weight: 600;
+  padding: 8px 24px;
+  transition: all 0.3s ease;
+}
+
+mat-dialog-actions button:hover:not([disabled]) {
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.1) 0%, rgba(39, 75, 149, 0.05) 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 75, 149, 0.3);
+}
+
+mat-dialog-actions button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Retry Button */
+.retry-button {
+  margin-right: auto !important;
+}
+
+.retry-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* ===========================
+   RESPONSIVE DESIGN
+   =========================== */
+@media (max-width: 768px) {
+  .market-subscription-modal h2 {
+    font-size: 1.25rem;
+    padding: 16px 20px;
+  }
+
+  .market-subscription-modal h2 mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  mat-dialog-content {
+    padding: 20px 24px !important;
+  }
+
+  .description {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+
+  .markets-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  mat-dialog-actions {
+    padding: 12px 24px !important;
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "errors": {
+    "user_not_found": "User not found",
+    "wallet_not_found": "Wallet not found",
+    "invalid_pin": "Invalid PIN",
+    "blockchain_error": "Blockchain error occurred",
+    "contract_error": "Smart contract error occurred"
+  }
+}

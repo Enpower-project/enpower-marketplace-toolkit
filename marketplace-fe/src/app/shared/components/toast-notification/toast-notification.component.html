@@ -1,0 +1,21 @@
+<div class="toast-container">
+  <div
+    *ngFor="let toast of messages"
+    [@slideIn]
+    class="toast-message"
+    [class.success]="toast.type === 'success'"
+    [class.error]="toast.type === 'error'"
+    [class.warning]="toast.type === 'warning'"
+    [class.info]="toast.type === 'info'"
+    (click)="removeMessage(toast.id)">
+    <div class="toast-icon">
+      <mat-icon>{{ getIcon(toast.type) }}</mat-icon>
+    </div>
+    <div class="toast-content">
+      <p>{{ toast.message }}</p>
+    </div>
+    <button class="toast-close" (click)="removeMessage(toast.id)">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>

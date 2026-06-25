@@ -1,0 +1,18 @@
+{
+  "common": {
+    "success": "Operation completed successfully",
+    "error": "An error occurred",
+    "notFound": "Resource not found",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "badRequest": "Bad request",
+    "internalError": "Internal server error"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "tooShort": "Value is too short",
+    "tooLong": "Value is too long",
+    "invalidFormat": "Invalid format"
+  }
+}

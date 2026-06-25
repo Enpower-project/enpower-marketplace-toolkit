@@ -1,0 +1,65 @@
+<!-- Loading Spinner -->
+<div *ngIf="isLoading" class="loading-container">
+  <div class="spinner-wrapper">
+    <div class="spinner"></div>
+    <p>Loading sessions information...</p>
+  </div>
+</div>
+
+<div class="empty-state" *ngIf="filteredSessions.length <= 0">
+  <p>
+    There's no sessions available now
+  </p>
+</div>
+
+<div *ngIf="!isLoading && filteredSessions.length > 0" class="sessions-grid">
+  <div *ngFor="let session of filteredSessions" class="session-card" (click)="onCardClick(session.id)">
+    <div class="card-header">
+      <h3>{{ session.name }}</h3>
+      <span class="session-date">{{ session.sessionDate | date: 'dd/MM/yyyy' }}</span>
+    </div>
+
+    <div class="card-body">
+      <p *ngIf="session.description" class="description">{{ session.description }}</p>
+
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">Market:</span>
+          <span class="stat-value">{{ session.market.name }}</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">Total Flexibility Requests:</span>
+          <span class="stat-value">{{ getTotalBidsCount(session) }}</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">Available Flexibility Requests:</span>
+          <span class="stat-value highlight">{{ getAvailableBidsCount(session) }}</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">Total Power:</span>
+          <span class="stat-value">{{ session.totalPowerMw }} KW</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">Average Price:</span>
+          <span class="stat-value">{{ session.averagePricePerMwh | number: '1.2-4' }} €/KWh</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <button class="view-button" [disabled]="isMarketDeactivated" (click)="onCardClick(session.id)"
+        [style.opacity]="isMarketDeactivated ? '0.5' : '1'"
+        [style.cursor]="isMarketDeactivated ? 'not-allowed' : 'pointer'">
+        View Flexibility Requests and Create Offers
+      </button>
+
+      <span *ngIf="isMarketDeactivated" class="deactivated-badge">
+        <span>⛔</span> Market Deactivated
+      </span>
+    </div>
+  </div>
+</div>

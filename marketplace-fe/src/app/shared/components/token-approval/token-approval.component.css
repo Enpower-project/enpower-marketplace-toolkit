@@ -1,0 +1,135 @@
+.token-approval-container {
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .token-approval-container.compact {
+      padding: 12px;
+    }
+
+    .approval-loading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #666;
+    }
+
+    .approval-error {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #d32f2f;
+    }
+
+    .approval-success {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #388e3c;
+    }
+
+    .approval-success mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .approval-required {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .approval-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .approval-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .approval-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .approval-detail {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .pin-section {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .pin-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .pin-input-group label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .pin-input {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .pin-input:focus {
+      outline: none;
+      border-color: #00234e;
+      box-shadow: 0 0 0 2px rgba(0, 35, 78, 0.1);
+    }
+
+    .approval-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .approval-actions button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tx-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: #e8f5e9;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #2e7d32;
+    }
+
+    .tx-info mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    ::ng-deep .token-approval-container button[mat-raised-button] {
+      background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+      color: white;
+    }

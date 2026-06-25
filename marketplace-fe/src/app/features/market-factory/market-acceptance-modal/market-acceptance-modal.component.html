@@ -1,0 +1,75 @@
+<div class="market-acceptance-modal">
+  <!-- Loading Overlay -->
+  <div *ngIf="isProcessing" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Processing...</p>
+  </div>
+
+  <h2 mat-dialog-title>
+    <mat-icon>business</mat-icon>
+    Markets Pending Acceptance
+  </h2>
+  
+  <div mat-dialog-content class="dialog-content">
+    <p class="intro-text">
+      You have {{ data.pendingMarkets.length }} market{{ data.pendingMarkets.length > 1 ? 's' : '' }} 
+      waiting for your acceptance. Please review and decide:
+    </p>
+    
+    <div class="markets-list">
+      <mat-card *ngFor="let market of data.pendingMarkets; trackBy: trackByMarketId" 
+                class="market-card" 
+                [class.accepted]="acceptedMarkets.has(market.id)"
+                [class.rejected]="rejectedMarkets.has(market.id)">
+        <mat-card-header>
+          <mat-card-title>{{ market.name }}</mat-card-title>
+          <mat-card-subtitle>Created: {{ market.createdAt | date:'short' }}</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <p>{{ market.description }}</p>
+          <p class="state-info">
+            <mat-icon>info</mat-icon>
+            State: {{ getStateDisplay(market.state) }}
+          </p>
+        </mat-card-content>
+        
+        <mat-card-actions *ngIf="!acceptedMarkets.has(market.id) && !rejectedMarkets.has(market.id)">
+          <button mat-raised-button color="primary" 
+                  (click)="acceptMarket(market)"
+                  [disabled]="isProcessing">
+            <mat-icon>check</mat-icon>
+            Accept
+          </button>
+          <button mat-raised-button color="warn" 
+                  (click)="rejectMarket(market)"
+                  [disabled]="isProcessing">
+            <mat-icon>close</mat-icon>
+            Reject
+          </button>
+        </mat-card-actions>
+        
+        <div class="status-indicator" *ngIf="acceptedMarkets.has(market.id)">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <span>Accepted</span>
+        </div>
+        
+        <div class="status-indicator rejected" *ngIf="rejectedMarkets.has(market.id)">
+          <mat-icon color="warn">cancel</mat-icon>
+          <span>Rejected</span>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+  
+  <div mat-dialog-actions class="dialog-actions">
+    <!-- Show postpone button only if no markets have been accepted yet -->
+    <button mat-button 
+            *ngIf="acceptedMarkets.size === 0"
+            (click)="postpone()"
+            [disabled]="isProcessing">
+      <mat-icon>schedule</mat-icon>
+      I'll decide later
+    </button>
+  </div>
+</div>

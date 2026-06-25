@@ -1,0 +1,61 @@
+@if (isLoading) {
+<div class="loading-container">
+  <div class="loader"></div>
+</div>
+} @else {
+<table mat-table matSort 
+  [dataSource]="dataSource" 
+  [matSortActive]="activeSortField"
+  [matSortDirection]="activeSortDirection"
+  matSortDisableClear="false"
+  (matSortChange)="onSortChange($event)">
+
+  <ng-container matColumnDef="entryId">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="entryId">ENTRY ID</th>
+    <td mat-cell *matCellDef="let entry">{{entry.entryId}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="offeringName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="offeringName">OFFERING</th>
+    <td mat-cell *matCellDef="let entry">{{entry.offeringName}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="originalFileName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="originalFileName">ORIGINAL FILE NAME</th>
+    <td mat-cell *matCellDef="let entry">{{entry.originalFileName}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="entryCreationTimestamp">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header="entryCreationTimestamp">CREATION DATE</th>
+    <td mat-cell *matCellDef="let entry">{{entry.entryCreationTimestamp | date: 'dd-MM-yyyy HH:mm'}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>STATUS</th>
+    <td mat-cell *matCellDef="let entry">
+      <span class="status-badge" [ngClass]="'status-'+ entry.status.toLowerCase()">
+        {{entry.status}}
+      </span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+    <td mat-cell *matCellDef="let entry" [routerLink]="`/archives/${entry.entryId}`">
+      <mat-icon class="launch-icon">launch</mat-icon>
+    </td>
+  </ng-container>
+
+  <tr class="table-header" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<mat-paginator
+  [length]="totalElements"
+  [pageSize]="pageSize"
+  [pageIndex]="pageIndex"
+  [pageSizeOptions]="[10, 20, 50]"
+  [showFirstLastButtons]="true"
+  (page)="onPageChange($event)">
+</mat-paginator>
+}

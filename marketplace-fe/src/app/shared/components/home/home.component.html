@@ -1,0 +1,7 @@
+<div class="container">
+  <!-- User is authenticated - AuthGuard already verified this -->
+  <app-superadmin-panel *ngIf="userRole === 'MARKETPLACE_ADMIN'"></app-superadmin-panel>
+  <app-dsopanel *ngIf="userRole === 'FRP'"></app-dsopanel>
+  <app-market-owner-panel *ngIf="userRole === 'FMO_LMO'"></app-market-owner-panel>
+  <app-prosumer-panel *ngIf="userRole === 'FSP' || userRole === 'prosumer'"></app-prosumer-panel>
+</div>

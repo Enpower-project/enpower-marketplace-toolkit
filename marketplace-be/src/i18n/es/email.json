@@ -1,0 +1,79 @@
+{
+  "email": {
+    "sendFailed": "Falló el envío del email",
+    "sendSuccess": "Email enviado exitosamente"
+  },
+  "walletPin": {
+    "selfSubject": "Tu PIN de Billetera - Mercado de Flexibilidad",
+    "marketSubject": "Tu PIN de Billetera del Mercado - Mercado de Flexibilidad",
+    "greeting": "Tu PIN de Billetera",
+    "selfMessage": "¡Tu billetera personal ha sido creada exitosamente! Aquí tienes tu PIN seguro:",
+    "marketMessage": "¡Tu billetera del mercado ha sido creada exitosamente! Aquí tienes tu PIN seguro:",
+    "market": "Mercado",
+    "pin": "Tu PIN de Billetera",
+    "securityWarning": "Mantén este PIN seguro y privado. Lo necesitarás para acceder a tu billetera y realizar transacciones.",
+    "instructions": "Por favor guarda este PIN en un lugar seguro. Ahora puedes usar tu billetera para participar en el mercado de energía.",
+    "support": "Si tienes alguna pregunta sobre tu billetera, por favor contacta a nuestro equipo de soporte.",
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  },
+  "marketOwnerWelcome": {
+    "subject": "Bienvenido a la Plataforma de Mercado de Flexibilidad",
+    "greeting": "¡Bienvenido a nuestra plataforma!",
+    "credentials": "Tus credenciales de acceso:",
+    "username": "Nombre de usuario",
+    "temporaryPassword": "Contraseña temporal",
+    "market": "Tu Mercado",
+    "loginInstructions": "Por favor, inicia sesión en la plataforma y cambia tu contraseña lo antes posible.",
+    "support": "Si tienes alguna pregunta, por favor contacta a nuestro equipo de soporte.",
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  },
+  "passwordReset": {
+    "subject": "Solicitud de Restablecimiento de Contraseña",
+    "greeting": "Hola,",
+    "instructions": "Has solicitado restablecer tu contraseña. Haz clic en el enlace de abajo para restablecerla:",
+    "resetLink": "Restablecer Contraseña",
+    "expiration": "Este enlace expirará en 1 hora.",
+    "noRequest": "Si no solicitaste este restablecimiento de contraseña, por favor ignora este email.",
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  },
+  "marketActivation": {
+    "subject": "Mercado Activado",
+    "greeting": "Hola,",
+    "message": "Tu mercado ha sido activado exitosamente:",
+    "marketName": "Nombre del Mercado",
+    "instructions": "Ahora puedes comenzar a gestionar tu mercado a través de la plataforma.",
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  },
+  "marketAcceptance": {
+    "subject": "Se Requiere Aceptación de Propiedad del Mercado",
+    "greeting": "Invitación de Propiedad del Mercado",
+    "message": "Has sido invitado a convertirte en propietario de un nuevo mercado:",
+    "market": "Mercado",
+    "credentials": "Tus credenciales de acceso",
+    "username": "Nombre de usuario",
+    "temporaryPassword": "Contraseña temporal",
+    "acceptanceInstructions": "Haz clic en el botón de abajo para aceptar la propiedad del mercado e iniciar sesión en la plataforma:",
+    "acceptButton": "Aceptar Propiedad e Iniciar Sesión",
+    "support": "Si tienes alguna pregunta, por favor contacta a nuestro equipo de soporte.",
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  },
+  "invitation": {
+    "subject": "Invitación para unirte a {{marketName}}",
+    "greeting": "¡Has sido invitado!",
+    "message": "{{inviterName}} te ha invitado a unirte al mercado \"{{marketName}}\" con el rol de {{role}}.",
+    "instructions": "Haz clic en el botón de abajo para aceptar la invitación y crear tu cuenta:",
+    "buttonText": "Aceptar Invitación",
+    "expiryLabel": "Esta invitación expira el",
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  },
+  "common": {
+    "regards": "Saludos cordiales,",
+    "team": "El Equipo del Mercado de Flexibilidad"
+  }
+}

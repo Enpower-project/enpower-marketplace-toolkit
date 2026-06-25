@@ -1,0 +1,277 @@
+<div class="session-detail-container">
+  <!-- Header -->
+  <div class="header">
+    <button mat-icon-button (click)="goBack()" matTooltip="Go back" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="title-section">
+      <h1>{{ session?.name || 'Session Details' }}</h1>
+    </div>
+    <div class="actions" *ngIf="session && !loading">
+      <button *ngIf="canEditSession()" mat-stroked-button color="primary" (click)="editSession()">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+      <button *ngIf="canPublishSession()" mat-raised-button color="primary" (click)="publishSession()">
+        <mat-icon>publish</mat-icon>
+        Publish
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading session details...</p>
+    </div>
+  </div>
+
+  <!-- Session Details -->
+  <div *ngIf="!loading && session" class="session-content">
+    <!-- Basic Information Card -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="info-avatar">info</mat-icon>
+        <mat-card-title>Session Information</mat-card-title>
+        <mat-card-subtitle>Key details about this trading session</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <mat-icon>label</mat-icon>
+            <div class="info-content">
+              <span class="label">Status</span>
+              <span class="value">{{ getStatusDisplayName(session.status) }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>event</mat-icon>
+            <div class="info-content">
+              <span class="label">Date</span>
+              <span class="value">{{ formatDate(session.sessionDate) }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>person</mat-icon>
+            <div class="info-content">
+              <span class="label">Created by</span>
+              <span class="value">{{ session.createdBy.username || 'Unknown' }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>schedule</mat-icon>
+            <div class="info-content">
+              <span class="label">Time Slots</span>
+              <span class="value">{{ session.totalBids || 0 }} configured</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>flash_on</mat-icon>
+            <div class="info-content">
+              <span class="label">Total Power</span>
+              <span class="value">{{ session.totalPowerMw | number:'1.2-2' }} KW</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>euro_symbol</mat-icon>
+            <div class="info-content">
+              <span class="label">Average Price</span>
+              <span class="value">{{ session.averagePricePerMwh | number:'1.2-2' }} Flex/KWh</span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="session.publishedAt">
+            <mat-icon>publish</mat-icon>
+            <div class="info-content">
+              <span class="label">Published</span>
+              <span class="value">{{ formatDateTime(session.publishedAt) }}</span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="session.contractAddress">
+            <mat-icon>link</mat-icon>
+            <div class="info-content">
+              <span class="label">Contract Address</span>
+              <span class="value contract-address">{{ session.contractAddress | slice:0:10 }}...{{
+                session.contractAddress | slice:-8 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="session.description" class="description">
+          <h4>Description</h4>
+          <p>{{ session.description }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Time Slots Overview -->
+    <mat-card class="time-slots-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="slots-avatar">schedule</mat-icon>
+        <mat-card-title>Time Slots Overview</mat-card-title>
+        <mat-card-subtitle>
+          {{ session.totalBids || 0 }} of 24 time slots configured
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="time-slots-grid">
+          <div *ngFor="let slot of timeSlots; trackBy: trackByHour" class="time-slot-card"
+            [class.has-bid]="slot.hasData" [class.empty]="!slot.hasData">
+
+            <div class="slot-header">
+              <span class="time-range">{{ slot.displayTime }}</span>
+              <mat-icon *ngIf="slot.hasData" class="status-icon">
+                check_circle
+              </mat-icon>
+              <mat-icon *ngIf="!slot.hasData" class="status-icon empty">
+                radio_button_unchecked
+              </mat-icon>
+            </div>
+
+            <div *ngIf="slot.hasData" class="bid-details">
+              <div class="bid-row">
+                <span class="label">Power:</span>
+                <span class="value">{{ slot.bid?.powerMw | number:'1.2-4' }} KW</span>
+              </div>
+              <div class="bid-row">
+                <span class="label">Price:</span>
+                <span class="value">{{ slot.bid?.pricePerMwh | number:'1.2-4' }} Flex/KWh</span>
+              </div>
+              <div class="bid-row">
+                <span class="label">Type:</span>
+                <span class="type-badge" [class.demand]="slot.bid?.bidType === 'UPWARD'"
+                  [class.supply]="slot.bid?.bidType === 'DOWNWARD'">
+                  {{ getBidTypeName(slot.bid?.bidType) }}
+                </span>
+              </div>
+              <div class="bid-row total">
+                <span class="label">Total:</span>
+                <span class="value">{{ getTotalForBid(slot.bid) | number:'1.2-2' }} Flex</span>
+              </div>
+            </div>
+
+            <div *ngIf="!slot.hasData" class="empty-slot">
+              <span>No flexibility request configured</span>
+            </div>
+
+            <div *ngIf="slot.hasData && getOffersForSlot(slot.hour).length > 0" class="offers-toggle">
+              <div class="progress-section">
+                <div class="progress-labels">
+                  <span class="progress-label">Offered: {{ getTotalOfferedPowerForSlot(slot.hour) |
+                    number:'1.2-2' }} KW</span>
+                  <span class="progress-max">Target: {{ slot.bid?.powerMw | number:'1.2-4' }} KW</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" [style.width.%]="getProgressPercentage(slot.hour, slot.bid!.powerMw)">
+                  </div>
+                </div>
+              </div>
+
+              <button class="toggle-btn" (click)="toggleSlotExpanded(slot.hour)">
+                <mat-icon class="toggle-icon" [class.expanded]="isSlotExpanded(slot.hour)">
+                  expand_more
+                </mat-icon>
+                <span>{{ getOffersForSlot(slot.hour).length }} offer(s)</span>
+              </button>
+            </div>
+
+            <!-- Offers Container -->
+                <div *ngIf="slot.hasData && isSlotExpanded(slot.hour) && !loading" class="offers-container">
+                    <div class="offers-header">
+                        <span>Offers for this slot:</span>
+                    </div>
+                    <div *ngIf="getOffersForSlot(slot.hour).length > 0; else noOffers" class="offers-list">
+                        <div *ngFor="let offer of getOffersForSlot(slot.hour); trackBy: trackByOffer"
+                            class="offer-item">
+                            <div class="offer-detail">
+                                <span class="offer-label">Power:</span>
+                                <span class="offer-value">{{ offer.powerMw | number:'1.2-2' }} KW</span>
+                            </div>
+                            <div class="offer-detail">
+                                <span class="offer-label">User:</span>
+                                <span class="offer-value">{{ offer.fsp.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template #noOffers>
+                        <div class="no-offers">No offers submitted yet</div>
+                    </ng-template>
+                </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Bids Summary Table -->
+    <mat-card class="bids-table-card" *ngIf="session.bids && session.bids.length > 0">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="table-avatar">table_chart</mat-icon>
+        <mat-card-title>Flexibility Requests Summary</mat-card-title>
+        <mat-card-subtitle>
+          Detailed view of all configured flexibility requests
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-container">
+          <table mat-table [dataSource]="session.bids" class="bids-table">
+            <!-- Time Slot Column -->
+            <ng-container matColumnDef="timeSlot">
+              <th mat-header-cell *matHeaderCellDef>Time Slot</th>
+              <td mat-cell *matCellDef="let bid">{{ getTimeSlotDisplay(bid.hour) }}</td>
+            </ng-container>
+
+            <!-- Power Column -->
+            <ng-container matColumnDef="power">
+              <th mat-header-cell *matHeaderCellDef>Power (KW)</th>
+              <td mat-cell *matCellDef="let bid">{{ bid.powerMw | number:'1.2-2' }}</td>
+            </ng-container>
+
+            <!-- Price Column -->
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price (Flex/KWh)</th>
+              <td mat-cell *matCellDef="let bid">{{ bid.pricePerMwh | number:'1.2-2' }}</td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let bid">
+                <span class="type-badge" [class.demand]="bid.bidType === 'UPWARD'"
+                  [class.supply]="bid.bidType === 'DOWNWARD'">
+                  {{ getBidTypeName(bid.bidType) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Total Column -->
+            <ng-container matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef>Total (Flex)</th>
+              <td mat-cell *matCellDef="let bid">{{ (bid.powerMw * bid.pricePerMwh) | number:'1.2-2' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && !session" class="error-state">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h2>Session Not Found</h2>
+    <p>The requested session could not be found or you don't have permission to view it.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back to Sessions
+    </button>
+  </div>
+</div>

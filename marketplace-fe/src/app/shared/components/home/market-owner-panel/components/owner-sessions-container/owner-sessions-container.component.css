@@ -1,0 +1,561 @@
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 64px;
+}
+
+.spinner-wrapper {
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #00234e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-wrapper p {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Empty States */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  gap: 16px;
+  text-align: center;
+  color: #666;
+  padding: 32px 12px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+  color: #ddd;
+  flex-shrink: 0;
+}
+
+.empty-state h2 {
+  color: #333;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.empty-state p {
+  color: #666;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.empty-state-button {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 200px;
+  height: 52px;
+  border-radius: 8px;
+  border: 2px solid #274b95;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.08) 0%, rgba(39, 75, 149, 0.04) 100%);
+  color: #274b95;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(39, 75, 149, 0.15);
+  letter-spacing: 0.3px;
+}
+
+.empty-state-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.15) 0%, rgba(39, 75, 149, 0.08) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 75, 149, 0.25);
+  border-color: #1e3a75;
+}
+
+.empty-state-button mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* Sessions Grid */
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  max-width: 100%;
+}
+
+.session-card {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 460px;
+  display: flex;
+  flex-direction: column;
+  border-left: none;
+}
+
+.session-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--status-color, #757575);
+  box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  transition: all 0.25s ease;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.session-card:hover::before {
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.2),
+              2px 0 8px var(--status-color);
+}
+
+/* Card Header */
+::ng-deep .session-card mat-card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 16px 16px 16px 20px;
+  position: relative;
+  border-radius: 12px 12px 0 0;
+}
+
+.session-avatar {
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.session-avatar mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+::ng-deep .session-card mat-card-title {
+  color: #00234e;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-right: 8px !important;
+  padding-right: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 10px);
+}
+
+::ng-deep .session-card mat-card-subtitle {
+  color: #666;
+  font-size: 0.9rem;
+  margin-right: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-chip {
+  position: relative;
+  margin-top: 0;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 16px 8px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  flex-shrink: 0;
+}
+
+::ng-deep .status-chip .mat-mdc-chip {
+  font-weight: 500;
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  height: auto;
+  min-height: 20px;
+  border-radius: 8px;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.mat-warn {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.mat-accent {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.mat-primary {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+}
+
+/* Custom chip colors for session statuses - Escala de Madurez */
+::ng-deep .status-chip .mat-mdc-chip.orange {
+  background: rgba(255, 152, 0, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4) !important;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.sky-blue {
+  background: rgba(3, 169, 244, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(3, 169, 244, 0.4) !important;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.purple {
+  background: rgba(156, 39, 176, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4) !important;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.green {
+  background: rgba(76, 175, 80, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.dark-gray {
+  background: rgba(96, 125, 139, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(96, 125, 139, 0.3) !important;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.warn {
+  background: rgba(244, 67, 54, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
+}
+
+::ng-deep .status-chip .mat-mdc-chip.in-delivery {
+  background: #ffc107e6 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+::ng-deep .status-chip .mat-mdc-chip.settlement-pending {
+  background: #ff5722e6 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+}
+
+::ng-deep .status-chip .mat-mdc-chip.settled {
+  background: rgba(76, 175, 80, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+/* Card Content */
+::ng-deep .session-card mat-card-content {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.session-info {
+  margin-bottom: 16px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.info-row mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  color: #00234e;
+  flex-shrink: 0;
+}
+
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 250px;
+}
+
+.contract-address {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  background: rgba(0, 35, 78, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #00234e;
+}
+
+/* Session Metadata */
+.session-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.metadata-item mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #999;
+  flex-shrink: 0;
+}
+
+/* Card Actions */
+::ng-deep .session-card mat-card-actions {
+  display: flex;
+  margin-left: 12px;
+  gap: 11px;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Prevent wide spacing/stretching */
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.action-button {
+  flex: 0 0 auto; /* Avoid stretching on wide cards */
+  min-width: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  white-space: nowrap; /* Keep label on one line */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.action-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-button mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-button[color="primary"] {
+  border-color: rgba(0, 35, 78, 0.2);
+}
+
+.action-button[color="primary"]:hover {
+  background: rgba(0, 35, 78, 0.08);
+  border-color: #00234e;
+}
+
+.action-button[color="accent"] {
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.action-button[color="accent"]:hover {
+  background: rgba(33, 150, 243, 0.08);
+  border-color: #2196f3;
+}
+
+.action-button[color="warn"] {
+  border-color: rgba(211, 47, 47, 0.3);
+}
+
+.action-button[color="warn"]:hover {
+  background: rgba(211, 47, 47, 0.08);
+  border-color: #d32f2f;
+}
+
+.deactivated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.deactivated-badge mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #c62828;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sessions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .session-list-container {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+    margin-left: 36px;
+  }
+
+  .create-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sessions-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Mobile: center actions and prevent overflow */
+  ::ng-deep .session-card mat-card-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .session-card mat-card-actions .action-button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 80px;
+    max-width: calc(50% - 8px); /* fit 2 per row with gap */
+    padding: 12px 10px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .action-button span {
+    display: none;
+  }
+  
+  .session-card mat-card-actions .action-button mat-icon {
+    margin: 0 auto;
+  }
+
+  .info-row {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title mat-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Large screens adjustments (e.g., 1920x1080) */
+@media (min-width: 1440px) {
+  /* Keep action buttons compact and consistent */
+  .session-card .action-button {
+    min-width: 100px;
+    max-width: 140px;
+    font-size: 0.9rem;
+  }
+  .action-button.delete-button {
+  flex: 1 0 100%;
+  width: 100%;
+  justify-content: center;
+  padding: 10px 16px;
+}
+  /* Ensure icons don’t scale unexpectedly */
+  .session-card .info-row mat-icon,
+  .session-card .action-button mat-icon,
+  .session-avatar mat-icon {
+    font-size: 15px;
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Maintain a readable status chip size */
+  .status-chip .mat-mdc-chip {
+    font-size: 0.75rem;
+    min-height: 26px;
+    padding: 6px 12px;
+  }
+}
+

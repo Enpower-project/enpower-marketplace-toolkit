@@ -1,0 +1,10 @@
+{
+  "MarketSession": {
+    "address": "Deployed by MarketFactory",
+    "note": "Dynamic deployment"
+  },
+  "Market": {
+    "address": "Deployed by MarketSession",
+    "note": "Dynamic deployment"
+  }
+}

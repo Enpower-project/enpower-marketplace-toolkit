@@ -1,0 +1,178 @@
+<div class="session-bids-container">
+  <!-- Header -->
+  <div class="header">
+    <button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back</span>
+    </button>
+
+    <div *ngIf="sessionWithBids" class="session-info-card">
+      <div class="session-header-row">
+        <div class="session-title-section">
+          <h1 class="session-title">{{ sessionWithBids.name }}</h1>
+          <span class="status-badge">{{ sessionWithBids.status }}</span>
+        </div>
+      </div>
+
+      <div class="session-metadata-grid">
+        <div class="metadata-card">
+          <div class="metadata-icon">
+            <mat-icon>calendar_today</mat-icon>
+          </div>
+          <div class="metadata-content">
+            <span class="metadata-label">Session Date</span>
+            <span class="metadata-value">{{ sessionWithBids.sessionDate | date: 'EEEE, dd MMM yyyy' }}</span>
+          </div>
+        </div>
+        <div class="metadata-card">
+          <div class="metadata-icon">
+            <mat-icon>business</mat-icon>
+          </div>
+          <div class="metadata-content">
+            <span class="metadata-label">Market</span>
+            <span class="metadata-value">{{ sessionWithBids.market.name }}</span>
+          </div>
+        </div>
+        <div class="metadata-card">
+          <div class="metadata-icon">
+            <mat-icon>bolt</mat-icon>
+          </div>
+          <div class="metadata-content">
+            <span class="metadata-label">Total Requests</span>
+            <span class="metadata-value">{{ sessionWithBids.bids.length }} Hours</span>
+          </div>
+        </div>
+      </div>
+
+      <p *ngIf="sessionWithBids.description" class="description">
+        {{ sessionWithBids.description }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading session information...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="goBack()" class="retry-button">Back</button>
+  </div>
+
+  <!-- Bids List -->
+  <div *ngIf="!loading && !error && sessionWithBids" class="bids-list">
+    <div class="bids-list-header">
+      <h2 class="bids-title">Available Flexibility Requests</h2>
+      <p class="info-text">
+        Select a flexibility request to create your offer. You can only create offers for flexibility requests that have available capacity.
+      </p>
+    </div>
+
+    <div class="bids-grid">
+      <div *ngFor="let bid of sessionWithBids.bids" class="bid-card" [class.bid-full]="bid.isFull"
+        [class.bid-available]="!bid.isFull">
+
+        <!-- Bid Header -->
+        <div class="bid-header">
+          <div class="bid-header-left">
+            <div class="hour-badge">
+              {{ getHourDisplay(bid.hour) }}
+            </div>
+            <div class="bid-type-badge" [ngClass]="getBidTypeClass(bid.bidType)">
+              {{ getBidTypeLabel(bid.bidType) }}
+            </div>
+            <div *ngIf="bid.isFull" class="full-badge">
+              FULL
+            </div>
+          </div>
+          <div class="bid-header-right">
+            <button class="create-offer-button-small" [disabled]="bid.isFull" (click)="openCreateOfferModal(bid)">
+              <span *ngIf="!bid.isFull">+ Offer</span>
+              <span *ngIf="bid.isFull">Full</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bid Details -->
+        <div class="bid-details">
+          <div class="details-grid">
+            <div class="detail-card">
+              <span class="detail-label">Requested</span>
+              <span class="detail-value">{{ bid.powerMw }} KW</span>
+            </div>
+            <div class="detail-card">
+              <span class="detail-label">Fulfilled</span>
+              <span class="detail-value">{{ bid.fulfilledPowerMw | number: '1.0-5' }} KW</span>
+            </div>
+            <div class="detail-card highlight-card">
+              <span class="detail-label">Available</span>
+              <span class="detail-value primary">{{ bid.availablePowerMw | number: '1.0-5' }} KW</span>
+            </div>
+            <div class="detail-card price-card">
+              <span class="detail-label">Price</span>
+              <span class="detail-value">{{ bid.pricePerMwh | number: '1.2-5' }} Flex/KWh</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="100 - getAvailabilityPercentage(bid)">
+            </div>
+          </div>
+          <span class="progress-text">
+            {{ 100 - getAvailabilityPercentage(bid) | number: '1.0-0' }}% Fulfilled
+          </span>
+        </div>
+
+        <!-- Existing Offers -->
+        <div *ngIf="bid.offers.length > 0" class="offers-section">
+          <div class="offers-header">
+            <h4 class="offers-title">Submitted Offers</h4>
+            <span class="offers-count">{{ bid.offers.length }}</span>
+          </div>
+          <div class="offers-list">
+            <div *ngFor="let offer of bid.offers" class="offer-item">
+              <div class="offer-info">
+                <div class="offer-provider">
+                  <mat-icon class="provider-icon">person</mat-icon>
+                  <span class="offer-fsp">{{ offer.fsp.username }}</span>
+                </div>
+                <div class="offer-details">
+                  <span class="offer-power">{{ offer.powerMw | number: '1.2-2'}} KW</span>
+                  <span class="offer-status" [ngClass]="getStatusClass(offer.status)">
+                    {{ getStatusLabel(offer.status) }}
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="isMyOffer(offer) && offer.status === 'PENDING'" class="offer-actions">
+                <button class="publish-button" (click)="openPublishOfferModal(offer)">
+                  <mat-icon>publish</mat-icon> Publish
+                </button>
+                <button class="cancel-button" (click)="cancelOffer(offer)">
+                  <mat-icon>close</mat-icon> Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Offer Modal -->
+<app-create-offer-modal *ngIf="showCreateOfferModal && selectedBid && sessionWithBids" [sessionId]="sessionWithBids.id"
+  [bid]="selectedBid" (close)="closeCreateOfferModal()" (offerCreated)="onOfferCreated()">
+</app-create-offer-modal>
+
+<!-- PIN Modal -->
+<app-pin-modal *ngIf="showPinModal" [title]="'Publish Offer to Blockchain'"
+  [message]="'Enter your PIN to authorize publishing this offer to the blockchain. This will lock collateral and create the offer on-chain.'"
+  [offerValue]="getOfferValue()" [collateral]="getCollateral()" [platformFee]="getPlatformFee()"
+  [flexTokens]="getFlexTokens()" (close)="closePinModal()" (pinSubmitted)="onPinSubmitted($event)">
+</app-pin-modal>

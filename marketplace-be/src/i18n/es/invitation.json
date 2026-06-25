@@ -1,0 +1,20 @@
+{
+  "errors": {
+    "invalidRole": "Rol inválido. Solo se permiten roles FRP o FSP para invitaciones.",
+    "marketNotFound": "Market no encontrado.",
+    "notMarketOwner": "No estás autorizado. Solo el propietario del market puede enviar invitaciones.",
+    "inviterNotFound": "Usuario que envía la invitación no encontrado en el sistema.",
+    "frpAlreadyExists": "Este market ya tiene un FRP asignado ({{email}}). Solo se permite un FRP por market.",
+    "pendingFRPInvitation": "Ya existe una invitación FRP pendiente para este market ({{email}}).",
+    "userAlreadyExists": "Ya existe un usuario con este email.",
+    "userAlreadyHasMarketAccess": "El usuario {{email}} ya tiene acceso al mercado {{marketName}}.",
+    "pendingInvitationExists": "Ya existe una invitación pendiente para este email y market.",
+    "invitationNotFound": "Invitación no encontrada.",
+    "cannotRevokeNonPending": "No se puede revocar una invitación que no está pendiente."
+  },
+  "success": {
+    "invitationSent": "Invitación enviada correctamente.",
+    "invitationRevoked": "Invitación revocada correctamente.",
+    "invitationAccepted": "Invitación aceptada correctamente. Ya puedes iniciar sesión."
+  }
+}

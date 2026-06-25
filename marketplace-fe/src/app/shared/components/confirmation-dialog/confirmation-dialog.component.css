@@ -1,0 +1,200 @@
+/* Dialog Container */
+.dialog-container {
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+  border: 1px solid rgba(0, 35, 78, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 35, 78, 0.12);
+}
+
+/* Header */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 20px 24px;
+  background: transparent;
+  border-bottom: 2px solid rgba(0, 35, 78, 0.08);
+}
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dialog-header.warning .header-icon {
+  /* Use brand blue tint for warnings to match project palette */
+  background: linear-gradient(135deg, rgba(0, 35, 78, 0.06) 0%, rgba(0, 61, 130, 0.04) 100%);
+}
+
+.dialog-header.danger .header-icon {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.15) 0%, rgba(198, 40, 40, 0.1) 100%);
+}
+
+.dialog-header.info .header-icon {
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.15) 0%, rgba(30, 58, 115, 0.1) 100%);
+}
+
+.header-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.dialog-header.warning .header-icon mat-icon {
+  color: #00234e;
+}
+
+.dialog-header.danger .header-icon mat-icon {
+  color: #d32f2f;
+}
+
+.dialog-header.info .header-icon mat-icon {
+  color: #274b95;
+}
+
+h2[mat-dialog-title] {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: #00234e !important;
+  line-height: 1.3 !important;
+}
+
+/* Content */
+mat-dialog-content {
+  padding: 24px !important;
+  margin: 0 !important;
+  max-height: none !important;
+}
+
+.message-content {
+  color: rgba(0, 0, 0, 0.72);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.message-content p {
+  margin: 0;
+}
+
+/* Actions */
+mat-dialog-actions {
+  padding: 16px 24px 24px 24px !important;
+  margin: 0 !important;
+  gap: 12px;
+}
+
+.cancel-button,
+.confirm-button {
+  min-width: 120px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.cancel-button {
+  border: 1px solid #00234e;
+  color: #00234e;
+}
+
+.cancel-button:hover {
+  background-color: rgba(0, 35, 78, 0.08);
+  border-color: #003d82;
+}
+
+/* Confirm Button Variants */
+.confirm-button.warning-btn {
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 35, 78, 0.20);
+}
+
+.confirm-button.warning-btn:hover {
+  background: linear-gradient(135deg, #003d82 0%, #274b95 100%);
+  box-shadow: 0 3px 10px rgba(0, 35, 78, 0.25);
+  transform: translateY(-1px);
+}
+
+.confirm-button.danger-btn {
+  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+.confirm-button.danger-btn:hover {
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+  box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
+  transform: translateY(-2px);
+}
+
+.confirm-button.info-btn {
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 35, 78, 0.20);
+}
+
+.confirm-button.info-btn:hover {
+  background: linear-gradient(135deg, #003d82 0%, #274b95 100%);
+  box-shadow: 0 3px 10px rgba(0, 35, 78, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .dialog-header {
+    padding: 20px 20px 16px 20px;
+  }
+
+  h2[mat-dialog-title] {
+    font-size: 1.3rem !important;
+  }
+
+  .header-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-icon mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  mat-dialog-content {
+    padding: 20px !important;
+  }
+
+  mat-dialog-actions {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 20px 20px 20px !important;
+  }
+
+  .cancel-button,
+  .confirm-button {
+    width: 100%;
+  }
+}
+
+/* Focus states for accessibility */
+.cancel-button:focus-visible,
+.confirm-button:focus-visible {
+  outline: 2px solid rgba(0, 61, 130, 0.5);
+  outline-offset: 2px;
+}
+
+/* Subtle pressed state */
+.cancel-button:active,
+.confirm-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}

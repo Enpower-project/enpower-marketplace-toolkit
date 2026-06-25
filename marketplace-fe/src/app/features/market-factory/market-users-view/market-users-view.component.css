@@ -1,0 +1,212 @@
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  min-width: 450px;
+  min-height: 300px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #00234e;
+}
+
+.close-button {
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  color: #00234e;
+  background-color: rgba(0, 35, 78, 0.08);
+}
+
+.dialog-content {
+  flex: 1;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.users-list {
+  padding: 0;
+}
+
+.user-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-content {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.user-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.user-icon {
+  color: #00234e;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #00234e;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email {
+  color: #666;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 1em;
+  padding-top: 2px;
+}
+
+::ng-deep .user-role mat-chip-set {
+  margin: 0;
+}
+
+::ng-deep .user-role mat-chip {
+  font-size: 12px !important;
+  height: 28px !important;
+  min-height: 28px;
+}
+
+.user-divider {
+  margin: 0;
+}
+
+.no-users {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.no-users h3 {
+  margin: 0 0 8px 0;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.no-users p {
+  margin: 0;
+  color: #999;
+  font-size: 13px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+mat-dialog-actions button {
+  min-width: 100px;
+  height: 40px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  padding: 0 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #00234e 0%, #003a7a 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 35, 78, 0.15);
+  border: none;
+}
+
+mat-dialog-actions button:hover {
+  background: linear-gradient(135deg, #003a7a 0%, #00234e 100%);
+  box-shadow: 0 4px 12px rgba(0, 35, 78, 0.25);
+  transform: translateY(-2px);
+}
+
+mat-dialog-actions button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 35, 78, 0.2);
+}
+
+.remove-button{
+  cursor: pointer;
+  color: red;
+}
+
+.deactivated-badge{
+  color: red;
+}
+
+.remove-button-disabled{
+  color: gray;
+  cursor: not-allowed;
+}
+
+.reactivate-button{
+  cursor: pointer;
+}

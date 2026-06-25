@@ -1,0 +1,109 @@
+<!-- Loading Spinner -->
+<div *ngIf="loading" class="loading-container">
+    <div class="spinner-wrapper">
+        <div class="spinner"></div>
+        <p>Loading offers information...</p>
+    </div>
+</div>
+
+
+<!-- Time Slots Overview -->
+<h1 *ngIf="!loading" class="offers-page-header">{{session?.name}}</h1>
+<mat-card *ngIf="!loading" class="time-slots-card">
+    <mat-card-header>
+        <mat-icon mat-card-avatar class="slots-avatar">schedule</mat-icon>
+        <mat-card-title>Time Slots Overview</mat-card-title>
+        <mat-card-subtitle>
+            {{ session!.totalBids || 0 }} of 24 time slots configured
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <div class="time-slots-grid">
+            <div *ngFor="let slot of timeSlots; trackBy: trackByHour" class="time-slot-card"
+                [class.has-bid]="slot.hasData" [class.empty]="!slot.hasData">
+
+                <div class="slot-header">
+                    <span class="time-range">{{ slot.displayTime }}</span>
+                    <mat-icon *ngIf="slot.hasData" class="status-icon">
+                        check_circle
+                    </mat-icon>
+                    <mat-icon *ngIf="!slot.hasData" class="status-icon empty">
+                        radio_button_unchecked
+                    </mat-icon>
+                </div>
+
+                <div *ngIf="slot.hasData" class="bid-details">
+                    <div class="bid-row">
+                        <span class="label">Power:</span>
+                        <span class="value">{{ slot.bid?.powerMw | number:'1.2-2' }} KW</span>
+                    </div>
+                    <div class="bid-row">
+                        <span class="label">Price:</span>
+                        <span class="value">{{ slot.bid?.pricePerMwh | number:'1.2-2' }} €/KWh</span>
+                    </div>
+                    <div class="bid-row">
+                        <span class="label">Type:</span>
+                        <span class="type-badge" [class.demand]="slot.bid?.bidType === 'UPWARD'"
+                            [class.supply]="slot.bid?.bidType === 'DOWNWARD'">
+                            {{ getBidTypeName(slot.bid?.bidType) }}
+                        </span>
+                    </div>
+                    <div class="bid-row total">
+                        <span class="label">Total:</span>
+                        <span class="value">{{ getTotalForBid(slot.bid) | number:'1.2-2' }} €</span>
+                    </div>
+                </div>
+
+                <div *ngIf="!slot.hasData" class="empty-slot">
+                    <span>No flexibility request configured</span>
+                </div>
+
+                <!-- Offers Toggle Button -->
+                <div *ngIf="slot.hasData && getOffersForSlot(slot.hour).length > 0" class="offers-toggle">
+                    <!-- Power Progress Bar -->
+                    <div class="progress-section">
+                        <div class="progress-labels">
+                            <span class="progress-label">Offered: {{ getTotalOfferedPowerForSlot(slot.hour) |
+                                number:'1.2-2' }} KW</span>
+                            <span class="progress-max">Target: {{ slot.bid?.powerMw | number:'1.2-2' }} KW</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill"
+                                [style.width.%]="getProgressPercentage(slot.hour, slot.bid!.powerMw)"></div>
+                        </div>
+                    </div>
+
+                    <button class="toggle-btn" (click)="toggleSlotExpanded(slot.hour)">
+                        <mat-icon class="toggle-icon" [class.expanded]="isSlotExpanded(slot.hour)">
+                            expand_more
+                        </mat-icon>
+                        <span>{{ getOffersForSlot(slot.hour).length }} offer(s)</span>
+                    </button>
+                </div>
+
+                <!-- Offers Container -->
+                <div *ngIf="slot.hasData && isSlotExpanded(slot.hour) && !loading" class="offers-container">
+                    <div class="offers-header">
+                        <span>Offers for this slot:</span>
+                    </div>
+                    <div *ngIf="getOffersForSlot(slot.hour).length > 0; else noOffers" class="offers-list">
+                        <div *ngFor="let offer of getOffersForSlot(slot.hour); trackBy: trackByOffer"
+                            class="offer-item">
+                            <div class="offer-detail">
+                                <span class="offer-label">Power:</span>
+                                <span class="offer-value">{{ offer.powerMw | number:'1.2-2' }} KW</span>
+                            </div>
+                            <div class="offer-detail">
+                                <span class="offer-label">User:</span>
+                                <span class="offer-value">{{ offer.fsp.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template #noOffers>
+                        <div class="no-offers">No offers submitted yet</div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

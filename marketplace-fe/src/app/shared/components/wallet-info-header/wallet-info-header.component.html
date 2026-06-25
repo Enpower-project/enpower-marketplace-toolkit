@@ -1,0 +1,74 @@
+<div class="wallet-info-container" *ngIf="isConnected">
+  <!-- Wallet Address -->
+  <div class="wallet-address" [matTooltip]="walletAddress" matTooltipPosition="below">
+    <mat-icon class="wallet-icon">account_balance_wallet</mat-icon>
+    <span class="address-text">{{ getTruncatedAddress() }}</span>
+    <button
+      mat-icon-button
+      (click)="copyAddress()"
+      class="copy-button"
+      [matTooltip]="showCopiedMessage ? 'Copied!' : 'Copy address'">
+      <mat-icon [class.copied]="showCopiedMessage">
+        {{ showCopiedMessage ? 'done' : 'content_copy' }}
+      </mat-icon>
+    </button>
+  </div>
+
+  <!-- Balance -->
+  <div class="wallet-balance" matTooltip="FLEX Token Balance">
+    <mat-icon>toll</mat-icon>
+    <span class="balance-text">{{ balance }} FLEX</span>
+  </div>
+
+  <!-- Network Indicator -->
+  <div class="network-indicator" [matTooltip]="'Network: ' + network">
+    <mat-icon
+      [color]="getConnectionColor()"
+      class="connection-status">
+      {{ getConnectionIcon() }}
+    </mat-icon>
+    <span class="network-text">{{ network }}</span>
+  </div>
+
+  <!-- Refresh Button -->
+  <button
+    mat-icon-button
+    (click)="refresh()"
+    matTooltip="Refresh wallet info"
+    [disabled]="loading">
+    <mat-icon [class.spinning]="loading">refresh</mat-icon>
+  </button>
+
+  <!-- More Options Menu -->
+  <button mat-icon-button [matMenuTriggerFor]="walletMenu" matTooltip="Wallet options">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+
+  <mat-menu #walletMenu="matMenu">
+    <button mat-menu-item (click)="copyAddress()">
+      <mat-icon>content_copy</mat-icon>
+      <span>Copy Address</span>
+    </button>
+    <button mat-menu-item (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+      <span>Refresh Balance</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item disabled>
+      <mat-icon>info</mat-icon>
+      <span>Network: {{ network }}</span>
+    </button>
+  </mat-menu>
+</div>
+
+<!-- Loading State -->
+<div class="wallet-info-container loading" *ngIf="loading && !isConnected">
+  <mat-icon>hourglass_empty</mat-icon>
+  <span>Loading wallet...</span>
+</div>
+
+<!-- Disconnected State -->
+<div class="wallet-info-container disconnected" *ngIf="!isConnected && !loading">
+  <mat-icon color="warn">warning</mat-icon>
+  <span>Wallet not connected</span>
+</div>

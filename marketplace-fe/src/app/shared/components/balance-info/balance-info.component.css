@@ -1,0 +1,76 @@
+    .balance-info {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+    }
+
+    .balance-button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      border: 1px solid rgba(39, 75, 149, 0.2);
+      border-radius: 8px;
+      color: #274b95;
+      padding: 8px 16px;
+      min-height: 38px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(39, 75, 149, 0.08);
+    }
+
+    .balance-button:hover {
+      background: #f8f9fa;
+      border-color: #274b95;
+      box-shadow: 0 4px 8px rgba(39, 75, 149, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .balance-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      max-width: 140px;
+      color: #274b95;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dropdown-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #274b95;
+      transition: transform 0.3s ease;
+    }
+
+    .dropdown-icon.loading {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .balance-container{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0em 1em;
+      gap: 0.3em;
+    }
+
+    .balance-header{
+      font-size: large;
+      font-weight: bold;
+      color: #274b95;
+    }
+
+    .balance-info{
+      font-size: large;
+      font-weight: bold;
+    }
+
+    .unit{
+      font-weight: bold;
+    }

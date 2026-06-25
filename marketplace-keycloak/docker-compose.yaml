@@ -1,0 +1,67 @@
+name: kc
+
+services:
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.2
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://${KC_DB_HOST}:${KC_DB_PORT}/${KC_DB_NAME}
+      - KC_DB_USERNAME=${KC_DB_USER}
+      - KC_DB_PASSWORD=${KC_DB_PASSWORD}
+      - KEYCLOAK_ADMIN
+      - KEYCLOAK_ADMIN_PASSWORD
+    volumes:
+      - ./imports:/opt/keycloak/data/import
+    ports:
+      - "8088:8080"
+    command: 
+      - start
+      - --import-realm
+      - --http-enabled=true
+      # - --hostname=${KEYCLOAK_URL}
+      # - --hostname-backchannel-dynamic=true
+      - --hostname-backchannel-dynamic=false
+      - --hostname-strict=false
+    restart: unless-stopped      
+    networks:
+      - net
+  
+
+  database:
+    image: postgres:16
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+    command: [
+      "postgres",
+      "-c", "track_commit_timestamp=on"
+    ]
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - KEYCLOAK_DB_NAME=${KC_DB_NAME}
+      - DB_USER=${KC_DB_USER}
+      - DB_PASSWORD=${KC_DB_PASSWORD}
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    networks:
+      - net
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  db-data:
+  
+
+networks:
+  net:
+    driver: bridge

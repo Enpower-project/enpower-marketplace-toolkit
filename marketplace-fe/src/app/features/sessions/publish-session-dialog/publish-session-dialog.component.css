@@ -1,0 +1,291 @@
+/* Container Principal */
+.dialog-container {
+  padding: 0;
+  max-width: 600px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Header */
+.dialog-header {
+  padding: 24px 24px 20px;
+  /* background: transparent; */
+  font-size: 1.5rem;
+  color: #274b95;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: -24px -24px 0 -24px;
+}
+
+.header-icon {
+  border-radius: 12px;
+  gap: 300px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #274b95;
+}
+
+::ng-deep .dialog-container h2[mat-dialog-title] {
+  margin: 0 !important;
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+  color: #274b95 !important;
+  padding: 0 !important;
+}
+
+/* Content */
+::ng-deep .dialog-container mat-dialog-content {
+  padding: 32px 24px;
+  margin: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Warning Section */
+.warning-section {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 152, 0, 0.04) 100%);
+  border: 2px solid #ff9800;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+}
+
+.warning-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #ff9800;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-title {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #e65100;
+}
+
+.warning-text {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.warning-text strong {
+  color: #274b95;
+  font-weight: 600;
+}
+
+/* Info Section */
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.03) 0%, rgba(39, 75, 149, 0.01) 100%);
+  border-radius: 12px;
+  border: 2px solid rgba(39, 75, 149, 0.1);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-item mat-icon {
+  color: #4caf50;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.info-item span {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* PIN Section */
+.pin-section {
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid rgba(39, 75, 149, 0.15);
+}
+
+.pin-section h3 {
+  margin: 0 0 8px 0;
+  color: #274b95;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.pin-description {
+  margin: 0 0 20px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.pin-field {
+  width: 100%;
+}
+
+::ng-deep .pin-field .mat-mdc-text-field-wrapper {
+  background-color: #f5f5f5;
+}
+
+::ng-deep .pin-field .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(39, 75, 149, 0.05);
+}
+
+::ng-deep .pin-field.mat-focused .mat-mdc-text-field-wrapper {
+  background-color: white;
+}
+
+.pin-input {
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: #274b95;
+}
+
+.pin-toggle {
+  color: #666;
+}
+
+.pin-toggle:hover {
+  color: #274b95;
+}
+
+::ng-deep .pin-field .mat-mdc-form-field-error {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* Actions */
+::ng-deep .dialog-container mat-dialog-actions {
+  padding: 16px 24px 24px;
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid rgba(39, 75, 149, 0.1);
+}
+
+.cancel-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  color: #666;
+  border-color: #ddd;
+  border-radius: 24px;
+}
+
+.cancel-button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: #999;
+}
+
+.cancel-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.confirm-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #274b95 0%, #1e3a73 100%);
+  color: white;
+  transition: all 0.3s ease;
+  border-radius: 24px;
+}
+
+.confirm-button:not([disabled]):hover {
+  background: linear-gradient(135deg, #1e3a73 0%, #152b57 100%);
+  box-shadow: 0 4px 12px rgba(39, 75, 149, 0.3);
+  transform: translateY(-1px);
+}
+
+.confirm-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.confirm-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dialog-container {
+    max-width: 100%;
+  }
+
+  .dialog-header {
+    padding: 20px 16px;
+  }
+
+  ::ng-deep .dialog-container h2 {
+    font-size: 1.25rem;
+  }
+
+  ::ng-deep .dialog-container mat-dialog-content {
+    padding: 24px 16px;
+  }
+
+  .warning-section {
+    flex-direction: column;
+  }
+
+  ::ng-deep .dialog-container mat-dialog-actions {
+    padding: 16px;
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .confirm-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animation for error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+::ng-deep .pin-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+  animation: shake 0.5s;
+}

@@ -1,0 +1,94 @@
+<div class="published-sessions-container">
+  <div class="header">
+    <h2>Active Sessions - Available for Offers</h2>
+    <p>Select a session to view available flexibility requests and create your offers</p>
+  </div>
+
+  <div class="deactivated-warning" *ngIf="isMarketDeactivated">
+    <mat-icon>block</mat-icon>
+    <span>This market is deactivated. Session actions are disabled.</span>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading active sessions...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadActiveSessions()" class="retry-button">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error && sessions.length === 0" class="no-sessions">
+    <div class="no-sessions-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+        <path d="M8 14h.01"></path>
+        <path d="M12 14h.01"></path>
+        <path d="M16 14h.01"></path>
+        <path d="M8 18h.01"></path>
+        <path d="M12 18h.01"></path>
+        <path d="M16 18h.01"></path>
+      </svg>
+    </div>
+    <h3>No Active Sessions Available</h3>
+    <p class="no-sessions-message">There are currently no sessions with open offers period. Sessions must have
+      <strong>ACTIVE</strong> status to create offers.
+    </p>
+    <p class="no-sessions-hint">New sessions will appear here automatically when they become available for trading.</p>
+  </div>
+
+  <div *ngIf="!loading && !error && sessions.length > 0" class="sessions-grid">
+    <div *ngFor="let session of sessions" class="session-card" (click)="onCardClick(session.id)"
+      [style.cursor]="isMarketDeactivated ? 'default' : 'pointer'">
+
+      <div class="card-header">
+        <h3>{{ session.name }}</h3>
+        <span class="session-date">{{ session.sessionDate | date: 'dd/MM/yyyy' }}</span>
+      </div>
+
+      <div class="card-body">
+        <p *ngIf="session.description" class="description">{{ session.description }}</p>
+
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-label">Market:</span>
+            <span class="stat-value">{{ session.market.name }}</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Total Flexibility Requests:</span>
+            <span class="stat-value">{{ getTotalBidsCount(session) }}</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Available Flexibility Requests:</span>
+            <span class="stat-value highlight">{{ getAvailableBidsCount(session) }}</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Total Power:</span>
+            <span class="stat-value">{{ session.totalPowerMw }} KW</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Average Price:</span>
+            <span class="stat-value">{{ session.averagePricePerMwh | number: '1.2-2' }} Flex/KWh</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="view-button" [disabled]="isMarketDeactivated" (click)="onCardClick(session.id)"
+          [style.opacity]="isMarketDeactivated ? '0.5' : '1'"
+          [style.cursor]="isMarketDeactivated ? 'not-allowed' : 'pointer'">
+          View Flexibility Requests and Create Offers
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

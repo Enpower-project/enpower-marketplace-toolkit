@@ -1,0 +1,482 @@
+.market-container {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 24px auto;
+  background: linear-gradient(135deg, rgba(0, 35, 78, 0.02) 0%, rgba(0, 61, 130, 0.03) 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 35, 78, 0.08);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(0, 35, 78, 0.08);
+}
+
+.header h2 {
+  margin: 0;
+  color: #00234e;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 2px solid #00234e;
+  background: white;
+  color: #00234e;
+  transition: all 0.2s ease;
+}
+
+.header button:hover {
+  background: #f5f5f5;
+  border-color: #003d82;
+}
+
+/* Filters Section */
+.filters {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 auto;
+  min-width: 250px;
+}
+
+::ng-deep .filter-container .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: #f8f9fa !important;
+  border-radius: 8px !important;
+}
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: #f8f9fa !important;
+}
+
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #00234e;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #90caf9;
+}
+
+.chip:hover {
+  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 6px;
+  color: #00234e;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 50%;
+}
+
+.remove-btn:hover {
+  background-color: rgba(0, 35, 78, 0.1);
+}
+
+.remove-btn mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.search-wrapper {
+  flex: 1 1 auto;
+  min-width: 300px;
+}
+
+.search-field {
+  width: 100%;
+}
+
+::ng-deep .search-field .mat-mdc-form-field-icon-prefix {
+  color: #00234e;
+  margin-right: 8px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.loading-text {
+  margin-top: 24px;
+  color: #00234e;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+::ng-deep .loading-container .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #00234e;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.markets-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+/* Table Header */
+::ng-deep .markets-table .mat-mdc-header-row {
+  background: #f5f5f5;
+}
+
+::ng-deep .markets-table .mat-mdc-header-cell {
+  color: #333 !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  padding: 16px !important;
+  border-bottom: 2px solid #e0e0e0 !important;
+}
+
+/* Table Rows */
+::ng-deep .markets-table .mat-mdc-row {
+  border-bottom: 1px solid rgba(0, 35, 78, 0.08);
+}
+
+::ng-deep .markets-table .mat-mdc-row:hover {
+  background-color: rgba(0, 35, 78, 0.03);
+}
+
+::ng-deep .markets-table .mat-mdc-cell {
+  padding: 16px !important;
+  color: #333;
+  font-size: 0.9rem;
+  border-bottom: none !important;
+}
+
+.cell-content {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name-cell {
+  font-weight: 600;
+  color: #00234e;
+  max-width: 160px;
+}
+
+.description-cell {
+  max-width: 280px;
+  color: #666;
+}
+
+.email-cell {
+  color: #003d82;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  max-width: 220px;
+}
+
+/* Column width control */
+::ng-deep .markets-table .mat-column-name {
+  flex: 0 0 150px;
+  max-width: 150px;
+}
+
+::ng-deep .markets-table .mat-column-description {
+  flex: 0 0 180px;
+  max-width: 180px;
+}
+
+::ng-deep .markets-table .mat-column-region {
+  flex: 0 0 100px;
+  max-width: 100px;
+}
+
+::ng-deep .markets-table .mat-column-owner {
+  flex: 0 0 160px;
+  max-width: 160px;
+}
+
+::ng-deep .markets-table .mat-column-state {
+  flex: 0 0 130px;
+  max-width: 130px;
+}
+
+::ng-deep .markets-table .mat-column-actions {
+  flex: 0 0 140px;
+  max-width: 140px;
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 1;
+}
+
+::ng-deep .markets-table .mat-mdc-header-cell.mat-column-actions {
+  background: #f5f5f5;
+}
+
+/* State Badges */
+.state-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.state-badge.active {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #81c784;
+}
+
+.state-badge.inactive {
+  background-color: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffb74d;
+}
+
+.state-badge.retired {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+  border: 1px solid #ba68c8;
+}
+
+/* Actions Cell */
+.actions-cell {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  padding: 4px !important;
+  min-width: 36px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+::ng-deep .action-btn.mat-mdc-icon-button.mat-primary {
+  color: #00234e;
+}
+
+::ng-deep .action-btn.mat-mdc-icon-button.mat-primary:hover {
+  background-color: rgba(0, 35, 78, 0.08);
+}
+
+::ng-deep .action-btn.mat-mdc-icon-button.mat-accent {
+  color: #003d82;
+}
+
+::ng-deep .action-btn.mat-mdc-icon-button.mat-accent:hover {
+  background-color: rgba(0, 61, 130, 0.08);
+}
+
+::ng-deep .action-btn.mat-mdc-icon-button.mat-warn {
+  color: #d32f2f;
+}
+
+::ng-deep .action-btn.mat-mdc-icon-button.mat-warn:hover {
+  background-color: rgba(211, 47, 47, 0.08);
+}
+
+/* Disabled buttons styling */
+::ng-deep .action-btn[disabled],
+::ng-deep .action-btn.mat-mdc-icon-button[disabled] {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* No Results */
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.no-results mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #999;
+  margin-bottom: 16px;
+}
+
+.no-results h3 {
+  margin: 0 0 8px 0;
+  color: #00234e;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.no-results p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .market-container {
+    max-width: 100%;
+    margin: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .market-container {
+    padding: 16px;
+    margin: 12px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .header button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .filter-container,
+  .search-wrapper {
+    min-width: 100%;
+  }
+
+  ::ng-deep .markets-table .mat-mdc-header-cell,
+  ::ng-deep .markets-table .mat-mdc-cell {
+    padding: 12px 8px !important;
+    font-size: 0.85rem !important;
+  }
+
+  ::ng-deep .markets-table .mat-column-name {
+    flex: 0 0 150px;
+    max-width: 150px;
+  }
+
+  ::ng-deep .markets-table .mat-column-description {
+    flex: 0 0 200px;
+    max-width: 200px;
+  }
+
+  ::ng-deep .markets-table .mat-column-region {
+    flex: 0 0 100px;
+    max-width: 100px;
+  }
+
+  ::ng-deep .markets-table .mat-column-owner {
+    flex: 0 0 180px;
+    max-width: 180px;
+  }
+
+  ::ng-deep .markets-table .mat-column-state {
+    flex: 0 0 110px;
+    max-width: 110px;
+  }
+
+  .name-cell {
+    max-width: 150px;
+  }
+
+  .description-cell {
+    max-width: 200px;
+  }
+
+  .email-cell {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h2 {
+    font-size: 1.5rem;
+  }
+
+  ::ng-deep .markets-table .mat-mdc-header-cell {
+    font-size: 0.8rem !important;
+  }
+
+  .description-cell {
+    max-width: 150px;
+  }
+}

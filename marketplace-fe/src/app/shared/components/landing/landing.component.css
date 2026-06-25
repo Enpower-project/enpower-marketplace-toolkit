@@ -1,0 +1,358 @@
+/* ── Auth Loading Overlay ── */
+.auth-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #123469 0%, #163e78 100%);
+  z-index: 9999;
+  gap: 1rem;
+}
+
+.auth-loading p {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #fff;
+  margin: 0;
+}
+
+.auth-loading span {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+.spinner-ring {
+  width: 56px;
+  height: 56px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #3fa87f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Landing Wrapper ── */
+.landing-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Hero Section ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-image: url('/assets/images/landing_background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(60, 90, 140, 0.8) 0%,
+    rgba(80, 110, 160, 0.7) 40%,
+    rgba(100, 130, 180, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+/* ── Top Bar ── */
+.top-bar {
+  flex-shrink: 0;
+  padding: 50px 90px;
+  /* padding: 50px 80px; */
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+.top-bar img{
+  height: 100px;
+  /* height: 125px; */
+  width: auto;
+}
+
+.top-logo {
+  height: 72px;
+  opacity: 0.92;
+}
+
+/* ── Central Card ── */
+.card-container {
+  flex: 1;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  padding: 56px 64px 48px;
+  width: 460px;
+  max-width: 92vw;
+  text-align: center;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.25),
+    0 8px 20px rgba(0, 0, 0, 0.12);
+  animation: cardFadeIn 0.8s ease-out;
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Card Icon (logo) ── */
+.card-icon {
+  margin: 0 auto 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-icon img {
+  max-width: 300px;
+  max-height: 135px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ── Card Typography ── */
+.card .description {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #4a5568;
+  margin: 0 0 36px;
+  padding: 0 8px;
+}
+
+/* ── Welcome back ── */
+.card .welcome-msg {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a3a6e;
+  margin: 0 0 20px;
+}
+
+.logged-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Access / Logout Buttons ── */
+.access-btn,
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 32px;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.access-btn {
+  border: 2px solid #3fa87f;
+  background: transparent;
+  color: #3fa87f;
+}
+
+.access-btn:hover {
+  background: #3fa87f;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(63, 168, 127, 0.35);
+}
+
+.logout-btn {
+  border: 2px solid #cbd5e0;
+  background: transparent;
+  color: #718096;
+}
+
+.logout-btn:hover {
+  border-color: #a0aec0;
+  color: #4a5568;
+  transform: translateY(-1px);
+}
+
+.access-btn svg,
+.logout-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.access-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── Hero Footer ── */
+.hero-footer {
+  flex-shrink: 0;
+  padding: 24px 56px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+.eu-img {
+  height: 78px;
+  opacity: 0.92;
+}
+
+.copyright {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: right;
+  line-height: 1.5;
+}
+
+/* ── Features Section ── */
+.features-section {
+  background: linear-gradient(180deg, #0f2b5e 0%, #163e78 100%);
+  padding: 80px 40px 60px;
+  text-align: center;
+}
+
+.features-section h2 {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #fff;
+  margin: 0 0 48px;
+  letter-spacing: 1px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 36px 28px;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px);
+}
+
+.icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(63, 168, 127, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.icon-circle svg {
+  width: 26px;
+  height: 26px;
+}
+
+.feature-card h3 {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  margin: 0 0 10px;
+}
+
+.feature-card p {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.features-footer {
+  margin-top: 60px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 24px 32px;
+  }
+
+  .top-logo {
+    height: 52px;
+  }
+
+  .card {
+    padding: 40px 28px 36px;
+  }
+
+  .card-icon img {
+    max-width: 200px;
+    max-height: 90px;
+  }
+
+  .hero-footer {
+    padding: 20px 32px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .eu-img {
+    height: 56px;
+  }
+
+  .features-section {
+    padding: 60px 24px 48px;
+  }
+}

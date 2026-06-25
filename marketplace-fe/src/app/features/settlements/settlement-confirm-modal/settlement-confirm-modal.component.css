@@ -1,0 +1,497 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeInOverlay 0.25s ease-out;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 35, 78, 0.2);
+  animation: slideUpModal 0.35s ease-out;
+}
+
+@keyframes slideUpModal {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #274b95 0%, #3B7DBF 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.3px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  padding: 0;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+
+.close-button:hover:not(:disabled) {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.close-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.action-description {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  background: #f8f9fa;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 4px solid #3B7DBF;
+}
+
+.settlement-summary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.summary-title {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.summary-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.summary-section h5 {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.summary-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.summary-value {
+  font-weight: 500;
+  color: #333;
+}
+
+.summary-row.warning .summary-value {
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.summary-row.penalty .summary-value,
+.summary-value.negative {
+  color: #e74c3c;
+}
+
+.summary-row.fee .summary-value {
+  color: #666;
+}
+
+.summary-row.total {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.summary-row.total .summary-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-value.highlight {
+  color: #27ae60;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.penalty-section {
+  background: #fdf2f2;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.penalty-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0 0;
+  font-size: 0.8rem;
+  color: #e74c3c;
+}
+
+.penalty-note mat-icon {
+  font-size: 1rem;
+  width: 16px;
+  height: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.pin-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pin-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+}
+
+.pin-input:focus {
+  outline: none;
+  border-color: #3B7DBF;
+  box-shadow: 0 0 0 3px rgba(59, 125, 191, 0.15);
+  background: #f8f9fa;
+}
+
+.pin-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.toggle-pin-button {
+  padding: 14px 16px;
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  min-width: 52px;
+}
+
+.toggle-pin-button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #3B7DBF;
+  color: #3B7DBF;
+  transform: scale(1.05);
+}
+
+.toggle-pin-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message-modal {
+  background: linear-gradient(135deg, #fff5f5 0%, #fde8e8 100%);
+  border: 2px solid #ffcccb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.1);
+  animation: slideInErrorModal 0.3s ease-out;
+}
+
+@keyframes slideInErrorModal {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.error-icon-modal {
+  color: #e74c3c;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.error-title-modal {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.error-text-modal {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #d64545;
+  line-height: 1.4;
+  word-break: break-word;
+  padding-left: 30px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid #f1f3f5;
+}
+
+.cancel-button,
+.submit-button {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  color: #495057;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #3B7DBF 0%, #2D5A8C 100%);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 160px;
+  box-shadow: 0 2px 8px rgba(59, 125, 191, 0.3);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2D5A8C 0%, #1f3d5c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 125, 191, 0.4);
+}
+
+.submit-button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Collateral Section */
+.collateral-section {
+  background: #f0f7ff;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.collateral-section .summary-row.success {
+  background: rgba(39, 174, 96, 0.1);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 4px 0;
+}
+
+.summary-value.positive {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.collateral-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0 0;
+  font-size: 0.8rem;
+  color: #e74c3c;
+}
+
+.collateral-note mat-icon {
+  font-size: 1rem;
+  width: 16px;
+  height: 16px;
+}
+
+/* Deviation Badge */
+.deviation-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.deviation-over {
+  background: #e8f8ef;
+  color: #27ae60;
+}
+
+.deviation-under {
+  background: #fdf2f2;
+  color: #e74c3c;
+}
+
+.deviation-exact {
+  background: #f0f7ff;
+  color: #3498db;
+}
+
+/* NFT Section */
+.nft-section {
+  background: #f5f0ff;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.nft-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.nft-info mat-icon {
+  font-size: 1.2rem;
+  width: 20px;
+  height: 20px;
+  color: #9b59b6;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .submit-button {
+    width: 100%;
+  }
+}

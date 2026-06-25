@@ -1,0 +1,146 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3>Create Offer</h3>
+      <button class="close-button" (click)="onCancel()">&times;</button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Bid Info -->
+      <div class="bid-info-section">
+        <h4>Bid Information</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Your max (this hour):</span>
+            <span class="info-value highlight">
+              {{ getUserHourMaxMw() | number: '1.2-2' }} KW
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Effective max you can offer:</span>
+            <span class="info-value highlight">
+              {{ getEffectiveMaxMw() | number: '1.2-2' }} KW
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Hour:</span>
+            <span class="info-value">{{ getHourDisplay() }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Type:</span>
+            <span class="info-value">{{ getBidTypeLabel() }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Requested Power:</span>
+            <span class="info-value">{{ bid.powerMw }} KW</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Available Power:</span>
+            <span class="info-value highlight">{{ bid.availablePowerMw }} KW</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Price:</span>
+            <span class="info-value">{{ bid.pricePerMwh | number: '1.2-4' }} Flex/KWh</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offer Form -->
+      <form (ngSubmit)="onSubmit()" #offerForm="ngForm">
+        <div class="form-section">
+          <h4>Your Offer</h4>
+
+          <!-- Power Input -->
+          <div class="form-group">
+            <label for="powerMw">Power to Offer (KW) *</label>
+            <div class="power-input-group">
+              <button type="button" class="power-button" (click)="decreasePower(1)">-1</button>
+              <input type="number" id="powerMw" name="powerMw" [(ngModel)]="powerMw" [max]="getEffectiveMaxMw()"
+                min="0.00001" step="1" required class="power-input" />
+              <button type="button" class="power-button" (click)="increasePower(1)">+1</button>
+              <button type="button" class="power-button max-button" (click)="setMaxPower()">
+                MAX
+              </button>
+            </div>
+            <small class="input-hint">
+              Maximum you can offer (this hour): {{ getEffectiveMaxMw() | number: '1.2-2' }} KW
+              <span style="display:block; color:#777;">
+                (Bid limit: {{ bid.availablePowerMw | number: '1.2-2' }} KW · Your limit: {{ getUserHourMaxMw() |
+                number: '1.2-2' }} KW)
+              </span>
+            </small>
+
+          </div>
+
+          <!-- Price Calculation -->
+          <div class="calculation-section">
+            <div class="calculation-row">
+              <span class="calc-label">Unit price:</span>
+              <span class="calc-value">{{ bid.pricePerMwh | number: '1.2-4' }} Flex/KWh</span>
+            </div>
+            <div class="calculation-row">
+              <span class="calc-label">Offered power:</span>
+              <span class="calc-value">{{ powerMw | number: '1.3-5' }} KW</span>
+            </div>
+            <div class="calculation-row total">
+              <span class="calc-label">Estimated total:</span>
+              <span class="calc-value">{{ calculateTotalPrice() | number: '1.2-4' }} Flex</span>
+            </div>
+          </div>
+
+          <!-- Financial Breakdown -->
+          <div class="calculation-section" style="margin-top: 15px; border-top: 1px solid #e0e0e0; padding-top: 15px;">
+            <h5 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Financial Details</h5>
+            <div class="calculation-row">
+              <span class="calc-label">Collateral to deposit (5%):</span>
+              <span class="calc-value" style="color: #ff9800;">
+                {{ calculateCollateral() | number: '1.2-4' }} Flex / {{ calculateCollateral() | number: '1.2-4' }} FLEX
+              </span>
+            </div>
+            <div class="calculation-row">
+              <span class="calc-label">Platform fee (2%):</span>
+              <span class="calc-value" style="color: #f44336;">
+                {{ calculatePlatformFee() | number: '1.2-4' }} Flex / {{ calculatePlatformFee() | number: '1.2-4' }}
+                FLEX
+              </span>
+            </div>
+            <div class="calculation-row">
+              <span class="calc-label">FLEX tokens to receive:</span>
+              <span class="calc-value" style="color: #4caf50;">{{ calculateFlexTokens() | number: '1.2-4' }} FLEX</span>
+            </div>
+          </div>
+
+          <!-- Validation Errors -->
+          <div *ngIf="validationErrors.length > 0" class="validation-errors">
+            <ul>
+              <li *ngFor="let error of validationErrors">{{ error }}</li>
+            </ul>
+          </div>
+
+          <!-- Server Error -->
+          <div *ngIf="error" class="error-message">
+            {{ error }}
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="button" class="cancel-button" (click)="onCancel()" [disabled]="submitting">
+            Cancel
+          </button>
+          <button type="submit" class="submit-button"
+            [disabled]="submitting || !offerForm.valid || getEffectiveMaxMw() <= 0">
+            <div class="spinner-small" *ngIf="submitting"></div>
+            <span *ngIf="!submitting">Create Offer</span>
+            <span *ngIf="submitting">Creating...</span>
+          </button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

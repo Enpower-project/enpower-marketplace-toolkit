@@ -1,0 +1,57 @@
+<div class="dialog-header">
+  <button mat-icon-button class="back-button" (click)="close()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <h2 mat-dialog-title>Manage Users for {{ data.market.name }}</h2>
+</div>
+
+<mat-dialog-content>
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Add Users Section -->
+    <div class="section">
+      <h3>Add Users</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Select users to add</mat-label>
+        <mat-select [(ngModel)]="selectedUserIds" multiple>
+          <mat-option *ngFor="let user of availableUsers" [value]="user.id">
+            {{ getUserDisplayName(user) }} - {{ user.role }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="addUsers()" [disabled]="selectedUserIds.length === 0">
+        <mat-icon>add</mat-icon>
+        Add Selected Users
+      </button>
+    </div>
+
+    <!-- Current Users Section -->
+    <div class="section">
+      <mat-expansion-panel class="users-expansion">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>people</mat-icon>
+            <span>Current Users ({{ assignedUsers.length }})</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        
+        <mat-list *ngIf="assignedUsers.length > 0">
+          <mat-list-item *ngFor="let user of assignedUsers">
+            <mat-icon matListItemIcon>person</mat-icon>
+            <div matListItemTitle>{{ getUserDisplayName(user) }}</div>
+            <div matListItemLine>{{ user.role }}</div>
+            <div matListItemMeta class="actions">
+              <button mat-icon-button color="warn" (click)="removeUser(user.id)" title="Remove user from this market">
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <p *ngIf="assignedUsers.length === 0" class="no-users">No users assigned to this market yet.</p>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</mat-dialog-content>

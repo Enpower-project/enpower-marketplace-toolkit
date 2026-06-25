@@ -1,0 +1,121 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon>{{
+        data.action === 'open_offers' ? 'lock_open' :
+        data.action === 'close_offers' ? 'lock' :
+        data.action === 'return_tokens' ? 'currency_exchange' :
+        'publish'
+      }}</mat-icon>
+    </div>
+    <h2 mat-dialog-title>{{
+      data.action === 'open_offers' ? 'Open Offers' :
+      data.action === 'close_offers' ? 'Close Offers' :
+      data.action === 'return_tokens' ? 'Return Tokens' :
+      'Publish Session to Blockchain'
+    }}</h2>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content>
+    <div class="warning-section">
+      <div class="warning-icon">
+        <mat-icon>warning_amber</mat-icon>
+      </div>
+      <div class="warning-content">
+        <p class="warning-title">Important: This action cannot be undone</p>
+        <p class="warning-text" *ngIf="data.action === 'publish'">
+          You are about to publish the session <strong>"{{ data.sessionName }}"</strong> to the blockchain.
+          Once published, the session data will be permanently recorded and cannot be modified or deleted.
+        </p>
+        <p class="warning-text" *ngIf="data.action === 'open_offers'">
+          You are about to open the offers period for session <strong>"{{ data.sessionName }}"</strong>.
+          This will change the session status to ACTIVE on the blockchain and allow FSPs to submit offers.
+        </p>
+        <p class="warning-text" *ngIf="data.action === 'close_offers'">
+          You are about to close the offers period for session <strong>"{{ data.sessionName }}"</strong>.
+          This will change the session status to IN_DELIVERY on the blockchain and no more offers can be submitted.
+        </p>
+        <p class="warning-text" *ngIf="data.action === 'return_tokens'">
+          You are about to return your tokens for the cancelled session <strong>"{{ data.sessionName }}"</strong>.
+          This will process the token return on the blockchain and the transaction will be permanent.
+        </p>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-item">
+        <mat-icon>check_circle</mat-icon>
+        <span>Session will be visible to all participants</span>
+      </div>
+      <div class="info-item">
+        <mat-icon>lock</mat-icon>
+        <span>Data will be secured on the blockchain</span>
+      </div>
+      <div class="info-item">
+        <mat-icon>schedule</mat-icon>
+        <span>Transaction may take a few seconds to complete</span>
+      </div>
+    </div>
+
+    <div class="pin-section">
+      <h3>Enter your PIN to confirm</h3>
+      <p class="pin-description">Please enter your 6-digit PIN to sign this blockchain transaction.</p>
+      
+      <mat-form-field appearance="outline" class="pin-field">
+        <mat-label>6-digit PIN</mat-label>
+        <input
+          matInput
+          [(ngModel)]="pin"
+          [type]="showPin ? 'text' : 'password'"
+          maxlength="6"
+          placeholder="000000"
+          (input)="onPinInput()"
+          (keyup.enter)="onConfirm()"
+          autocomplete="off"
+          class="pin-input">
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePinVisibility()"
+          [attr.aria-label]="'Toggle PIN visibility'"
+          class="pin-toggle">
+          <mat-icon>{{ showPin ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="pinError">{{ pinError }}</mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions>
+    <button
+      mat-stroked-button
+      (click)="onCancel()"
+      class="cancel-button">
+      <mat-icon>close</mat-icon>
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onConfirm()"
+      [disabled]="!pin"
+      class="confirm-button">
+      <mat-icon>{{
+        data.action === 'open_offers' ? 'lock_open' :
+        data.action === 'close_offers' ? 'lock' :
+        data.action === 'return_tokens' ? 'currency_exchange' :
+        'publish'
+      }}</mat-icon>
+      {{
+        data.action === 'open_offers' ? 'Open Offers' :
+        data.action === 'close_offers' ? 'Close Offers' :
+        data.action === 'return_tokens' ? 'Return Tokens' :
+        'Publish to Blockchain'
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,29 @@
+{
+  "abi": [
+    "constructor(address)",
+    "error AccessControlBadConfirmation()",
+    "error AccessControlUnauthorizedAccount(address,bytes32)",
+    "event MarketCreated(uint256 indexed,address indexed,address indexed)",
+    "event MarketDeactivated(uint256 indexed)",
+    "event MarketReactivated(uint256 indexed)",
+    "event RoleAdminChanged(bytes32 indexed,bytes32 indexed,bytes32 indexed)",
+    "event RoleGranted(bytes32 indexed,address indexed,address indexed)",
+    "event RoleRevoked(bytes32 indexed,address indexed,address indexed)",
+    "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
+    "function MARKETPLACE_ADMIN() view returns (bytes32)",
+    "function createMarket(string,string,address) returns (uint256)",
+    "function deactivateMarket(uint256)",
+    "function getMarket(uint256) view returns ((address,string,string,address,bool,uint256))",
+    "function getRoleAdmin(bytes32) view returns (bytes32)",
+    "function grantRole(bytes32,address)",
+    "function hasRole(bytes32,address) view returns (bool)",
+    "function marketCount() view returns (uint256)",
+    "function markets(uint256) view returns (address,string,string,address,bool,uint256)",
+    "function participantRegistry() view returns (address)",
+    "function reactivateMarket(uint256)",
+    "function renounceRole(bytes32,address)",
+    "function revokeRole(bytes32,address)",
+    "function supportsInterface(bytes4) view returns (bool)"
+  ],
+  "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82"
+}

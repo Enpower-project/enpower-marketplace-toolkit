@@ -1,0 +1,389 @@
+<div class="market-info-page">
+  <div class="page-header">
+    <h1 class="page-title">
+      <mat-icon>info</mat-icon>
+      Market Information
+    </h1>
+    <p class="page-subtitle">Current selected market details and configuration</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading market information...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="hasError && !isLoading" class="error-container">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <h3>Unable to Load Market Information</h3>
+    <p>{{ errorMessage || 'There was an error loading the market details.' }}</p>
+    <button mat-raised-button color="primary" (click)="loadMarketInfo()">
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </div>
+
+  <!-- Market Details -->
+  <div *ngIf="marketDetails && !isLoading && !hasError" class="market-details">
+
+    <div class="deactivation-banner" *ngIf="marketDetails.status === 'DEACTIVATED'">
+      <mat-icon>block</mat-icon>
+      <div class="banner-content">
+        <h3>Market Deactivated</h3>
+        <p>This market has been deactivated on the blockchain and is no longer operational.
+          Contact the platform administrator to reactivate it.</p>
+      </div>
+    </div>
+
+    <!-- Basic Information Card -->
+    <mat-expansion-panel class="info-card">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="panel-header">
+          <mat-icon>store</mat-icon>
+          <div class="header-content">
+            <span class="header-title">{{ marketDetails.name }}</span>
+            <span class="header-subtitle">Market ID: {{ marketDetails.id }}</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="status-section">
+        <div class="status-item">
+          <mat-chip [class]="getStatusClass(marketDetails.status)">
+            <mat-icon>{{ getStatusIcon(marketDetails.status) }}</mat-icon>
+            {{ getStatusLabel(marketDetails.status) }}
+          </mat-chip>
+        </div>
+
+        <!-- <div class="status-item">
+          <mat-chip [class]="marketDetails.isActive ? 'active-chip' : 'inactive-chip'">
+            <mat-icon>{{ marketDetails.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ marketDetails.isActive ? 'Active' : 'Inactive' }}
+          </mat-chip>
+        </div> -->
+      </div>
+
+      <div *ngIf="marketDetails.description" class="description-section">
+        <h4>Description</h4>
+        <p>{{ marketDetails.description }}</p>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="metadata-section">
+        <div class="metadata-grid">
+          <div class="metadata-item" *ngIf="marketDetails.region">
+            <mat-icon>location_on</mat-icon>
+            <div>
+              <span class="label">Region</span>
+              <span class="value">{{ marketDetails.region }}</span>
+            </div>
+          </div>
+
+          <div class="metadata-item" *ngIf="marketDetails.createdAt">
+            <mat-icon>calendar_today</mat-icon>
+            <div>
+              <span class="label">Created</span>
+              <span class="value">{{ marketDetails.createdAt | date:'medium' }}</span>
+            </div>
+          </div>
+
+          <div class="metadata-item" *ngIf="marketDetails.updatedAt">
+            <mat-icon>update</mat-icon>
+            <div>
+              <span class="label">Last Updated</span>
+              <span class="value">{{ marketDetails.updatedAt | date:'medium' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Market Owner Card -->
+    <mat-expansion-panel class="info-card" *ngIf="marketDetails.marketOwner">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="panel-header">
+          <mat-icon>person</mat-icon>
+          <div class="header-content">
+            <span class="header-title">Market Owner</span>
+            <span class="header-subtitle">Administrator and owner information</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="owner-info">
+        <div class="owner-grid">
+          <div class="owner-item" *ngIf="marketDetails.marketOwner.firstName || marketDetails.marketOwner.lastName">
+            <mat-icon>account_circle</mat-icon>
+            <div>
+              <span class="label">Name</span>
+              <span class="value">{{ marketDetails.marketOwner.firstName }} {{ marketDetails.marketOwner.lastName
+                }}</span>
+            </div>
+          </div>
+
+          <div class="owner-item" *ngIf="marketDetails.marketOwner.email">
+            <mat-icon>email</mat-icon>
+            <div>
+              <span class="label">Email</span>
+              <span class="value">{{ marketDetails.marketOwner.email }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Market Users -->
+    <mat-expansion-panel class="info-card users-card" *ngIf="currentMarketId && isFMO_LMO">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="panel-header">
+          <mat-icon>group</mat-icon>
+          <div class="header-content">
+            <span class="header-title">Market Users</span>
+            <span class="header-subtitle">List of users assigned to this market</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="users-actions">
+        <button mat-raised-button color="accent" (click)="openInviteUserModal()" [disabled]="marketDetails.isActive === false"
+          [matTooltip]="marketDetails.status === 'DEACTIVATED' ? 'Cannot invite users to a deactivated market' : ''"
+        >
+          <mat-icon>person_add</mat-icon>
+          Invite Users
+        </button>
+      </div>
+
+      <div class="users-table-section" *ngIf="marketUsers && marketUsers.length; else noUsersTpl">
+        <table mat-table [dataSource]="marketUsers" class="users-table mat-elevation-z1">
+          <!-- Nombre -->
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let user">{{ user.username || (user.firstName + ' ' + user.lastName) }}</td>
+          </ng-container>
+
+          <!-- Rol -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <button *ngIf="!isOwnerRole(user)" mat-icon-button color="warn" (click)="deleteUserPermanently(user.id)"
+                matTooltip="Delete user permanently" class="delete-button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['username', 'role', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['username', 'role', 'actions'];"></tr>
+        </table>
+      </div>
+
+      <ng-template #noUsersTpl>
+        <div class="no-users-message">
+          <mat-icon class="no-users-icon">group_off</mat-icon>
+          <div class="no-users-content">
+            <p class="no-users-title">No users assigned yet</p>
+            <p class="no-users-description">Add users to this market to enable role-based participation and access.</p>
+          </div>
+        </div>
+
+      </ng-template>
+    </mat-expansion-panel>
+
+    <!-- Wallet Information Card -->
+    <mat-expansion-panel class="info-card wallet-card" *ngIf="marketDetails.hasWallet !== undefined">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="panel-header">
+          <mat-icon [class]="marketDetails.hasWallet ? 'wallet-active' : 'wallet-inactive'">
+            {{ marketDetails.hasWallet ? 'account_balance_wallet' : 'wallet' }}
+          </mat-icon>
+          <div class="header-content">
+            <span class="header-title">Market Wallet Status</span>
+            <span class="header-subtitle">Blockchain wallet configuration for transactions</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="wallet-status-section">
+        <div class="status-indicator" [class]="marketDetails.hasWallet ? 'wallet-configured' : 'wallet-missing'">
+          <mat-icon>{{ marketDetails.hasWallet ? 'check_circle' : 'error' }}</mat-icon>
+          <span class="status-text">
+            {{ marketDetails.hasWallet ? 'Wallet Configured' : 'No Wallet Configured' }}
+          </span>
+        </div>
+
+        <div class="wallet-address-section" *ngIf="marketDetails.hasWallet && marketDetails.walletAddress">
+          <div class="address-display">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <div class="address-info">
+              <span class="address-label">Wallet Address</span>
+              <span class="address-value" [matTooltip]="marketDetails.walletAddress">
+                {{ marketDetails.walletAddress | slice:0:16 }}...{{ marketDetails.walletAddress | slice:-12 }}
+              </span>
+            </div>
+            <button mat-icon-button (click)="copyToClipboard(marketDetails.walletAddress!)"
+              matTooltip="Copy Wallet Address" class="copy-button">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="wallet-capabilities" *ngIf="marketDetails.hasWallet">
+          <h4>Available Operations</h4>
+          <div class="capabilities-list">
+            <div class="capability-item">
+              <mat-icon class="capability-icon">swap_horiz</mat-icon>
+              <span>Energy Transaction Processing</span>
+            </div>
+            <div class="capability-item">
+              <mat-icon class="capability-icon">smart_contract</mat-icon>
+              <span>Smart Contract Interactions</span>
+            </div>
+            <div class="capability-item">
+              <mat-icon class="capability-icon">account_balance</mat-icon>
+              <span>Flexibility Token Management</span>
+            </div>
+            <div class="capability-item">
+              <mat-icon class="capability-icon">receipt_long</mat-icon>
+              <span>Automated Settlement Processing</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wallet-warning" *ngIf="!marketDetails.hasWallet">
+          <div class="warning-info">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            <div class="warning-content">
+              <p class="warning-title">Market Operations Limited</p>
+              <p class="warning-description">
+                This market cannot process energy transactions or interact with blockchain smart contracts
+                until a wallet is configured.
+              </p>
+            </div>
+          </div>
+          <div class="wallet-creation-section">
+            <button mat-raised-button color="primary" (click)="createMarketWallet()" [disabled]="isCheckingWallet"
+              class="create-wallet-btn">
+              <mat-icon>account_balance_wallet</mat-icon>
+              Create Market Wallet
+            </button>
+            <p class="creation-note">Create a secure blockchain wallet to enable all market operations.</p>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Blockchain Activation Card -->
+    <mat-expansion-panel class="info-card blockchain-card" *ngIf="isFMO_LMO && marketDetails.status != 'DEACTIVATED'">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="panel-header">
+          <mat-icon
+            [class]="marketDetails.isActive && marketDetails.marketAddress ? 'blockchain-active' : 'blockchain-inactive'">
+            {{ marketDetails.isActive && marketDetails.marketAddress ? 'verified' : 'cloud_off' }}
+          </mat-icon>
+          <div class="header-content">
+            <span class="header-title">Blockchain Activation Status</span>
+            <span class="header-subtitle">Market deployment on blockchain network</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="blockchain-status-section">
+        <div class="status-indicator blockchain-activated"
+          *ngIf="marketDetails.isActive && marketDetails.marketAddress">
+          <mat-icon>check_circle</mat-icon>
+          <span class="status-text">Market Active on Blockchain</span>
+        </div>
+
+        <div class="blockchain-address-section" *ngIf="marketDetails.isActive && marketDetails.marketAddress">
+          <div class="address-display">
+            <mat-icon>link</mat-icon>
+            <div class="address-info">
+              <span class="address-label">Market Contract Address</span>
+              <span class="address-value" [matTooltip]="marketDetails.marketAddress">
+                {{ marketDetails.marketAddress | slice:0:16 }}...{{ marketDetails.marketAddress | slice:-12 }}
+              </span>
+            </div>
+            <button mat-icon-button (click)="copyToClipboard(marketDetails.marketAddress!)"
+              matTooltip="Copy Market Address" class="copy-button">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="blockchain-benefits" *ngIf="marketDetails.isActive && marketDetails.marketAddress">
+          <h4>Blockchain Features</h4>
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <mat-icon class="benefit-icon">security</mat-icon>
+              <span>Immutable Transaction Records</span>
+            </div>
+            <div class="benefit-item">
+              <mat-icon class="benefit-icon">gavel</mat-icon>
+              <span>Smart Contract Enforcement</span>
+            </div>
+            <div class="benefit-item">
+              <mat-icon class="benefit-icon">verified_user</mat-icon>
+              <span>Transparent Market Operations</span>
+            </div>
+            <div class="benefit-item">
+              <mat-icon class="benefit-icon">public</mat-icon>
+              <span>Decentralized Verification</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="blockchain-warning" *ngIf="!marketDetails.isActive || !marketDetails.marketAddress">
+          <div class="warning-info">
+            <mat-icon class="warning-icon">info</mat-icon>
+            <div class="warning-content">
+              <p class="warning-title">Blockchain Activation Required</p>
+              <p class="warning-description">
+                Activate this market on the blockchain to enable smart contract functionality,
+                transparent transactions, and decentralized operations.
+              </p>
+            </div>
+          </div>
+          <div class="activation-section">
+            <button mat-raised-button color="primary" (click)="activateMarketOnBlockchain()"
+              [disabled]="!marketDetails.hasWallet || isActivatingBlockchain" class="activate-blockchain-btn">
+              <mat-icon>rocket_launch</mat-icon>
+              Activate Market on Blockchain
+            </button>
+            <p class="activation-note" *ngIf="marketDetails.hasWallet">
+              Deploy your market as a smart contract on the blockchain network.
+            </p>
+            <p class="activation-note warning-text" *ngIf="!marketDetails.hasWallet">
+              <mat-icon class="inline-icon">warning</mat-icon>
+              You must create a market wallet before activating on blockchain.
+            </p>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+
+
+    <!-- Actions Card -->
+    <mat-card class="actions-card">
+      <mat-card-content>
+        <div class="actions-section">
+          <button mat-stroked-button color="primary" (click)="refreshMarketInfo()" [disabled]="isLoading">
+            <mat-icon>refresh</mat-icon>
+            Refresh Information
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

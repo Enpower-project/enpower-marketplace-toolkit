@@ -1,0 +1,189 @@
+<div class="accept-invitation-container">
+  <mat-card class="invitation-card">
+    <!-- Loading State -->
+    <div *ngIf="loadingInvitation" class="loading-container">
+      <div class="css-circular-loader"></div>
+      <p>{{ 'invitation.loadingInvitation' | translate }}</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="invitationError && !loadingInvitation" class="error-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h2>{{ 'invitation.invalidInvitation' | translate }}</h2>
+      <p>{{ errorMessage }}</p>
+      <button mat-raised-button color="primary" (click)="goToHome()">
+        {{ 'invitation.goToHome' | translate }}
+      </button>
+    </div>
+
+    <!-- Valid Invitation Form -->
+    <div *ngIf="!loadingInvitation && !invitationError && invitation" class="invitation-content">
+      <!-- Two Column Layout -->
+      <div class="two-column-layout">
+        <!-- Left Column: Invitation Info -->
+        <div class="left-column">
+          <div class="invitation-header">
+            <mat-icon class="header-icon">mail_outline</mat-icon>
+            <h1>{{ userExists ? ('invitation.welcomeBack' | translate) : ('invitation.welcomeTitle' | translate) }}</h1>
+          </div>
+
+          <div class="invitation-info">
+            <p><strong>{{ 'invitation.invitedBy' | translate }}:</strong> {{ invitation.invitedByName }}</p>
+            <p><strong>{{ 'invitation.market' | translate }}:</strong> {{ invitation.marketName }}</p>
+            <p><strong>{{ 'invitation.role' | translate }}:</strong> {{ invitation.role }}</p>
+            <p><strong>{{ 'invitation.email' | translate }}:</strong> {{ invitation.email }}</p>
+            <p *ngIf="userExists && invitation.existingUsername">
+              <strong>{{ 'invitation.username' | translate }}:</strong> {{ invitation.existingUsername }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Column: Form/Actions -->
+        <div class="right-column">
+            <!-- Existing User - Simple Confirmation -->
+          <div *ngIf="userExists" class="existing-user-section">
+            <div class="info-box">
+              <mat-icon>info</mat-icon>
+              <div>
+                <h3>{{ 'invitation.existingUserTitle' | translate }}</h3>
+                <p>{{ 'invitation.existingUserMessage' | translate }}</p>
+                <p class="username-hint">
+                  {{ 'invitation.loginUsername' | translate }}: <strong>{{ invitation.existingUsername }}</strong>
+                </p>
+              </div>
+            </div>
+
+            <!-- Accept Button for Existing Users -->
+            <div class="action-buttons">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="onSubmit()"
+                [disabled]="loading"
+                class="accept-button"
+              >
+                <span class="button-content">
+                  <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+                  <mat-icon *ngIf="!loading">check_circle</mat-icon>
+                  <span>{{ loading ? ('common.processing' | translate) : ('invitation.acceptInvitation' | translate) }}</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- New User - Registration Form -->
+          <div *ngIf="!userExists">
+            <h2>{{ 'invitation.createAccount' | translate }}</h2>
+
+            <form [formGroup]="acceptForm" (ngSubmit)="onSubmit()">
+              <div class="form-row">
+                <!-- First Name -->
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>{{ 'invitation.firstName' | translate }}</mat-label>
+                  <input matInput formControlName="firstName" required />
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error *ngIf="firstName?.hasError('required')">
+                    {{ 'invitation.firstNameRequired' | translate }}
+                  </mat-error>
+                  <mat-error *ngIf="firstName?.hasError('minlength')">
+                    First name must be at least 2 characters
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Last Name -->
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>{{ 'invitation.lastName' | translate }}</mat-label>
+                  <input matInput formControlName="lastName" required />
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error *ngIf="lastName?.hasError('required')">
+                    {{ 'invitation.lastNameRequired' | translate }}
+                  </mat-error>
+                  <mat-error *ngIf="lastName?.hasError('minlength')">
+                    Last name must be at least 2 characters
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Username -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'invitation.username' | translate }}</mat-label>
+                <input matInput formControlName="username" required />
+                <mat-icon matPrefix>account_circle</mat-icon>
+                <mat-error *ngIf="username?.hasError('required')">
+                  {{ 'invitation.usernameRequired' | translate }}
+                </mat-error>
+                <mat-error *ngIf="username?.hasError('minlength')">
+                  {{ 'invitation.usernameMinLength' | translate }}
+                </mat-error>
+                <mat-error *ngIf="username?.hasError('pattern')">
+                  Username can only contain letters, numbers, hyphens and underscores
+                </mat-error>
+                <mat-hint *ngIf="!username?.valid && username?.touched">Minimum 3 characters (letters, numbers, - and _ only)</mat-hint>
+              </mat-form-field>
+
+              <!-- Password -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'invitation.password' | translate }}</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
+                <mat-icon matPrefix>lock</mat-icon>
+                <button mat-icon-button matSuffix type="button" tabindex="-1" (click)="hidePassword = !hidePassword">
+                  <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="password?.hasError('required')">
+                  {{ 'invitation.passwordRequired' | translate }}
+                </mat-error>
+                <mat-error *ngIf="password?.hasError('minlength')">
+                  Password must be at least 8 characters
+                </mat-error>
+                <mat-hint *ngIf="!password?.valid && password?.touched">Minimum 8 characters</mat-hint>
+              </mat-form-field>
+
+              <!-- Confirm Password -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'invitation.confirmPassword' | translate }}</mat-label>
+                <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" required />
+                <mat-icon matPrefix>lock</mat-icon>
+                <button mat-icon-button matSuffix type="button" tabindex="-1" (click)="hideConfirmPassword = !hideConfirmPassword">
+                  <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="confirmPassword?.hasError('required')">
+                  {{ 'invitation.confirmPasswordRequired' | translate }}
+                </mat-error>
+                <mat-error *ngIf="confirmPassword?.hasError('passwordMismatch') && !confirmPassword?.hasError('required')">
+                  Passwords do not match
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Submit Button or Loader -->
+              <ng-container *ngIf="!loading && !successMessage; else loadingOrSuccess">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  class="submit-button"
+                  [disabled]="!acceptForm.valid || loading"
+                >
+                  {{ 'invitation.acceptAndCreateAccount' | translate }}
+                </button>
+              </ng-container>
+              <ng-template #loadingOrSuccess>
+                <ng-container *ngIf="loading">
+                  <div class="css-circular-loader" style="margin-top: 16px;"></div>
+                </ng-container>
+              </ng-template>
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Success/Error Messages (shown for both user types) -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        <mat-icon>check_circle</mat-icon>
+        {{ successMessage }}
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <mat-icon>error</mat-icon>
+        {{ errorMessage }}
+      </div>

@@ -1,0 +1,136 @@
+<div class="superadmin-panel">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <h2>Platform Administration</h2>
+      <p class="subtitle">Manage the energy flexibility marketplace platform</p>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading platform data...</p>
+    </div>
+  </div>
+
+  <!-- Statistics Overview - Full Width -->
+  <div class="stats-overview" *ngIf="!isLoading">
+    <div class="stat-card markets-card">
+      <mat-icon class="stat-icon">store</mat-icon>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalMarkets }}</div>
+        <div class="stat-label">Total Markets</div>
+        <div class="stat-breakdown">
+          <span class="breakdown-item active">{{ activeMarkets }} active</span>
+          <span class="breakdown-item pending" *ngIf="pendingMarkets > 0">{{ pendingMarkets }} pending</span>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card users-card">
+      <mat-icon class="stat-icon">people</mat-icon>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalUsers }}</div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-breakdown">
+          <span class="breakdown-item">{{ usersWithWallet }} with wallet</span>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card fsp-card">
+      <mat-icon class="stat-icon">electric_bolt</mat-icon>
+      <div class="stat-content">
+        <div class="stat-value">{{ prosumersCount }}</div>
+        <div class="stat-label">FSP Users</div>
+        <div class="stat-breakdown">
+          <span class="breakdown-item">Flexibility Providers</span>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card frp-card">
+      <mat-icon class="stat-icon">request_quote</mat-icon>
+      <div class="stat-content">
+        <div class="stat-value">{{ frpCount }}</div>
+        <div class="stat-label">FRP Users</div>
+        <div class="stat-breakdown">
+          <span class="breakdown-item">Requesting Parties</span>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card fmo-card">
+      <mat-icon class="stat-icon">business</mat-icon>
+      <div class="stat-content">
+        <div class="stat-value">{{ fmoLmoCount }}</div>
+        <div class="stat-label">FMO/LMO</div>
+        <div class="stat-breakdown">
+          <span class="breakdown-item">Market Owners</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refresh Button -->
+  <div class="refresh-section" *ngIf="!isLoading">
+    <button class="refresh-btn" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      Refresh Data
+    </button>
+  </div>
+
+  <!-- Quick Actions Grid -->
+  <div class="actions-section">
+    <h3 class="section-title">Quick Actions</h3>
+    <div class="actions-grid">
+      <div class="action-card" (click)="navigateToMarkets()">
+        <div class="action-icon-wrapper">
+          <mat-icon class="action-icon">store</mat-icon>
+        </div>
+        <div class="action-content">
+          <h4>All Platform Markets</h4>
+          <p>View and manage all markets</p>
+        </div>
+      </div>
+
+      <div class="action-card" (click)="toggleUserManagement()">
+        <div class="action-icon-wrapper">
+          <mat-icon class="action-icon">people</mat-icon>
+        </div>
+        <div class="action-content">
+          <h4>User Management</h4>
+          <p>Manage platform users and roles</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Market Selection Modal -->
+  <div *ngIf="showMarketSelection" class="modal-overlay" (click)="cancelMarketSelection()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="market-selection-form">
+        <h4>Select Market for User Management</h4>
+        
+        <div *ngIf="!isLoadingMarketSelection">
+          <div class="form-group">
+            <label for="marketSelect">Choose a Market</label>
+            <select id="marketSelect" [(ngModel)]="selectedMarketId" class="market-select">
+              <option value="" disabled>Select a market</option>
+              <option *ngFor="let market of markets" [value]="market._id">
+                {{ market.name }} - {{ market.region }}
+              </option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="cancelMarketSelection()">Cancel</button>
+            <button type="button" class="btn-primary" [disabled]="!selectedMarketId" (click)="confirmMarketSelection()">Confirm</button>
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingMarketSelection" class="loading-container">
+          <mat-spinner [diameter]="40"></mat-spinner>
+          <span>Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

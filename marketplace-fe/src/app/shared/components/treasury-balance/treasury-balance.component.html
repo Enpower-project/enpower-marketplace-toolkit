@@ -1,0 +1,110 @@
+<mat-card class="treasury-balance-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>account_balance</mat-icon>
+      Treasury Balance
+    </mat-card-title>
+    <button
+      mat-icon-button
+      (click)="refresh()"
+      [disabled]="loading"
+      matTooltip="Refresh balance"
+      class="refresh-button">
+      <mat-icon [class.spinning]="loading">refresh</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Loading State -->
+    <div *ngIf="loading && !balance" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading treasury balance...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-container">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button color="primary" (click)="refresh()">
+        Try Again
+      </button>
+    </div>
+
+    <!-- Balance Data -->
+    <div *ngIf="balance && !loading" class="balance-content">
+      <!-- Total Deposited -->
+      <div class="balance-item">
+        <div class="balance-label">
+          <mat-icon>savings</mat-icon>
+          <span>Total Deposited</span>
+          <mat-icon
+            class="info-icon"
+            matTooltip="Total FLEX tokens deposited in Treasury">
+            info_outline
+          </mat-icon>
+        </div>
+        <div class="balance-value primary">
+          {{ depositedFormatted }} <span class="token-symbol">FLEX</span>
+        </div>
+      </div>
+
+      <!-- Locked as Collateral -->
+      <div class="balance-item">
+        <div class="balance-label">
+          <mat-icon>lock</mat-icon>
+          <span>Locked as Collateral</span>
+          <mat-icon
+            class="info-icon"
+            matTooltip="FLEX tokens locked for active offers (5% collateral)">
+            info_outline
+          </mat-icon>
+        </div>
+        <div class="balance-value" [ngClass]="getLockedColor()">
+          {{ lockedFormatted }} <span class="token-symbol">FLEX</span>
+        </div>
+        <div class="balance-percentage" [ngClass]="getLockedColor()">
+          {{ lockedPercentageFormatted }}% of deposited
+        </div>
+      </div>
+
+      <!-- Available Balance -->
+      <div class="balance-item highlighted">
+        <div class="balance-label">
+          <mat-icon>check_circle</mat-icon>
+          <span>Available Balance</span>
+          <mat-icon
+            class="info-icon"
+            matTooltip="FLEX tokens available for new offers">
+            info_outline
+          </mat-icon>
+        </div>
+        <div class="balance-value success">
+          {{ availableFormatted }} <span class="token-symbol">FLEX</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="balance-progress">
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            [style.width.%]="lockedPercentageFormatted"
+            [ngClass]="getLockedColor()">
+          </div>
+        </div>
+        <div class="progress-labels">
+          <span>Locked: {{ lockedPercentageFormatted }}%</span>
+          <span>Available: {{ (100 - Number(lockedPercentageFormatted)).toFixed(2) }}%</span>
+        </div>
+      </div>
+
+      <!-- Wallet Address (truncated) -->
+      <div class="wallet-info" *ngIf="walletAddress">
+        <small>
+          <strong>Wallet:</strong>
+          {{ walletAddress.slice(0, 10) }}...{{ walletAddress.slice(-8) }}
+        </small>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

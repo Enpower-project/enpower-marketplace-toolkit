@@ -1,0 +1,172 @@
+<div class="session-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>schedule</mat-icon>
+        {{ getPageTitle() }}
+      </h1>
+      <p class="page-subtitle">Manage and track your energy trading sessions</p>
+    </div>
+    <button *ngIf="canCreateSession()" mat-raised-button color="primary" (click)="createNewSession()"
+      [disabled]="loading" class="create-button">
+      <mat-icon>add</mat-icon>
+      Create Session
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading sessions...</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && getFilteredSessions().length === 0" class="empty-state">
+    <mat-icon class="empty-icon">schedule</mat-icon>
+    <h2>No {{ statusFilter ? getStatusDisplayName(statusFilter) : '' }} Sessions Found</h2>
+    <p>There are no{{ statusFilter ? ' ' + statusFilter.toLowerCase() : '' }} sessions for this market.</p>
+    <button
+      *ngIf="(statusFilter === 'DRAFT' || statusFilter === 'APPROVED' || statusFilter === 'PUBLISHED') && canCreateSession()"
+      mat-raised-button color="primary" (click)="createNewSession()" class="empty-state-button">
+      <mat-icon>add</mat-icon>
+      Create Session
+    </button>
+  </div>
+
+  <!-- Sessions List -->
+  <div *ngIf="!loading && currentMarketId && getFilteredSessions().length > 0" class="sessions-grid">
+    <mat-card *ngFor="let session of getFilteredSessions(); trackBy: trackBySessionId" class="session-card"
+      [style.--status-color]="getStatusBorderColor(session.status)">
+
+      <mat-card-header>
+        <div mat-card-avatar class="session-avatar">
+          <mat-icon>event</mat-icon>
+        </div>
+        <mat-card-title>{{ session.name }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ formatDate(session.sessionDate) }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <div class="status-chip">
+        <mat-chip [ngClass]="getStatusColor(session.status)" selected>
+          {{ getStatusDisplayName(session.status) }}
+        </mat-chip>
+      </div>
+
+      <mat-card-content>
+        <div class="session-info">
+          <div class="info-row">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ session.totalBids }} time slots</span>
+          </div>
+          <div class="info-row">
+            <mat-icon>flash_on</mat-icon>
+            <span>{{ session.totalPowerMw | number:'1.2-4' }} KW total</span>
+          </div>
+          <div class="info-row">
+            <mat-icon>euro_symbol</mat-icon>
+            <span>{{ session.averagePricePerMwh | number:'1.2-4' }} Flex/KW avg</span>
+          </div>
+          <div class="info-row" *ngIf="session.description">
+            <mat-icon>description</mat-icon>
+            <span class="description">{{ session.description }}</span>
+          </div>
+          <div class="info-row" *ngIf="session.contractAddress">
+            <mat-icon>link</mat-icon>
+            <span class="contract-address">{{ session.contractAddress | slice:0:10 }}...{{ session.contractAddress |
+              slice:-8 }}</span>
+          </div>
+        </div>
+
+        <div class="session-metadata">
+          <div class="metadata-item">
+            <mat-icon>person</mat-icon>
+            <span>Created by {{ session.createdBy.username }}</span>
+          </div>
+          <div class="metadata-item">
+            <mat-icon>calendar_today</mat-icon>
+            <span>{{ formatDateTime(session.createdAt) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="viewSession(session)" class="action-button">
+          <mat-icon>visibility</mat-icon>
+          <span>View</span>
+        </button>
+
+        <span *ngIf="isMarketDeactivated" class="deactivated-badge">
+          <mat-icon>block</mat-icon>
+          Market Deactivated, actions not available
+        </span>
+
+        <button *ngIf="canEditSession(session)" mat-button color="accent" (click)="editSession(session)"
+          class="action-button">
+          <mat-icon>edit</mat-icon>
+          <span>Edit</span>
+        </button>
+
+        <!-- Botón Approve - Solo para FRP en sesiones DRAFT -->
+        <button *ngIf="canApproveSession(session)" mat-button color="primary" (click)="approveSession(session)"
+          class="action-button">
+          <mat-icon>check_circle</mat-icon>
+          <span>Approve</span>
+        </button>
+
+        <!-- Botón Revert to Draft - Solo para FRP en sesiones APPROVED -->
+        <button *ngIf="canRevertSession(session)" mat-button color="warn" (click)="revertSessionToDraft(session)"
+          class="action-button">
+          <mat-icon>undo</mat-icon>
+          <span>Revert to Draft</span>
+        </button>
+
+        <!-- Botón Publish - Solo para FMO_LMO en sesiones APPROVED -->
+        <button *ngIf="canPublishSession(session)" mat-button color="primary" (click)="publishSession(session)"
+          class="action-button">
+          <mat-icon>publish</mat-icon>
+          <span>Publish</span>
+        </button>
+
+        <!-- Botón Open Offers Period - Solo para FMO_LMO en sesiones PUBLISHED -->
+        <button *ngIf="canOpenOffersPeriod(session)" mat-raised-button color="accent"
+          (click)="openOffersPeriod(session)" class="action-button">
+          <mat-icon>lock_open</mat-icon>
+          <span>Open Offers</span>
+        </button>
+
+        <!-- Botón Close Offers Period - Solo para FMO_LMO en sesiones ACTIVE -->
+        <button *ngIf="canCloseOffersPeriod(session)" mat-raised-button color="warn"
+          (click)="closeOffersPeriod(session)" class="action-button">
+          <mat-icon>lock</mat-icon>
+          <span>Close Offers</span>
+        </button>
+
+        <!-- Botón Create Offer - Solo para FSP en sesiones ACTIVE -->
+        <button *ngIf="canCreateOffer(session)" mat-raised-button color="primary"
+          (click)="viewSessionBids(session)" class="action-button">
+          <mat-icon>local_offer</mat-icon>
+          <span>Create Offer</span>
+        </button>
+
+        <!-- Botón Return Tokens - Solo para FSP en sesiones CANCELLED -->
+        <button *ngIf="canReturnTokens(session)" mat-raised-button color="warn" (click)="returnTokens(session)"
+          class="action-button">
+          <mat-icon>undo</mat-icon>
+          <span>Return Tokens</span>
+        </button>
+
+        <button *ngIf="canDeleteSession(session)" mat-button color="warn"
+          (click)="deleteSession(session)" class="action-button delete-button">
+          <mat-icon>delete</mat-icon>
+          <span>Delete</span>
+        </button>
+
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

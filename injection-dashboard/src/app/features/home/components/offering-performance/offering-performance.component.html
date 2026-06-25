@@ -1,0 +1,33 @@
+<div class="offering-container">
+  <div class="offering-header">
+    <h2>Offering Performance</h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 20V14M8 20V10M12 20V4M16 20V12M20 20V8" stroke="#515F74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="offering-cards">
+    @for (offering of offerings; track offering.name) {
+      <div class="offering-card">
+        <div class="offering-card__header">
+          <span class="offering-card__name">{{ offering.name | uppercase }}</span>
+          <span class="offering-card__total">{{ offering.total }}</span>
+        </div>
+        <div class="offering-bar-track">
+          <div class="offering-bar-fill" [style.width]="getBarWidth(offering.total)"></div>
+        </div>
+        <span class="offering-card__errors" [class.offering-card__errors--alert]="offering.errors > 0">
+          @if (offering.errors > 0) {
+            {{ offering.errors }} errors detected
+          } @else {
+            0 errors detected
+          }
+        </span>
+      </div>
+    }
+
+    @if (offerings.length === 0) {
+      <p class="offering-empty">No data available</p>
+    }
+  </div>
+</div>

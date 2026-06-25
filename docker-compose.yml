@@ -1,0 +1,209 @@
+services:
+  hardhat:
+    build:
+      context: ./flexibility-market-smartcontracts
+      dockerfile: Dockerfile
+    container_name: hardhat
+    working_dir: /app
+    ports:
+      - "8545:8545"
+    environment:
+      - SHARED_DIR=/shared
+    restart: unless-stopped
+    command: bash ./scripts/start-and-deploy.sh
+    volumes:
+      - ./flexibility-market-smartcontracts:/app
+      - hardhat_node_modules:/app/node_modules
+      - contracts_data:/shared
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /shared/.deployed"]
+      interval: 5s
+      timeout: 3s
+      retries: 120
+      start_period: 10s
+
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27018:27017"
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
+    volumes:
+      - mailhog_data:/mailhog/data
+
+  keycloak-db:
+    image: postgres:16
+    user: postgres
+    container_name: keycloak-db
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+      - ./marketplace-keycloak/db/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+    command: ["postgres", "-c", "track_commit_timestamp=on"]
+    environment:
+      - POSTGRES_USER=${KC_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${KC_POSTGRES_PASSWORD}
+      - KEYCLOAK_DB_NAME=${KC_DB_NAME}
+      - DB_USER=${KC_DB_USER}
+      - DB_PASSWORD=${KC_DB_PASSWORD}
+    expose:
+      - 5432
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.2
+    container_name: keycloak
+    env_file:
+      - ./marketplace-keycloak/.env
+    volumes:
+      - ./marketplace-keycloak/imports:/opt/keycloak/data/import
+    ports:
+      - "8088:8080"
+    command:
+      - start
+      - --import-realm
+      - --http-enabled=true
+      - --hostname-backchannel-dynamic=false
+      - --hostname-strict=false
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./marketplace-be
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./marketplace-be/.env.docker
+    environment:
+      - FRONTEND_URL=${SERVER_URL}
+    volumes:
+      - contracts_data:/shared
+    depends_on:
+      hardhat:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      mailhog:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+    command: >
+      sh -c '
+        echo "Loading contract addresses from deployment...";
+        while IFS= read -r line; do
+          case "$$line" in \#*|"") continue;; esac;
+          export "$$line";
+          echo "  Set: $${line%%=*}";
+        done < /shared/contracts.env;
+        echo "Updating ABIs...";
+        cp /shared/contracts/*.json dist/contracts/ 2>/dev/null || true;
+        echo "Starting NestJS...";
+        exec node dist/main
+      '
+
+  frontend:
+    build:
+      context: ./marketplace-fe
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ── PostgreSQL compartido para los nuevos microservicios ──────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-file-ingestion
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ── Init: copia los scripts de Python al volumen compartido ─────────────
+  dfim-init:
+    image: alpine
+    container_name: dfim-init
+    volumes:
+      - dfim_data:/data/dfim
+      - ./marketplace-be/scripts:/scripts-src:ro
+    command: sh -c "mkdir -p /data/dfim/scripts && cp /scripts-src/build_profiles*.py /data/dfim/scripts/"
+    restart: "no"
+
+  # ── Dataspace File Ingestion ──────────────────────────────────────────────
+  ingestion-microservice:
+    build:
+      context: ./dataspace-file-ingestion-microservice
+      dockerfile: Dockerfile
+    container_name: ingestion-microservice
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dataspace_ingestion
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    volumes:
+      - dfim_data:/data/dfim
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dfim-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  ingestion-dashboard:
+    build:
+      context: ./injection-dashboard
+      dockerfile: Dockerfile
+    container_name: ingestion-dashboard
+    ports:
+      - "4201:80"
+    depends_on:
+      - ingestion-microservice
+    restart: unless-stopped
+
+
+volumes:
+  mongo_data:
+  mailhog_data:
+  hardhat_node_modules:
+  hardhat_test_node_modules:
+  contracts_data:
+  postgres_data:
+  dfim_data:
+  keycloak_db_data:

@@ -1,0 +1,144 @@
+<h2 mat-dialog-title>
+  {{ 'invitation.inviteUser' | translate }}
+  <mat-icon class="close-icon" (click)="onCancel()">close</mat-icon>
+</h2>
+
+<mat-dialog-content>
+  <!-- Loader inicial -->
+  <div *ngIf="isInitializing" class="initial-loader-container">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <!-- Contenido del formulario (se muestra después del loader) -->
+  <div *ngIf="!isInitializing" class="form-content">
+    <p class="market-info">
+      <strong>{{ 'invitation.market' | translate }}:</strong> {{ data.marketName }}
+    </p>
+
+    <form [formGroup]="inviteForm" (ngSubmit)="onSubmit()">
+    <!-- Email Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'invitation.emailAddress' | translate }}</mat-label>
+      <input
+        matInput
+        type="email"
+        formControlName="email"
+        placeholder="{{ 'invitation.emailPlaceholder' | translate }}"
+        required
+      />
+      <mat-icon matPrefix>email</mat-icon>
+      <mat-error *ngIf="email?.hasError('required')">
+        {{ 'invitation.emailRequired' | translate }}
+      </mat-error>
+      <mat-error *ngIf="email?.hasError('email')">
+        {{ 'invitation.emailInvalid' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Role Selection -->
+    <div class="role-selection-section">
+      <label class="role-label">
+        <mat-icon>person</mat-icon>
+        {{ 'invitation.selectRole' | translate }}
+      </label>
+
+      <div class="role-buttons">
+        <button
+          type="button"
+          mat-raised-button
+          class="role-button"
+          [class.selected]="selectedRole === UserRole.FRP"
+          [disabled]="data.hasFRP"
+          (click)="selectRole(UserRole.FRP)"
+        >
+          <div class="role-button-content">
+            <mat-icon>business</mat-icon>
+            <div class="role-text">
+              <span class="role-name">FRP</span>
+              <span class="role-description">Flexibility Requesting Party</span>
+            </div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          mat-raised-button
+          class="role-button"
+          [class.selected]="selectedRole === UserRole.FSP"
+          (click)="selectRole(UserRole.FSP)"
+        >
+          <div class="role-button-content">
+            <mat-icon>electrical_services</mat-icon>
+            <div class="role-text">
+              <span class="role-name">FSP</span>
+              <span class="role-description">Flexibility Service Provider</span>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div *ngIf="data.hasFRP" class="frp-warning" role="alert" aria-live="polite">
+        <div class="frp-warning-content">
+          <mat-icon>info</mat-icon>
+          <span class="frp-warning-text">{{ 'invitation.frpAlreadyAssigned' | translate }}</span>
+        </div>
+        <button
+          type="button"
+          mat-stroked-button
+          color="warn"
+          class="remove-frp-btn"
+          (click)="removeFRP()"
+          [disabled]="removingFRP"
+        >
+          <mat-icon>person_remove</mat-icon>
+          {{ 'invitation.removeFRP' | translate }}
+        </button>
+      </div>
+
+      <!-- User Access Warning -->
+      <div *ngIf="checkingUserAccess" class="user-access-checking">
+        <mat-icon>sync</mat-icon>
+        <span>Checking user access...</span>
+      </div>
+
+      <div *ngIf="!checkingUserAccess && userAlreadyHasAccess" class="user-access-error" role="alert" aria-live="polite">
+        <mat-icon>error</mat-icon>
+        <span>{{ userAccessMessage }}</span>
+      </div>
+
+      <div *ngIf="!checkingUserAccess && userAccessMessage && !userAlreadyHasAccess" class="user-access-info" role="status">
+        <mat-icon>info</mat-icon>
+        <span>{{ userAccessMessage }}</span>
+      </div>
+
+      <div *ngIf="!selectedRole && roleSelectionAttempted" class="role-error">
+        <mat-icon>error</mat-icon>
+        {{ 'invitation.roleRequired' | translate }}
+      </div>
+    </div>
+  </form>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" *ngIf="!isInitializing">
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p class="loading-text">Sending invitation...</p>
+  </div>
+  
+  <div *ngIf="!loading" class="button-group">
+    <button mat-button (click)="onCancel()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="!inviteForm.valid || !selectedRole || userAlreadyHasAccess || checkingUserAccess"
+      class="submit-button"
+    >
+      <mat-icon>send</mat-icon>
+      {{ 'invitation.sendInvitation' | translate }}
+    </button>
+  </div>
+</mat-dialog-actions>

@@ -1,0 +1,218 @@
+<div class="settlement-manager">
+  <!-- Header -->
+  <div class="page-header">
+    @if (isFMO) {
+      <div class="header-content">
+        <h1>Settlement Manager</h1>
+        <p class="header-description">
+          Manage the settlement process for sessions with closed offers
+        </p>
+      </div>
+      <button mat-raised-button color="primary" (click)="loadSessions()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      
+    } @else {
+      <div class="header-content">
+        @if (isFSP) {
+          <h1>Settlements</h1>
+          <p class="header-description">
+            View settlement details for sessions where you participated
+          </p>
+        } @else {
+          <h1>Settlements</h1>
+          <p class="header-description">
+            View the settlement process for sessions with closed offers
+          </p>
+        }
+      </div>
+      <button mat-raised-button color="primary" (click)="loadSessions()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    }
+  </div>
+
+  <!-- Info Card -->
+  <div class="info-card">
+    <mat-icon>info</mat-icon>
+    <div class="info-content">
+      @if (isFMO) {
+        <strong>Settlement Process</strong>
+        <p>
+          Select a session to start the settlement process.
+          You will be able to calculate, submit and execute settlements for each accepted offer.
+        </p>
+      } @else if (isFSP) {
+        <strong>Your Settlements</strong>
+        <p>
+          View settlement details for sessions where you have participated with offers.
+          Track the progress of settlements and payment execution.
+        </p>
+      } @else {
+        <strong>Settlement View</strong>
+        <p>
+          View settlement details for sessions with closed offers.
+          Monitor the settlement process and track payment execution status.
+        </p>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-content">
+      <mat-spinner diameter="60" strokeWidth="5"></mat-spinner>
+      <div class="loading-text">
+        <h3>Loading Sessions</h3>
+        <p>Please wait while we fetch the settlement data...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-container" *ngIf="error">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error }}</span>
+    <button mat-button (click)="loadSessions()">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && !error && sessions.length === 0">
+    <mat-icon>event_busy</mat-icon>
+    @if (isFSP) {
+      <h3>No settlements available</h3>
+      <p>
+        You don't have any sessions ready for settlement yet.
+        Settlements will appear here after the offers period closes for sessions where you participated.
+      </p>
+    } @else {
+      <h3>No sessions pending settlement</h3>
+      <p>
+        Sessions will appear here when the offers period has closed
+        and they are ready for the settlement process.
+      </p>
+    }
+  </div>
+
+  <!-- Sessions Table -->
+  <div class="table-container" *ngIf="!loading && !error && sessions.length > 0">
+    <table mat-table [dataSource]="sessions" class="sessions-table">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let session">
+          <div class="session-name-cell">
+            <span class="session-name">{{ session.name }}</span>
+            <span class="contract-address" *ngIf="session.contractAddress">
+              {{ truncateAddress(session.contractAddress) }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Session Date Column -->
+      <ng-container matColumnDef="sessionDate">
+        <th mat-header-cell *matHeaderCellDef>Delivery Date</th>
+        <td mat-cell *matCellDef="let session">
+          {{ formatDate(session.sessionDate) }}
+        </td>
+      </ng-container>
+
+      <!-- Total Offers Column -->
+      <ng-container matColumnDef="totalOffers">
+        <th mat-header-cell *matHeaderCellDef>Flexibility requests</th>
+        <td mat-cell *matCellDef="let session">
+          {{ getTotalOffers(session) }} slots
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let session">
+          <span class="status-chip" [ngClass]="getStatusClass(session.status)">
+            {{ getStatusLabel(session.status) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let session">
+          <div class="action-buttons">
+            @if (isFMO) {
+
+              <button
+                mat-icon-button
+                *ngIf="canStartSettlement(session)"
+                (click)="openSettlementsPage(session)"
+                matTooltip="Manage Settlements"
+                class="manage-settlements-btn"
+              >
+                <mat-icon>gavel</mat-icon>
+              </button>
+  
+              <button
+                mat-icon-button
+                *ngIf="session.status === 'SETTLEMENT_PENDING' || session.status === 'SETTLED'"
+                (click)="openSettlementsPage(session)"
+                matTooltip="Continue settlement process"
+                class="continue-btn"
+              >
+                <mat-icon>play_arrow</mat-icon>
+              </button>
+            } @else {
+              <button
+                mat-icon-button
+                *ngIf="canViewSettlementDetails(session)"
+                (click)="openSettlementsPage(session)"
+                matTooltip="View settlement details"
+                class="view-settlements-btn"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            }
+
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  @if (isFMO) {
+
+    <!-- Help Section -->
+    <div class="help-section" *ngIf="!loading && sessions.length > 0">
+      <h4>Settlement Process Steps</h4>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <strong>Calculate</strong>
+            <p>Settlements are calculated based on actual consumption vs baseline data</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <strong>Submit</strong>
+            <p>Settlements are submitted to the blockchain with your digital signature</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <strong>Execute</strong>
+            <p>Payments are executed and FLEX tokens are transferred</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

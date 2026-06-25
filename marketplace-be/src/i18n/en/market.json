@@ -1,0 +1,35 @@
+{
+  "market": {
+    "created": "Market created successfully",
+    "creationFailed": "Failed to create market",
+    "notFound": "Market not found",
+    "ownershipCheck": "Market ownership verified",
+    "noOwnership": "User does not own any market",
+    "stateUpdated": "Market state updated successfully"
+  },
+  "validation": {
+    "nameRequired": "Market name is required",
+    "nameMinLength": "Market name must be at least 3 characters long",
+    "descriptionRequired": "Market description is required",
+    "ownerEmailRequired": "Owner email is required",
+    "ownerEmailInvalid": "Owner email must be a valid email address",
+    "ownerUsernameRequired": "Owner username is required",
+    "acceptanceRequired": "Market participation acceptance is required"
+  },
+  "owner": {
+    "created": "Market owner created successfully",
+    "welcomeEmailSent": "Welcome email sent to market owner",
+    "alreadyExists": "Market owner already exists"
+  },
+  "accepted": "Market participation accepted successfully",
+  "acceptanceError": "Failed to accept market participation",
+  "participation": {
+    "info": "You will be assigned to participate in the flexibility market",
+    "walletGeneration": "A new wallet will be generated exclusively for this platform",
+    "securityNotice": "Neither the wallet address nor private key will be revealed to you",
+    "pinRequired": "You will create a personal PIN to decrypt wallet data for transactions"
+  },
+  "invalidToken": "Invalid or expired acceptance token",
+  "tokenExpired": "The acceptance link has expired. Please contact support for assistance",
+  "alreadyAccepted": "Market ownership has already been accepted"
+}

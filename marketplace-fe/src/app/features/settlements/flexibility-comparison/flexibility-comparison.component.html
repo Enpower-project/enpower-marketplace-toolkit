@@ -1,0 +1,76 @@
+<mat-card class="flexibility-comparison-card">
+  <mat-card-header>
+    <div class="card-header-content">
+      <div class="offer-info">
+        <span class="offer-id">Offer #{{ comparison.offerId }}</span>
+        <span class="hour-slot">Hour {{ comparison.hourSlot }}:00</span>
+        <span class="delivery-date">{{ comparison.deliveryDate | date: 'MMM d, y' }}</span>
+      </div>
+      <div class="deviation-badge" [ngClass]="getDeviationClass()">
+        <mat-icon>{{ getDeviationIcon() }}</mat-icon>
+        <span>{{ deviationPercentage | number:'1.2-2' }}%</span>
+      </div>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Comparison Bars -->
+    <div class="comparison-section">
+      <div class="comparison-row">
+        <div class="label">Theoretical (Promised)</div>
+        <div class="value-bar theoretical-bar">
+          <div class="bar-fill" [style.width.%]="100"></div>
+          <span class="bar-value">{{ theoreticalValue | number:'1.4-4' }} KWh</span>
+        </div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="label">Actual (Delivered)</div>
+        <div class="value-bar actual-bar" [ngClass]="getProgressClass()">
+          <div class="bar-fill" [style.width.%]="progressValue"></div>
+          <span class="bar-value">{{ actualValue | number:'1.4-4' }} KWh</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-section">
+      <div class="progress-label">
+        <span>Delivery Ratio</span>
+        <span class="progress-percentage" [ngClass]="getDeviationClass()">
+          {{ progressValue | number:'1.2-2' }}%
+        </span>
+      </div>
+      <mat-progress-bar mode="determinate" [value]="progressValue > 100 ? 100 : progressValue"
+        [ngClass]="getProgressClass()">
+      </mat-progress-bar>
+    </div>
+
+    <!-- Financial Details -->
+    <div class="financial-section">
+      <div class="financial-row">
+        <mat-icon class="financial-icon">attach_money</mat-icon>
+        <div class="financial-info">
+          <span class="financial-label">Price</span>
+          <span class="financial-value">{{ formatWei(comparison.price) }} FLEX/KWh</span>
+        </div>
+      </div>
+
+      <div class="financial-row penalty" *ngIf="comparison.penalty !== '0'">
+        <mat-icon class="financial-icon">warning</mat-icon>
+        <div class="financial-info">
+          <span class="financial-label">Penalty Applied</span>
+          <span class="financial-value penalty-value">{{ formatWei(comparison.penalty) }} FLEX</span>
+        </div>
+      </div>
+
+      <div class="financial-row success" *ngIf="comparison.penalty === '0'">
+        <mat-icon class="financial-icon">check_circle</mat-icon>
+        <div class="financial-info">
+          <span class="financial-label">No Penalty</span>
+          <span class="financial-value success-value">Delivery within tolerance</span>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

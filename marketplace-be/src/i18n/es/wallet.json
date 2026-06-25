@@ -1,0 +1,22 @@
+{
+  "created": "Billetera creada exitosamente",
+  "creationError": "Falló la creación de la billetera",
+  "validation": {
+    "pinRequired": "El PIN es requerido",
+    "pinMinLength": "El PIN debe tener al menos 4 dígitos",
+    "pinFormat": "El PIN debe contener solo números y tener entre 4-8 dígitos",
+    "confirmationMismatch": "La confirmación del PIN no coincide"
+  },
+  "errors": {
+    "notFound": "Billetera no encontrada",
+    "alreadyExists": "El usuario ya tiene una billetera",
+    "invalidPin": "PIN inválido",
+    "decryptionFailed": "Falló la desencriptación de los datos de la billetera",
+    "encryptionFailed": "Falló la encriptación de los datos de la billetera"
+  },
+  "info": {
+    "secureStorage": "Su billetera será encriptada y almacenada de forma segura",
+    "pinImportance": "Su PIN es requerido para todas las transacciones blockchain",
+    "noReveal": "Ni la dirección de su billetera ni la clave privada le serán reveladas"
+  }
+}

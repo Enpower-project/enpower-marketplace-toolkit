@@ -1,0 +1,45 @@
+<!-- Only show market info for users who need market context (not market_crud) -->
+<ng-container *ngIf="shouldShowBalance">
+    <div class="balance-info">
+        <button mat-button class="balance-button" [matMenuTriggerFor]="balanceMenu" matTooltipPosition="below">
+            <mat-icon style="color: #00234eff;">account_balance</mat-icon>
+            <span class="balance-name"> Balance </span>
+            <mat-icon class="dropdown-icon">
+                arrow_drop_down
+            </mat-icon>
+        </button>
+
+        <mat-menu #balanceMenu="matMenu" class="market-menu">
+            <div class="menu-header">
+                <mat-icon>account_balance</mat-icon>
+                <span>{{ isFRP ? 'Market Wallet Balance' : 'My Wallet Balance' }}</span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div *ngIf="isLoading" class="menu-loading">
+                <mat-icon>hourglass_empty</mat-icon>
+                <span>Loading balance...</span>
+            </div>
+
+            <ng-container *ngIf="!isLoading">
+                <div class="balance-container">
+                    <h1 class="balance-header">{{ isFRP ? 'Market' : 'Personal' }} Balance: </h1>
+                    <p class="balance-info" *ngIf="walletBalance?.balance !== null && walletBalance?.balance !== undefined">{{ walletBalance?.balance }} {{ walletBalance?.unit }}</p>
+                    <p class="balance-info" *ngIf="walletBalance?.balance === null || walletBalance?.balance === undefined" style="color: #999;">No data available</p>
+                </div>
+            </ng-container>
+
+            <mat-divider></mat-divider>
+
+            <ng-container *ngIf="!isLoading">
+                <div class="balance-container">
+                    <h1 class="balance-header">{{ isFRP ? 'Market' : 'Personal' }} Token Balance: </h1>
+                    <p class="balance-info" *ngIf="tokenBalance?.tokenBalance !== null && tokenBalance?.tokenBalance !== undefined">{{ tokenBalance?.tokenBalance }} {{ tokenBalance?.tokenSymbol }}</p>
+                    <p class="balance-info" *ngIf="tokenBalance?.tokenBalance === null || tokenBalance?.tokenBalance === undefined" style="color: #999;">No data available</p>
+                </div>
+            </ng-container>
+
+        </mat-menu>
+    </div>
+</ng-container>

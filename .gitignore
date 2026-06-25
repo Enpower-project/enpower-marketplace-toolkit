@@ -1,0 +1,35 @@
+# ============================================
+# ENPOWER Marketplace Toolkit — Root .gitignore
+# ============================================
+
+# ---------- Environment & secrets ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- IDEs ----------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ---------- Docker ----------
+docker-compose.override.yml
+
+# ---------- Logs ----------
+*.log
+logs/
+
+# ---------- Shared volumes / sentinels ----------
+.deployed
+contracts.env

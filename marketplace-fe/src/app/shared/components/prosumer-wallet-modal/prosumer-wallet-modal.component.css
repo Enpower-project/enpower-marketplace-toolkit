@@ -1,0 +1,466 @@
+.prosumer-wallet-modal {
+  min-width: 550px;
+  max-width: 650px;
+}
+
+.wallet-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.08) 0%, rgba(39, 75, 149, 0.05) 100%);
+  border-radius: 12px;
+  border-left: 4px solid #274b95;
+  box-shadow: 0 4px 12px rgba(39, 75, 149, 0.1);
+}
+
+.wallet-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #274b95;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(39, 75, 149, 0.2));
+}
+
+.wallet-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #274b95;
+  letter-spacing: -0.3px;
+}
+
+.wallet-content {
+  padding: 0 24px;
+}
+
+.welcome-message {
+  margin-bottom: 24px;
+}
+
+.primary-message {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0;
+}
+
+.benefits-section {
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.05) 0%, rgba(39, 75, 149, 0.03) 100%);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 24px 0;
+  border-left: 4px solid #274b95;
+  border: 2px solid rgba(39, 75, 149, 0.15);
+}
+
+.benefits-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #274b95;
+  letter-spacing: -0.2px;
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.benefits-list li:hover {
+  padding-left: 8px;
+  color: #274b95;
+}
+
+.benefits-list mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: #4caf50;
+  flex-shrink: 0;
+}
+
+.restrictions-section {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 152, 0, 0.05) 100%);
+  padding: 16px;
+  border-radius: 12px;
+  margin: 24px 0;
+  border-left: 4px solid #ff9800;
+  border: 2px solid rgba(255, 152, 0, 0.2);
+}
+
+.restriction-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.warning-icon {
+  color: #ff9800;
+  margin-top: 2px;
+  flex-shrink: 0;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.restriction-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #e65100;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.03) 0%, rgba(39, 75, 149, 0.06) 100%);
+  border-radius: 12px;
+  margin: 24px 0;
+  border: 2px solid rgba(39, 75, 149, 0.1);
+}
+
+::ng-deep .loading-section mat-spinner circle {
+  stroke: #274b95 !important;
+}
+
+.loading-text {
+  margin: 20px 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #274b95;
+  letter-spacing: -0.2px;
+}
+
+.loading-subtext {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.success-section {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(76, 175, 80, 0.05) 100%);
+  padding: 24px;
+  border-radius: 12px;
+  margin: 24px 0;
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+  justify-content: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.2);
+}
+
+.success-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #4caf50;
+  filter: drop-shadow(0 2px 6px rgba(76, 175, 80, 0.3));
+}
+
+.success-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2e7d32;
+  letter-spacing: -0.3px;
+}
+
+.success-content {
+  margin: 24px 0;
+}
+
+.email-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(39, 75, 149, 0.06) 0%, rgba(39, 75, 149, 0.03) 100%);
+  border-radius: 12px;
+  border: 2px solid rgba(39, 75, 149, 0.15);
+  margin-bottom: 24px;
+}
+
+.email-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #274b95;
+  flex-shrink: 0;
+}
+
+.notification-text {
+  flex: 1;
+}
+
+.notification-text h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #274b95;
+  letter-spacing: -0.2px;
+}
+
+.notification-text p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.email-note {
+  font-weight: 600;
+  color: #274b95 !important;
+}
+
+.ready-section {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(76, 175, 80, 0.25);
+  margin-bottom: 20px;
+}
+
+.ready-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ready-icon {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  color: #4caf50;
+}
+
+.ready-header h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2e7d32;
+  letter-spacing: -0.2px;
+}
+
+.ready-description {
+  margin: 0 0 20px 0;
+  font-size: 0.9rem;
+  color: #388e3c;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.capabilities-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.capability-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  color: #2e7d32;
+  transition: all 0.2s ease;
+}
+
+.capability-item:hover {
+  padding-left: 8px;
+}
+
+.capability-item mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #4caf50;
+  flex-shrink: 0;
+}
+
+.security-reminder {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid #ffc107;
+  border: 2px solid rgba(255, 193, 7, 0.25);
+}
+
+.security-reminder mat-icon {
+  color: #ff9800;
+  margin-top: 2px;
+  flex-shrink: 0;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.security-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #e65100;
+  line-height: 1.6;
+}
+
+.security-content p:first-child {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  width: 100%;
+  padding: 24px 0 0;
+  border-top: 2px solid rgba(39, 75, 149, 0.1);
+  margin-top: 24px;
+}
+
+.action-buttons button {
+  min-width: 160px;
+  height: 48px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-buttons button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.action-buttons button[mat-raised-button][color="primary"] {
+  border: 2px solid #274b95;
+  background: transparent;
+  color: #274b95;
+}
+
+.action-buttons button[mat-raised-button][color="primary"]:hover:not(:disabled) {
+  background: rgba(39, 75, 149, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 75, 149, 0.25);
+}
+
+.action-buttons button[mat-button] {
+  border: 2px solid rgba(39, 75, 149, 0.3);
+  background: transparent;
+  color: #666;
+}
+
+.action-buttons button[mat-button] mat-icon {
+  color: #d32f2f;
+}
+
+.action-buttons button[mat-button]:hover:not(:disabled) {
+  background: rgba(39, 75, 149, 0.05);
+  border-color: #274b95;
+  color: #274b95;
+  transform: translateY(-2px);
+}
+
+.action-buttons button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sync-icon {
+  margin-left: 8px;
+  animation: spin 1.5s linear infinite;
+  color: #274b95 !important;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .prosumer-wallet-modal {
+    min-width: auto;
+    max-width: 100%;
+  }
+
+  .wallet-header {
+    padding: 20px;
+    gap: 12px;
+  }
+
+  .wallet-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .wallet-content {
+    padding: 0 16px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    padding: 16px 0 0;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .email-notification {
+    flex-direction: column;
+    text-align: center;
+  }
+}

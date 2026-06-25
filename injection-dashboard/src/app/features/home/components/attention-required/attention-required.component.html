@@ -1,0 +1,54 @@
+<div class="attention-container">
+  <div class="attention-header">
+    <h2>Attention Required</h2>
+    <span class="attention-alert">!</span>
+  </div>
+
+  <div class="attention-card">
+    <div class="attention-card__icon attention-card__icon--new">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="attention-card__body">
+      <span class="attention-card__label">OLDEST NEW ENTRY</span>
+      <span class="attention-card__value">{{ getRelativeTime(oldestNew?.entryCreationTimestamp) }}</span>
+      @if (oldestNew) {
+        <span class="attention-card__ref">Ref: #DFIM-{{ oldestNew.entryId }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="attention-card">
+    <div class="attention-card__icon attention-card__icon--translated">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="attention-card__body">
+      <span class="attention-card__label">OLDEST TRANSLATED</span>
+      <span class="attention-card__value">{{ getRelativeTime(oldestTranslated?.entryCreationTimestamp) }}</span>
+      @if (oldestTranslated) {
+        <span class="attention-card__ref">Ref: #DFIM-{{ oldestTranslated.entryId }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="quick-filters">
+    <span class="quick-filters__title">QUICK FILTERS</span>
+    <ul class="quick-filters__list">
+      <li class="quick-filters__item" (click)="navigateWithFilter('new')">
+        <span class="quick-filters__label">Pending Review</span>
+        <span class="quick-filters__badge quick-filters__badge--neutral">{{ newCount }}</span>
+      </li>
+      <li class="quick-filters__item" (click)="navigateWithFilter('error')">
+        <span class="quick-filters__label">Critical Errors</span>
+        <span class="quick-filters__badge quick-filters__badge--error">{{ errorCount }}</span>
+      </li>
+      <li class="quick-filters__item" (click)="navigateWithFilter('translated')">
+        <span class="quick-filters__label">Translation Latency</span>
+        <span class="quick-filters__badge quick-filters__badge--neutral">{{ translatedCount }}</span>
+      </li>
+    </ul>
+  </div>
+</div>

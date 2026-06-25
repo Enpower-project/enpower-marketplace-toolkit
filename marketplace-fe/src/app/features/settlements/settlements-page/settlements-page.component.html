@@ -1,0 +1,364 @@
+<div class="settlements-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button class="back-button" (click)="goBack()" matTooltip="Back to sessions list">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-content">
+        <h1>Settlement Management</h1>
+        <p class="session-address" *ngIf="sessionAddress">
+          Session: {{ sessionAddress | slice:0:10 }}...{{ sessionAddress | slice:-8 }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  @if (isFMO) {
+  <div class="header-actions" *ngIf="!isMarketContextLoaded">
+    <mat-spinner diameter="24"></mat-spinner>
+    <span style="color: #666; font-size: 0.9rem;">Loading market context...</span>
+  </div>
+
+  <div class="header-actions" *ngIf="isMarketContextLoaded">
+    <!-- Step 1: Calculate All Settlements -->
+    <div class="step-button-group">
+      <button mat-raised-button (click)="calculateAllSettlements()"
+        [disabled]="loading || isStepCompleted(2) || isMarketDeactivated"
+        [ngClass]="getStepClass(2)" matTooltip="Calculate settlements for all offers"
+        [matTooltip]="isMarketDeactivated ? 'This action can not be performed on a deactivated market' : ''"
+        >
+        <mat-icon *ngIf="!isStepCompleted(2)">calculate</mat-icon>
+        <mat-icon *ngIf="isStepCompleted(2)" class="check-icon">done</mat-icon>
+        <span>Calculate All</span>
+      </button>
+    </div>
+
+    <!-- Step 3: Submit Measurement Data (advance to SETTLEMENT_PENDING) -->
+    <div class="step-button-group">
+      <button mat-raised-button (click)="openSubmitMeasurementDataModal()"
+        [disabled]="loading || submittingMeasurementData || isStepLocked(3) || isStepCompleted(3) || isMarketDeactivated"
+        [ngClass]="getStepClass(3)"
+        [matTooltip]="isMarketDeactivated ? 'This action can not be performed on a deactivated market' : 'Submit measurement data to advance session to SETTLEMENT_PENDING (required before submitting settlements)'"
+        >
+        <mat-icon *ngIf="!isStepCompleted(3)">science</mat-icon>
+        <mat-icon *ngIf="isStepCompleted(3)" class="check-icon">done</mat-icon>
+        <span *ngIf="!submittingMeasurementData">Submit Measurement Data</span>
+        <span *ngIf="submittingMeasurementData">Submitting...</span>
+      </button>
+    </div>
+
+    <!-- Step 4: Finalize Session (set to SETTLED) -->
+    <div class="step-button-group">
+      <button mat-raised-button (click)="openFinalizeModal()"
+        [disabled]="loading || finalizingSettlement || !areAllSettlementsFinalized() || isStepCompleted(4)"
+        [ngClass]="getStepClass(4)"
+        matTooltip="Settle session on blockchain. Requires all settlements to be Executed or Failed.">
+        <mat-icon *ngIf="!isStepCompleted(4)">gavel</mat-icon>
+        <mat-icon *ngIf="isStepCompleted(4)" class="check-icon">done</mat-icon>
+        <span *ngIf="!finalizingSettlement">Finalize Session</span>
+        <span *ngIf="finalizingSettlement">Finalizing...</span>
+      </button>
+    </div>
+
+    <!-- Refresh -->
+    <button mat-raised-button (click)="loadSettlements()" [disabled]="loading">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+  }
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="summary">
+    <div class="summary-card">
+      <div class="card-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ summary.totalOffers }}</span>
+        <span class="card-label">Total Offers</span>
+      </div>
+    </div>
+
+    <div class="summary-card calculated">
+      <div class="card-icon">
+        <mat-icon>calculate</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ summary.settlementsCalculated }}</span>
+        <span class="card-label">Calculated</span>
+      </div>
+    </div>
+
+    <div class="summary-card submitted">
+      <div class="card-icon">
+        <mat-icon>send</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ summary.settlementsSubmitted }}</span>
+        <span class="card-label">Submitted</span>
+      </div>
+    </div>
+
+    <div class="summary-card executed">
+      <div class="card-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ summary.settlementsExecuted }}</span>
+        <span class="card-label">Executed</span>
+      </div>
+    </div>
+
+    <div class="summary-card failed" *ngIf="summary.settlementsFailed > 0">
+      <div class="card-icon">
+        <mat-icon>error</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ summary.settlementsFailed }}</span>
+        <span class="card-label">Failed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Totals -->
+  <div class="totals-section" *ngIf="summary">
+    <div class="total-item">
+      <span class="total-label">Total Payment:</span>
+      <span class="total-value">{{ formatWei(summary.totalPayment) }} FLEX</span>
+    </div>
+    <div class="total-item">
+      <span class="total-label">Total Fees (FSP → FMO):</span>
+      <span class="total-value fee">{{ formatWei(summary.totalPlatformFees) }} FLEX</span>
+    </div>
+  </div>
+
+  <!-- FRP Payment Request Section -->
+  <div class="frp-payment-section" *ngIf="summary && areAllSettlementsSubmitted()">
+    <div class="payment-request-card" *ngIf="!paymentRequest">
+      <div class="payment-info">
+        <mat-icon class="payment-icon">account_balance_wallet</mat-icon>
+        <div class="payment-text">
+          <h3>FRP Payment Required</h3>
+          <p>Request the FRP to deposit {{ formatWei(summary.totalPayment) }} FLEX tokens to execute settlements.</p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="requestFrpPayment()"
+        [disabled]="loading || requestingFrpPayment" class="frp-request-button">
+        <mat-icon>{{ requestingFrpPayment ? 'schedule' : 'email' }}</mat-icon>
+        <span *ngIf="!requestingFrpPayment">Request FRP Payment</span>
+        <span *ngIf="requestingFrpPayment">Sending Request...</span>
+      </button>
+    </div>
+
+    <div class="payment-request-card" *ngIf="paymentRequest"
+      [ngClass]="'status-' + paymentRequest.status.toLowerCase()">
+      <div class="payment-info">
+        <mat-icon class="payment-icon" [ngClass]="getPaymentStatusIconClass(paymentRequest.status)">
+          {{ getPaymentStatusIcon(paymentRequest.status) }}
+        </mat-icon>
+        <div class="payment-text">
+          <h3>FRP Payment Status: {{ paymentRequest.status }}</h3>
+          <p *ngIf="paymentRequest.status === 'PENDING'">
+            Waiting for FRP to deposit {{ formatWei(paymentRequest.totalPayment) }} FLEX tokens.
+            <br><small>Email sent to {{ paymentRequest.emailSentTo }} on {{ paymentRequest.emailSentAt | date:'medium'
+              }}</small>
+          </p>
+          <p *ngIf="paymentRequest.status === 'DEPOSITED'">
+            FRP has deposited {{ formatWei(paymentRequest.depositedAmount || '0') }} FLEX tokens.
+            <br><small>TX: {{ paymentRequest.depositTxHash | slice:0:20 }}...</small>
+          </p>
+        </div>
+      </div>
+
+      <div class="deactivated-badge" *ngIf="isMarketDeactivated">
+        <mat-icon>block</mat-icon>
+        <span>This market is deactivated. Settlement actions are disabled.</span>
+      </div>
+
+      <button mat-raised-button (click)="loadPaymentRequest()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Refresh Status
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-content">
+      <mat-spinner diameter="60" strokeWidth="5"></mat-spinner>
+      <div class="loading-text">
+        <h3>Loading settlements</h3>
+        <p>Please wait while we fetch the settlement data...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-container" *ngIf="error">
+    <div class="error-content">
+      <div class="error-icon-wrapper">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+      </div>
+      <div class="error-message-wrapper">
+        <h3 class="error-title">Unable to Load Settlements</h3>
+        <p class="error-text">{{ error }}</p>
+      </div>
+    </div>
+    <button mat-raised-button class="error-retry-btn" (click)="loadSettlements()">
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && !error && settlements.length === 0">
+    <mat-icon>inbox</mat-icon>
+    <h3>No settlements</h3>
+    <p>No settlements found for this session.</p>
+  </div>
+
+  <!-- Settlements Table -->
+  <div class="table-container" *ngIf="!loading && !error && settlements.length > 0">
+    <table mat-table [dataSource]="settlements" class="settlements-table">
+      <!-- Offer ID Column -->
+      <ng-container matColumnDef="offerId">
+        <th mat-header-cell *matHeaderCellDef>Offer ID</th>
+        <td mat-cell *matCellDef="let settlement">{{ settlement.offerId }}</td>
+      </ng-container>
+
+      <!-- Provider name Column -->
+      <ng-container matColumnDef="provider">
+        <th mat-header-cell *matHeaderCellDef>Provider</th>
+        <td mat-cell *matCellDef="let settlement">{{ getUsernameByAddress(settlement.fspAddress) }}</td>
+      </ng-container>
+
+      <!-- Hour Slot Column -->
+      <ng-container matColumnDef="hourSlot">
+        <th mat-header-cell *matHeaderCellDef>Hour</th>
+        <td mat-cell *matCellDef="let settlement">
+          {{ settlement.hourSlot }}:00 - {{ settlement.hourSlot + 1 }}:00
+        </td>
+      </ng-container>
+
+      <!-- Bid Type Column -->
+      <ng-container matColumnDef="bidType">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let settlement">
+          <span class="bid-type-chip" [ngClass]="getBidTypeClass(settlement.bidType)">
+            {{ getBidTypeLabel(settlement.bidType) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Committed vs Delivered Column -->
+      <ng-container matColumnDef="deliveredQuantity">
+        <th mat-header-cell *matHeaderCellDef>Committed / Delivered</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="quantity-cell">
+            <span class="committed">{{ formatWei(settlement.committedQuantity) }} KWh</span>
+            <span class="separator">/</span>
+            <span class="delivered" [ngClass]="getDeviationClass(settlement.deviationType)">
+              {{ formatWei(settlement.deliveredQuantity) }} KWh
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Deviation Column -->
+      <ng-container matColumnDef="deviationPercentage">
+        <th mat-header-cell *matHeaderCellDef>Deviation</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="deviation-cell">
+            <span [ngClass]="getDeviationClass(settlement.deviationType)">
+              {{ settlement.deviationPercentage | number:'1.2-4' }}%
+            </span>
+            <!-- <mat-chip *ngIf="settlement.deviationType"
+              [ngClass]="'deviation-chip-' + settlement.deviationType?.toLowerCase()">
+              {{ getDeviationLabel(settlement.deviationType) }}
+            </mat-chip> -->
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Collateral Column -->
+      <ng-container matColumnDef="collateral">
+        <th mat-header-cell *matHeaderCellDef>Collateral</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="collateral-cell" *ngIf="settlement.collateralAmount">
+            <span class="collateral-amount">{{ formatWei(settlement.collateralAmount) }} FLEX</span>
+            <span class="collateral-returned" *ngIf="settlement.collateralReturned">
+              Returned: {{ formatWei(settlement.collateralReturned) }}
+            </span>
+            <span class="collateral-forfeited"
+              *ngIf="settlement.collateralForfeited && settlement.collateralForfeited !== '0'">
+              Forfeited: {{ formatWei(settlement.collateralForfeited) }}
+            </span>
+          </div>
+          <span *ngIf="!settlement.collateralAmount">-</span>
+        </td>
+      </ng-container>
+
+      <!-- Payment Column -->
+      <ng-container matColumnDef="payment">
+        <th mat-header-cell *matHeaderCellDef>Payment</th>
+        <td mat-cell *matCellDef="let settlement">
+          {{ formatWei(settlement.payment) }} FLEX
+        </td>
+      </ng-container>
+
+      <!-- NFT Column -->
+      <ng-container matColumnDef="nft">
+        <th mat-header-cell *matHeaderCellDef>NFT</th>
+        <td mat-cell *matCellDef="let settlement">
+          <span class="nft-id clickable" *ngIf="settlement.flexibilityNftId"
+            (click)="navigateToNFT(settlement.flexibilityNftId)" matTooltip="Click to view NFT details">
+            <mat-icon>token</mat-icon>
+            #{{ settlement.flexibilityNftId }}
+          </span>
+          <span *ngIf="!settlement.flexibilityNftId">-</span>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let settlement">
+          <span class="status-chip" [ngClass]="getStatusClass(settlement.status)">
+            {{ getStatusLabel(settlement.status) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="action-buttons">
+            @if (isFMO) {
+            <button mat-icon-button color="primary" *ngIf="canSubmit(settlement)" (click)="openSubmitModal(settlement)"
+              matTooltip="Submit Settlement">
+              <mat-icon>send</mat-icon>
+            </button>
+
+            <div [matTooltip]="getExecuteTooltip()" matTooltipPosition="above" matTooltipShowDelay="0"
+              [style.display]="'inline-block'">
+              <button mat-icon-button color="accent" *ngIf="settlement.status === 'SUBMITTED'"
+                [disabled]="!canExecute(settlement)" (click)="openExecuteModal(settlement)">
+                <mat-icon>play_arrow</mat-icon>
+              </button>
+            </div>
+            }
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<app-settlement-confirm-modal *ngIf="showConfirmModal && selectedCalculation" [action]="modalAction"
+  [calculation]="selectedCalculation" (close)="closeModal()"
+  (confirmed)="onConfirmed($event)"></app-settlement-confirm-modal>

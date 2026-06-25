@@ -1,0 +1,444 @@
+<div class="session-create-container">
+  <!-- Header -->
+  <div class="header">
+    <button
+      mat-icon-button
+      (click)="goBack()"
+      matTooltip="Go back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Create New Session</h1>
+  </div>
+
+  <!-- Stepper -->
+  <mat-stepper #stepper linear="true">
+    <!-- Step 1: Basic Information -->
+    <mat-step
+      [stepControl]="basicInfoForm"
+      label="Session Information">
+      <form [formGroup]="basicInfoForm">
+        <mat-card class="step-card">
+          <mat-card-header>
+            <mat-card-title>Session Details</mat-card-title>
+            <mat-card-subtitle>
+              Provide basic information about your trading session
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Session Name</mat-label>
+                <input
+                  matInput
+                  formControlName="name"
+                  placeholder="e.g., Morning Trading Session"
+                  maxlength="100"
+                  required>
+                <mat-hint>Enter a descriptive name for your session</mat-hint>
+                <mat-error *ngIf="formSubmitted && basicInfoForm.get('name')?.hasError('required')">
+                  Session name is required
+                </mat-error>
+                <mat-error *ngIf="formSubmitted && basicInfoForm.get('name')?.hasError('maxlength')">
+                  Session name must not exceed 100 characters
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Description (Optional)</mat-label>
+                <textarea
+                  matInput
+                  formControlName="description"
+                  placeholder="Describe the purpose or details of this session"
+                  rows="3"
+                  maxlength="500">
+                </textarea>
+                <mat-hint>
+                  {{ basicInfoForm.get('description')?.value?.length || 0 }}/500
+                </mat-hint>
+                <mat-error *ngIf="formSubmitted && basicInfoForm.get('description')?.hasError('maxlength')">
+                  Description must not exceed 500 characters
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Session Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [min]="minDate"
+                  formControlName="sessionDate"
+                  readonly
+                  required>
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="picker">
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker [dateClass]="dateClass"></mat-datepicker>
+                <mat-hint>Select the date for this trading session</mat-hint>
+                <mat-error *ngIf="formSubmitted && basicInfoForm.get('sessionDate')?.hasError('required')">
+                  Session date is required
+                </mat-error>
+              </mat-form-field>
+              <div *ngIf="dateAlreadyExists" class="date-error-message">
+                <mat-icon color="warn">error</mat-icon>
+                <span>A session already exists for this date. Please select a different date.</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="checkDateAvailability()"
+              [disabled]="checkingDate">
+              <mat-icon *ngIf="checkingDate" class="spinning">sync</mat-icon>
+              <span>{{ checkingDate ? 'Checking Date...' : 'Next: Configure Time Slots' }}</span>
+              <mat-icon *ngIf="!checkingDate">arrow_forward</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+    </mat-step>
+
+    <!-- Step 2: Time Slot Configuration -->
+    <mat-step label="Time Slots Configuration">
+      <mat-card class="step-card">
+        <mat-card-header>
+          <mat-card-title>Configure Time Slots</mat-card-title>
+          <mat-card-subtitle>
+            Select time slots and configure flexibility requests for
+            {{ formatSelectedDate() }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Statistics Bar -->
+          <div class="time-slots-info">
+            <div class="info-item">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ getBidsCount() }}/24 slots configured</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>flash_on</mat-icon>
+              <span>{{ getTotalPower() | number:'1.2-4' }} KW total</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>euro_symbol</mat-icon>
+              <span>{{ getAveragePricePerMwh() | number:'1.2-4' }} Flex/KWh avg</span>
+            </div>
+            <div class="info-item action-item" (click)="toggleBulkConfig()">
+              <mat-icon>{{ showBulkConfig ? 'close' : 'settings' }}</mat-icon>
+              <span>{{ showBulkConfig ? 'Close' : 'Bulk Config' }}</span>
+            </div>
+          </div>
+
+          <!-- Bulk Configuration Panel -->
+          <div *ngIf="showBulkConfig" class="bulk-config-panel">
+            <div class="bulk-config-header">
+              <h4><mat-icon>tune</mat-icon> Bulk Configuration</h4>
+              <p>Apply the same flexibility request values to multiple time slots at once</p>
+            </div>
+
+            <form [formGroup]="bulkBidForm" class="bulk-form">
+              <div class="bulk-form-fields">
+                <mat-form-field appearance="outline" class="bulk-field">
+                  <mat-label>Power (KW)</mat-label>
+                  <input matInput type="number" formControlName="powerMw" min="0.00001" step="1" placeholder="e.g., 1000.50">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="bulk-field">
+                  <mat-label>Price (Flex/KWh)</mat-label>
+                  <input matInput type="number" formControlName="pricePerMwh" min="0.00001" step="1" placeholder="e.g., 4500.00">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="bulk-field">
+                  <mat-label>Type</mat-label>
+                  <mat-select formControlName="bidType">
+                    <mat-option value="UPWARD">Upward</mat-option>
+                    <mat-option value="DOWNWARD">Downward</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="bulk-actions">
+                <button type="button" mat-raised-button color="primary" (click)="applyToAllSlots()" [disabled]="!bulkBidForm.valid">
+                  <mat-icon>select_all</mat-icon>
+                  Apply to All 24 Slots
+                </button>
+                <button type="button" mat-button (click)="toggleBulkSelectionMode()">
+                  <mat-icon>{{ bulkSelectionMode ? 'close' : 'check_box' }}</mat-icon>
+                  {{ bulkSelectionMode ? 'Cancel Selection' : 'Select Specific Slots' }}
+                </button>
+                <button type="button" mat-button color="warn" (click)="clearAllBids()" *ngIf="getBidsCount() > 0">
+                  <mat-icon>delete_sweep</mat-icon>
+                  Clear All
+                </button>
+              </div>
+
+              <!-- Selection Mode Controls -->
+              <div *ngIf="bulkSelectionMode" class="selection-controls">
+                <div class="selection-info">
+                  <span>{{ selectedSlots.size }} slots selected</span>
+                </div>
+                <div class="selection-buttons">
+                  <button type="button" mat-button (click)="selectAllSlots()">Select All</button>
+                  <button type="button" mat-button (click)="selectEmptySlots()">Select Empty</button>
+                  <button type="button" mat-button (click)="clearSlotSelection()">Clear Selection</button>
+                  <button type="button" mat-raised-button color="accent" (click)="applyBulkBid()"
+                    [disabled]="!bulkBidForm.valid || selectedSlots.size === 0">
+                    <mat-icon>check</mat-icon>
+                    Apply to Selected ({{ selectedSlots.size }})
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Period Summary -->
+          <div class="period-summary">
+            <div class="period-chip" [class.has-bids]="getBidsForPeriod('night') > 0">
+              <mat-icon>bedtime</mat-icon>
+              <span>Night (00-06)</span>
+              <span class="period-count">{{ getBidsForPeriod('night') }}/6</span>
+            </div>
+            <div class="period-chip" [class.has-bids]="getBidsForPeriod('morning') > 0">
+              <mat-icon>wb_sunny</mat-icon>
+              <span>Morning (06-12)</span>
+              <span class="period-count">{{ getBidsForPeriod('morning') }}/6</span>
+            </div>
+            <div class="period-chip" [class.has-bids]="getBidsForPeriod('afternoon') > 0">
+              <mat-icon>wb_twilight</mat-icon>
+              <span>Afternoon (12-18)</span>
+              <span class="period-count">{{ getBidsForPeriod('afternoon') }}/6</span>
+            </div>
+            <div class="period-chip" [class.has-bids]="getBidsForPeriod('evening') > 0">
+              <mat-icon>nights_stay</mat-icon>
+              <span>Evening (18-24)</span>
+              <span class="period-count">{{ getBidsForPeriod('evening') }}/6</span>
+            </div>
+          </div>
+
+          <div class="time-slots-grid" [class.selection-mode]="bulkSelectionMode">
+            <div
+              *ngFor="let slot of timeSlots; trackBy: trackByHour"
+              class="time-slot-card"
+              [class.has-bid]="slot.hasData"
+              [class.selected]="selectedHour === slot.hour"
+              [class.editing]="selectedHour === slot.hour && !slot.hasData"
+              [class.bulk-selected]="isSlotSelected(slot.hour)"
+              (click)="bulkSelectionMode ? toggleSlotSelection(slot.hour) : null">
+
+              <div class="slot-header">
+                <span class="time-range">{{ slot.displayTime }}</span>
+                <mat-icon *ngIf="bulkSelectionMode && isSlotSelected(slot.hour)" class="selection-icon">check_box</mat-icon>
+                <mat-icon *ngIf="bulkSelectionMode && !isSlotSelected(slot.hour)" class="selection-icon unchecked">check_box_outline_blank</mat-icon>
+                <mat-icon *ngIf="!bulkSelectionMode && slot.hasData" class="configured-icon">check_circle</mat-icon>
+              </div>
+
+              <!-- Bid Summary (when data exists and not editing) -->
+              <div *ngIf="slot.hasData && selectedHour !== slot.hour" class="bid-summary" (click)="selectTimeSlot(slot.hour)">
+                <div class="bid-info">
+                  <span class="power">{{ slot.bid?.powerMw }} KW</span>
+                  <span class="price">{{ slot.bid?.pricePerMwh }} Flex/KWh</span>
+                  <span
+                    class="type"
+                    [class.demand]="slot.bid?.bidType === 'UPWARD'"
+                    [class.supply]="slot.bid?.bidType === 'DOWNWARD'">
+                    {{ getBidTypeName(slot.bid?.bidType) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Empty slot (when no data and not editing) -->
+              <div *ngIf="!slot.hasData && selectedHour !== slot.hour" class="empty-slot" (click)="selectTimeSlot(slot.hour)">
+                <mat-icon>add</mat-icon>
+                <span>Add Flexibility Request</span>
+              </div>
+
+              <!-- Inline Bid Form (when editing) -->
+              <div *ngIf="selectedHour === slot.hour" class="inline-bid-form" (click)="$event.stopPropagation()">
+                <form [formGroup]="bidForm" (ngSubmit)="saveBid()">
+                  <div class="form-field-wrapper">
+                    <label class="field-label">Power (KW)</label>
+                    <mat-form-field appearance="outline" class="compact-field">
+                      <input
+                        matInput
+                        type="number"
+                        formControlName="powerMw"
+                        min="0.00001"
+                        step="1"
+                        placeholder="e.g., 1000.50"
+                        required>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-field-wrapper">
+                    <label class="field-label">Price (Flex/KWh)</label>
+                    <mat-form-field appearance="outline" class="compact-field">
+                      <input
+                        matInput
+                        type="number"
+                        formControlName="pricePerMwh"
+                        min="0.00001"
+                        step="1"
+                        placeholder="e.g., 4500.00"
+                        required>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-field-wrapper">
+                    <label class="field-label">Type</label>
+                    <mat-form-field appearance="outline" class="compact-field-text">
+                      <mat-select formControlName="bidType" placeholder="Select flexibility request type" required>
+                        <mat-option value="UPWARD">Upward</mat-option>
+                        <mat-option value="DOWNWARD">Downward</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="inline-form-actions">
+                    <button
+                      type="button"
+                      mat-icon-button
+                      (click)="clearSelectedSlot()"
+                      matTooltip="Cancel">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+                      mat-icon-button
+                      color="warn"
+                      *ngIf="hasCurrentBid()"
+                      (click)="removeBid()"
+                      matTooltip="Remove flexibility request">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    <button
+                      type="submit"
+                      mat-icon-button
+                      color="primary"
+                      [disabled]="!bidForm.valid"
+                      matTooltip="Save flexibility request">
+                      <mat-icon>check</mat-icon>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <!-- Error message when no bids configured -->
+        <div *ngIf="bidsFormSubmitted && getBidsCount() === 0" class="date-error-message" style="margin-top: 20px;">
+          <mat-icon color="warn">error</mat-icon>
+          <span>At least one time slot flexibility request is required. Please configure at least one flexibility request before saving.</span>
+        </div>
+
+        <mat-card-actions>
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back</span>
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="checkBidsBeforeReview()">
+            <span>Next: Review & Confirm</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-step>
+
+    <!-- Step 3: Review and Confirm -->
+    <mat-step label="Review & Confirm">
+      <mat-card class="step-card">
+        <mat-card-header>
+          <mat-card-title>Review Session</mat-card-title>
+          <mat-card-subtitle>
+            Review your session configuration before saving
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Session Summary -->
+          <div class="session-summary">
+            <h3>Session Information</h3>
+            <div class="summary-row">
+              <strong>Name:</strong> <span>{{ sessionDraft.name }}</span>
+            </div>
+            <div class="summary-row" *ngIf="sessionDraft.description">
+              <strong>Description:</strong> <span>{{ sessionDraft.description }}</span>
+            </div>
+            <div class="summary-row">
+              <strong>Date:</strong> <span>{{ formatSelectedDate() }}</span>
+            </div>
+            <div class="summary-row">
+              <strong>Time Slots:</strong> <span>{{ getBidsCount() }} configured</span>
+            </div>
+            <div class="summary-row">
+              <strong>Total Power:</strong> <span>{{ getTotalPower() | number:'1.2-4' }} KW</span>
+            </div>
+            <div class="summary-row">
+              <strong>Average Price:</strong> <span>{{ getAveragePricePerMwh() | number:'1.2-4' }} Flex/KWh</span>
+            </div>
+          </div>
+
+          <!-- Bids Summary -->
+          <div class="bids-summary">
+            <h3>Configured Flexibility Requests</h3>
+            <div class="bids-table">
+              <div class="bid-row header">
+                <span>Time Slot</span>
+                <span>Power (KW)</span>
+                <span>Price (Flex/KWh)</span>
+                <span>Type</span>
+                <span>Total (Flex)</span>
+              </div>
+              <div
+                *ngFor="let bid of getOrderedBids()"
+                class="bid-row">
+                <span>{{ getTimeSlotDisplay(bid.hour) }}</span>
+                <span>{{ bid.powerMw | number:'1.2-5' }}</span>
+                <span>{{ bid.pricePerMwh | number:'1.2-5' }}</span>
+                <span
+                  class="type-cell"
+                  [class.demand]="bid.bidType === 'UPWARD'"
+                  [class.supply]="bid.bidType === 'DOWNWARD'">
+                  {{ getBidTypeName(bid.bidType) }}
+                </span>
+                <span>{{ (bid.powerMw * bid.pricePerMwh) | number:'1.2-5' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error message when no bids configured -->
+          <div *ngIf="formSubmitted && getBidsCount() === 0" class="date-error-message" style="margin-top: 20px;">
+            <mat-icon color="warn">error</mat-icon>
+            <span>At least one time slot flexibility request is required. Please configure at least one flexibility request before saving.</span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            <span>Back</span>
+          </button>
+          <button
+            mat-button
+            (click)="saveDraft()"
+            [class.saving]="saving">
+            <mat-icon [class.spinning]="saving">{{ saving ? 'sync' : 'save' }}</mat-icon>
+            <span>Save as Draft</span>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-step>
+  </mat-stepper>
+</div>

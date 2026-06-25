@@ -1,0 +1,22 @@
+{
+  "created": "Wallet created successfully",
+  "creationError": "Failed to create wallet",
+  "validation": {
+    "pinRequired": "PIN is required",
+    "pinMinLength": "PIN must be at least 4 digits long",
+    "pinFormat": "PIN must contain only numbers and be 4-8 digits long",
+    "confirmationMismatch": "PIN confirmation does not match"
+  },
+  "errors": {
+    "notFound": "Wallet not found",
+    "alreadyExists": "User already has a wallet",
+    "invalidPin": "Invalid PIN",
+    "decryptionFailed": "Failed to decrypt wallet data",
+    "encryptionFailed": "Failed to encrypt wallet data"
+  },
+  "info": {
+    "secureStorage": "Your wallet will be securely encrypted and stored",
+    "pinImportance": "Your PIN is required for all blockchain transactions",
+    "noReveal": "Neither your wallet address nor private key will be revealed to you"
+  }
+}

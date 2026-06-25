@@ -1,0 +1,22 @@
+{
+  "errors": {
+    "invalidRole": "Invalid role. Only FRP or FSP roles are allowed for invitations.",
+    "marketNotFound": "Market not found.",
+    "notMarketOwner": "You are not authorized. Only the market owner can send invitations.",
+    "inviterNotFound": "Inviter user not found in the system.",
+    "frpAlreadyExists": "This market already has an FRP assigned ({{email}}). Only one FRP is allowed per market.",
+    "pendingFRPInvitation": "There is already a pending FRP invitation for this market ({{email}}).",
+    "userAlreadyExists": "A user with this email already exists.",
+    "userAlreadyHasMarketAccess": "The user {{email}} already has access to the market {{marketName}}.",
+    "pendingInvitationExists": "There is already a pending invitation for this email and market.",
+    "invitationNotFound": "Invitation not found.",
+    "cannotRevokeNonPending": "Cannot revoke an invitation that is not pending.",
+    "noFRPAssigned": "This market does not have an FRP assigned."
+  },
+  "success": {
+    "invitationSent": "Invitation sent successfully.",
+    "invitationRevoked": "Invitation revoked successfully.",
+    "invitationAccepted": "Invitation accepted successfully. You can now login.",
+    "frpRemoved": "FRP has been removed from the market successfully."
+  }
+}

@@ -1,0 +1,427 @@
+.my-settlements {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #333;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #3498db;
+}
+
+.summary-card.total {
+  border-left-color: #3498db;
+}
+
+.summary-card.executed {
+  border-left-color: #27ae60;
+}
+
+.summary-card.pending {
+  border-left-color: #f39c12;
+}
+
+.summary-card.earnings {
+  border-left-color: #9b59b6;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-card.total .card-icon {
+  background: #f0f7ff;
+}
+
+.summary-card.executed .card-icon {
+  background: #e8f8ef;
+}
+
+.summary-card.pending .card-icon {
+  background: #fff8e6;
+}
+
+.summary-card.earnings .card-icon {
+  background: #f5f0ff;
+}
+
+.card-icon mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.summary-card.total .card-icon mat-icon {
+  color: #3498db;
+}
+
+.summary-card.executed .card-icon mat-icon {
+  color: #27ae60;
+}
+
+.summary-card.pending .card-icon mat-icon {
+  color: #f39c12;
+}
+
+.summary-card.earnings .card-icon mat-icon {
+  color: #9b59b6;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Financial Summary */
+.financial-summary {
+  display: flex;
+  gap: 32px;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-item.highlight {
+  padding-left: 16px;
+  border-left: 2px solid #27ae60;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-value.penalty {
+  color: #e74c3c;
+}
+
+.summary-item.highlight .summary-value {
+  color: #27ae60;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+  color: #666;
+}
+
+/* Error */
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: #fdf2f2;
+  border-radius: 8px;
+  color: #e74c3c;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #666;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Table */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.settlements-table {
+  width: 100%;
+}
+
+.settlements-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.settlements-table td {
+  color: #666;
+}
+
+.settlements-table .warning {
+  color: #f39c12;
+  font-weight: 500;
+}
+
+/* Payment Cell */
+.payment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.net-payment {
+  font-weight: 500;
+  color: #27ae60;
+}
+
+.penalty {
+  font-size: 0.8rem;
+  color: #e74c3c;
+}
+
+/* Status Chip */
+.status-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.status-calculated {
+  background: #fff8e6;
+  color: #f39c12;
+}
+
+.status-submitted {
+  background: #f5f0ff;
+  color: #9b59b6;
+}
+
+.status-executed {
+  background: #e8f8ef;
+  color: #27ae60;
+}
+
+.status-failed {
+  background: #fdf2f2;
+  color: #e74c3c;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.no-tx {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+/* Quantity Cell */
+.quantity-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quantity-cell .committed {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.quantity-cell .separator {
+  color: #ccc;
+}
+
+.quantity-cell .delivered {
+  font-weight: 500;
+}
+
+/* Deviation Cell */
+.deviation-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.deviation-over {
+  color: #27ae60;
+}
+
+.deviation-under {
+  color: #e74c3c;
+}
+
+.deviation-exact {
+  color: #3498db;
+}
+
+.deviation-chip-over_delivery,
+.deviation-chip-under_delivery,
+.deviation-chip-exact {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.deviation-chip-over_delivery {
+  background: #e8f8ef;
+  color: #27ae60;
+}
+
+.deviation-chip-under_delivery {
+  background: #fdf2f2;
+  color: #e74c3c;
+}
+
+.deviation-chip-exact {
+  background: #f0f7ff;
+  color: #3498db;
+}
+
+/* Collateral Cell */
+.collateral-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.collateral-cell .collateral-returned {
+  font-size: 0.85rem;
+  color: #27ae60;
+}
+
+.collateral-cell .collateral-forfeited {
+  font-size: 0.85rem;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+/* NFT Cell */
+.nft-id {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: #9b59b6;
+}
+
+.nft-id mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .my-settlements {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .financial-summary {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .summary-item.highlight {
+    padding-left: 0;
+    padding-top: 16px;
+    border-left: none;
+    border-top: 2px solid #27ae60;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+}

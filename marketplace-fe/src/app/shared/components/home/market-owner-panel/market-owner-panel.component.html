@@ -1,0 +1,189 @@
+<div class="market-owner-panel">
+  <div class="header-section">
+    <div>
+      <h2>Market Owner Dashboard</h2>
+      <p class="subtitle">Manage your energy flexibility markets</p>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <p>Loading market information...</p>
+    </div>
+  </div>
+
+  <!-- No market selected - show message to accept market invitation -->
+  <div *ngIf="!isLoading && !hasMarketSelected" class="no-market-container">
+    <mat-icon class="no-market-icon">store</mat-icon>
+    <h3>No Market Selected</h3>
+    <p>Please accept your market invitation to view your dashboard and manage your markets.</p>
+    <button mat-raised-button color="primary" (click)="reopenMarketAcceptanceModal()">
+      <mat-icon>mail</mat-icon>
+      <span>Review Market Invitations</span>
+    </button>
+  </div>
+
+  <!-- Market selected but no markets found -->
+  <div *ngIf="!isLoading && hasMarketSelected && ownedMarkets.length === 0" class="no-markets">
+    <mat-icon>info</mat-icon>
+    <p>You don't own any markets yet</p>
+    <p class="hint">Contact the platform administrator to be assigned as a market owner.</p>
+  </div>
+
+  <div class="markets-container" *ngIf="!isLoading && ownedMarkets.length > 0">
+    <mat-card *ngFor="let market of ownedMarkets" class="market-card">
+      <!-- Market Header -->
+      <mat-card-header>
+        <div mat-card-avatar class="market-avatar">
+          <mat-icon>store</mat-icon>
+        </div>
+        <mat-card-title>{{ market.name }}</mat-card-title>
+        <mat-card-subtitle>Owner: {{ username }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <!-- Market Info -->
+      <mat-card-content>
+        <div class="market-info-section">
+          <h4><mat-icon>info</mat-icon> Market Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <mat-icon>tag</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Market ID</span>
+                <span class="info-value">{{ market.id.substring(0, 12) }}...</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon>person</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Owner</span>
+                <span class="info-value">{{ username }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activate Market Alert (only shown when status is WALLET_CREATED_PENDING_ACTIVATION) -->
+        <div class="activation-alert" *ngIf="market.status === 'WALLET_CREATED_PENDING_ACTIVATION'">
+          <mat-icon>warning</mat-icon>
+          <div class="alert-content">
+            <h4>Market Activation Required</h4>
+            <p>Your market wallet has been created. Click the button below to activate your market on the blockchain.
+            </p>
+            <button mat-raised-button color="primary" (click)="openActivationModal(market)" class="activate-market-btn">
+              <mat-icon>rocket_launch</mat-icon>
+              Activate Market on Blockchain
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-section">
+          <h4><mat-icon>bolt</mat-icon> Quick Actions</h4>
+          <div class="actions-grid">
+            <button mat-raised-button color="primary" (click)="navigateToMarketInfo(market.id)" class="action-button">
+              <mat-icon>info</mat-icon>
+              <span>Market Details</span>
+            </button>
+            <button mat-raised-button class="action-button" (click)="toggleUsersList(market.id)"
+              [disabled]="marketUsersLoading[market.id]">
+              <mat-icon>people</mat-icon>
+              <span>Market Users</span>
+            </button>
+            <button mat-raised-button color="accent" (click)="openInviteUserModal(market.id, market.name)"
+              class="action-button" [disabled]="inviteUsersLoading[market.id] || market.status === 'DEACTIVATED'"
+              [matTooltip]="market.status === 'DEACTIVATED' ? 'Cannot invite users to a deactivated market' : ''"
+              matTooltipPosition="below">
+              <mat-icon>person_add</mat-icon>
+              <span>Invite Users</span>
+            </button>
+          </div>
+          <div class="users-inline-section" *ngIf="usersVisible[market.id]">
+            <div class="users-loading" *ngIf="marketUsersLoading[market.id]">
+              <div class="spinner"></div>
+            </div>
+            <div *ngIf="!marketUsersLoading[market.id] && marketUsersMap[market.id]?.length">
+              <table mat-table [dataSource]="marketUsersMap[market.id]" class="users-table mat-elevation-z1">
+                <ng-container matColumnDef="username">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let user">{{ user.username || (user.firstName + ' ' + user.lastName) }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="role">
+                  <th mat-header-cell *matHeaderCellDef>Role</th>
+                  <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let user">
+                    <mat-chip-set>
+                      <mat-chip [ngClass]="{'deactivated-badge': user.status == 'INACTIVE'}" selected>
+                        {{user.status}}
+                      </mat-chip>
+                    </mat-chip-set>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Actions</th>
+                  <td mat-cell *matCellDef="let user">
+                    <button *ngIf="!isOwnerRole(user) && user.status != 'INACTIVE'" mat-icon-button color="warn"
+                      matTooltip="Remove user from this market" (click)="removeUserFromMarket(user.id, user.name)"
+                      [disabled]="marketUsersLoading[market.id]">
+                      <mat-icon>person_remove</mat-icon>
+                    </button>
+                    @if (user.role == "FSP") {
+                    <button *ngIf="!isOwnerRole(user) && user.status != 'INACTIVE'" mat-icon-button color="primary"
+                      class="calc-btn" matTooltip="Generate user historicalconsumption data and calculate theoretical flexibility values"
+                      (click)="generateUserComsumptionData(user.id, market.id)"
+                      [disabled]="marketUsersLoading[market.id] || user.consumption || isActionLoading(market.id, user.id, 'consumption')">
+                      <mat-icon>cloud_download</mat-icon>
+                    </button>
+
+                    <!-- <button *ngIf="!isOwnerRole(user) && user.status != 'INACTIVE'" mat-icon-button color="primary"
+                      class="calc-btn" (click)="calculateTheoretical(user.id, market.id)"
+                      [disabled]="marketUsersLoading[market.id] || user.theoretical || isActionLoading(market.id, user.id, 'theoretical')">
+                      <mat-icon>play_circle_filled</mat-icon>
+                    </button> -->
+
+                    }
+
+                    <button *ngIf="!isOwnerRole(user) && user.status == 'INACTIVE'" mat-icon-button color="primary"
+                      matTooltip="Reactivate user"
+                      class="reactivate-btn" (click)="openReactivateDialog(user.id, user.name)"
+                      [disabled]="marketUsersLoading[market.id] || user.theoretical || isActionLoading(market.id, user.id, 'theoretical')">
+                      <mat-icon>settings_backup_restore</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['username','role','status','actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['username','role','status','actions'];"></tr>
+              </table>
+              <div *ngIf="loading" class="loader-backdrop">
+                <div class="loader-card">
+                  <p>Processing... please do not leave the page...</p>
+                  <mat-spinner diameter="60" style="--mdc-circular-progress-active-indicator-color: #3f51b5;">
+                  </mat-spinner>
+                </div>
+              </div>
+            </div>
+            <div class="no-users" *ngIf="!marketUsersLoading[market.id] && !(marketUsersMap[market.id]?.length)">
+              <mat-icon>group_off</mat-icon>
+              <span>No users assigned to this market</span>
+            </div>
+          </div>
+        </div>
+
+
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="sessions-section" *ngIf="!isLoading">
+    <h3>Market Sessions Management</h3>
+    <app-owner-sessions-container [sessions]="sessions" [isLoading]="isLoading" (sessionsUpdated)="loadOwnedMarkets()"
+      [isMarketDeactivated]="isMarketDeactivated"></app-owner-sessions-container>
+  </div>
+</div>

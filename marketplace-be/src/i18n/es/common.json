@@ -1,0 +1,18 @@
+{
+  "common": {
+    "success": "Operación completada exitosamente",
+    "error": "Ocurrió un error",
+    "notFound": "Recurso no encontrado",
+    "unauthorized": "Acceso no autorizado",
+    "forbidden": "Acceso prohibido",
+    "badRequest": "Solicitud incorrecta",
+    "internalError": "Error interno del servidor"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "invalid": "Valor inválido",
+    "tooShort": "El valor es muy corto",
+    "tooLong": "El valor es muy largo",
+    "invalidFormat": "Formato inválido"
+  }
+}

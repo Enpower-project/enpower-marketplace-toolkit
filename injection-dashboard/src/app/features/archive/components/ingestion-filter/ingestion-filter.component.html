@@ -1,0 +1,63 @@
+<div class="filter-container">
+    <div class="filter-container-header">
+        <h2>Archive Explorer</h2>
+        <div class="results-container">
+            <p>FILTERED RESULTS: {{filteredResults}}</p>
+        </div>
+    </div>
+    <div class="filter-container-body">
+        <div class="filter-section">
+            <h3>FILENAME SEARCH</h3>
+            <div class="search-input-container">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12.45 13.5L7.725 8.775C7.35 9.075 6.91875 9.3125 6.43125 9.4875C5.94375 9.6625 5.425 9.75 4.875 9.75C3.5125 9.75 2.35938 9.27813 1.41562 8.33438C0.471875 7.39063 0 6.2375 0 4.875C0 3.5125 0.471875 2.35938 1.41562 1.41562C2.35938 0.471875 3.5125 0 4.875 0C6.2375 0 7.39063 0.471875 8.33438 1.41562C9.27813 2.35938 9.75 3.5125 9.75 4.875C9.75 5.425 9.6625 5.94375 9.4875 6.43125C9.3125 6.91875 9.075 7.35 8.775 7.725L13.5 12.45L12.45 13.5ZM4.875 8.25C5.8125 8.25 6.60938 7.92188 7.26562 7.26562C7.92188 6.60938 8.25 5.8125 8.25 4.875C8.25 3.9375 7.92188 3.14062 7.26562 2.48438C6.60938 1.82812 5.8125 1.5 4.875 1.5C3.9375 1.5 3.14062 1.82812 2.48438 2.48438C1.82812 3.14062 1.5 3.9375 1.5 4.875C1.5 5.8125 1.82812 6.60938 2.48438 7.26562C3.14062 7.92188 3.9375 8.25 4.875 8.25Z"
+                        fill="#727783" />
+                </svg>
+                <input type="text" [value]="searchTerm()" (input)="onSearchChange($event.target.value)"
+                    placeholder="Search by filename...">
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>STATUS</h3>
+            <div class="status-container">
+                <select name="status-select" id="status-select" #statusValue
+                    [value]="selectedStatus()"
+                    (change)="onStatusChange(statusValue.value)">
+                    <option value="all">All Statuses</option>
+                    @for (status of statusList; track status) {
+                        <option class="option-badge" [ngClass]="status | statusBadgePipe" [value]="status | lowercase">
+                            {{status}}
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>DATE RANGE</h3>
+            <div class="date-container">
+                <input type="date" id="fromDate" class="date-input" [value]="fromDate()"
+                    (change)="onFromDateChange($event.target.value)" placeholder="mm/dd/yyyy">
+                <span class="date-separator">to</span>
+                <input type="date" id="toDate" class="date-input" [value]="toDate()"
+                    (change)="onToDateChange($event.target.value)" placeholder="mm/dd/yyyy">
+
+                @if(fromDate() != '' || toDate() != ''){
+                <div class="remove-time-container" (click)="onCrossIconClick()">
+                    <svg class="cross-icon" fill="#000000" width="18px" height="18px" viewBox="0 0 24 24" id="cross"
+                        data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color">
+                        <line id="primary" x1="19" y1="19" x2="5" y2="5"
+                            style="fill: none; stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;">
+                        </line>
+                        <line id="primary-2" data-name="primary" x1="19" y1="5" x2="5" y2="19"
+                            style="fill: none; stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;">
+                        </line>
+                    </svg>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

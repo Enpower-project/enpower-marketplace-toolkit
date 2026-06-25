@@ -1,0 +1,21 @@
+<div class="archive-container">
+    <app-ingestion-filter
+        (searchChange)="onSearchTermsChange($event)"
+        (statusChange)="onStatusChange($event)"
+        (dateRangeChange)="onDateRangeChange($event)"
+        [filteredResults]="totalElements()"
+        [initialStatus]="selectedStatus()"
+        />
+    <app-ingestion-entry-table
+        [displayedColumns]="displayedColumns"
+        [dataSource]="entries()"
+        [isLoading]="loading()"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [totalElements]="totalElements()"
+        [activeSortField]="sortField()"
+        [activeSortDirection]="sortDirection()"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSortChange($event)"
+        />
+</div>

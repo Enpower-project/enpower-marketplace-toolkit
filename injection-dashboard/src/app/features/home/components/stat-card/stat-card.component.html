@@ -1,0 +1,21 @@
+<div class="stat-card" [class.stat-card--error]="variant === 'error'" [style.border-left-color]="variant !== 'error' ? accentColor : null">
+  <div class="stat-card__header">
+    <span class="stat-card__title">{{ title }}</span>
+    <div class="stat-card__icon">
+      <ng-content select="[icon]"></ng-content>
+    </div>
+  </div>
+
+  <div class="stat-card__count">
+    {{ count !== null ? (count | number) : '—' }}
+  </div>
+
+  <div class="stat-card__footer">
+    @if (badge) {
+      <span class="stat-badge" [ngClass]="'stat-badge--' + badge.toLowerCase()">{{ badge }}</span>
+    }
+    @if (subtext) {
+      <span class="stat-card__subtext">{{ subtext }}</span>
+    }
+  </div>
+</div>

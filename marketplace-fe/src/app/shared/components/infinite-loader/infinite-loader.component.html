@@ -1,0 +1,4 @@
+<div id="infinite-loader" *ngIf="loaderBar$ | async as loaderbarData">
+  <mat-progress-bar mode="indeterminate" *ngIf="loaderbarData.isEnabled && loaderbarData.counter > 0"></mat-progress-bar>
+</div>
+

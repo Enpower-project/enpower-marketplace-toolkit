@@ -1,0 +1,156 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3>{{ title }}</h3>
+      <button class="close-button" (click)="onCancel()" [disabled]="submitting">&times;</button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <p class="action-description">{{ getActionDescription() }}</p>
+
+      <!-- Settlement Summary (only show for actual settlements, not measurement data) -->
+      <div class="settlement-summary" *ngIf="calculation && !isMeasurementData() && !isFinalize()">
+        <h4 class="summary-title">Settlement Summary</h4>
+
+        <!-- Offer Info -->
+        <div class="summary-section">
+          <div class="summary-row">
+            <span class="summary-label">Offer ID:</span>
+            <span class="summary-value">{{ calculation.offerId }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Hour:</span>
+            <span class="summary-value">{{ calculation.hourSlot }}:00 - {{ calculation.hourSlot + 1 }}:00</span>
+          </div>
+        </div>
+
+        <!-- Quantities -->
+        <div class="summary-section">
+          <h5>Quantities</h5>
+          <div class="summary-row">
+            <span class="summary-label">Committed:</span>
+            <span class="summary-value">{{ formatWei(calculation.committedQuantity) }} KWh</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Delivered:</span>
+            <span class="summary-value">{{ formatWei(calculation.deliveredQuantity) }} KWh</span>
+          </div>
+          <div class="summary-row" [class.warning]="isHighDeviation()">
+            <span class="summary-label">Deviation:</span>
+            <span class="summary-value">
+              {{ formatPercentage(calculation.deviationPercentage) }}%
+              <span class="deviation-badge" [ngClass]="getDeviationTypeClass()" *ngIf="calculation.deviationType">
+                {{ getDeviationTypeLabel() }}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Collateral (if applicable) -->
+        <div class="summary-section collateral-section" *ngIf="hasCollateral()">
+          <h5>Collateral</h5>
+          <div class="summary-row">
+            <span class="summary-label">Collateral Amount:</span>
+            <span class="summary-value">{{ formatWei(calculation.collateralAmount!) }} FLEX</span>
+          </div>
+          <div class="summary-row success" *ngIf="calculation.collateralReturned">
+            <span class="summary-label">Returned:</span>
+            <span class="summary-value positive">+{{ formatWei(calculation.collateralReturned) }} FLEX</span>
+          </div>
+          <div class="summary-row penalty" *ngIf="hasCollateralForfeited()">
+            <span class="summary-label">Forfeited:</span>
+            <span class="summary-value negative">-{{ formatWei(calculation.collateralForfeited!) }} FLEX</span>
+          </div>
+          <p class="collateral-note" *ngIf="hasCollateralForfeited()">
+            <mat-icon>warning</mat-icon>
+            Collateral forfeited due to under-delivery
+          </p>
+        </div>
+
+        <!-- Penalty (if applicable) -->
+        <div class="summary-section penalty-section" *ngIf="hasPenalty()">
+          <div class="summary-row penalty">
+            <span class="summary-label">Penalty:</span>
+            <span class="summary-value negative">-{{ formatWei(calculation.penaltyAmount) }} FLEX</span>
+          </div>
+          <p class="penalty-note">
+            <mat-icon>warning</mat-icon>
+            Penalty applied due to under-delivery
+          </p>
+        </div>
+
+        <!-- Payment Breakdown -->
+        <div class="summary-section payment-section">
+          <h5>Payment Breakdown</h5>
+          <div class="summary-row">
+            <span class="summary-label">Payment (FRP → FSP):</span>
+            <span class="summary-value">{{ formatWei(calculation.payment) }} FLEX</span>
+          </div>
+          <div class="summary-row fee">
+            <span class="summary-label">Platform Fee (2% of committed, FSP → FMO):</span>
+            <span class="summary-value negative">-{{ formatWei(calculation.platformFee) }} FLEX</span>
+          </div>
+        </div>
+
+        <!-- Consumption Data -->
+        <div class="summary-section consumption-section" *ngIf="calculation.baselineConsumption !== undefined">
+          <h5>Consumption Data</h5>
+          <div class="summary-row">
+            <span class="summary-label">Baseline (Standard):</span>
+            <span class="summary-value">{{ calculation.baselineConsumption | number:'1.0-0' }} Wh</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Actual Consumption:</span>
+            <span class="summary-value">{{ calculation.actualConsumption | number:'1.0-0' }} Wh</span>
+          </div>
+        </div>
+
+        <!-- NFT Info (if execute action) -->
+        <div class="summary-section nft-section" *ngIf="action === 'execute'">
+          <h5>NFT Transfer</h5>
+          <p class="nft-info">
+            <mat-icon>token</mat-icon>
+            A Flexibility NFT will be minted and transferred to the FRP representing this flexibility delivery.
+          </p>
+        </div>
+      </div>
+
+      <!-- PIN Form -->
+      <form (ngSubmit)="onSubmit()" #pinForm="ngForm">
+        <div class="form-group">
+          <label for="pin">PIN *</label>
+          <div class="pin-input-group">
+            <input [type]="showPin ? 'text' : 'password'" id="pin" name="pin" [(ngModel)]="pin" required minlength="6"
+              class="pin-input" [disabled]="submitting" placeholder="Enter your PIN" autocomplete="off" />
+            <button type="button" class="toggle-pin-button" (click)="togglePinVisibility()" [disabled]="submitting">
+              <mat-icon>{{ showPin ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="error-message-modal">
+          <div class="error-header">
+            <mat-icon class="error-icon-modal">error_outline</mat-icon>
+            <span class="error-title-modal">Something went wrong</span>
+          </div>
+          <p class="error-text-modal">{{ error }}</p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="button" class="cancel-button" (click)="onCancel()" [disabled]="submitting">
+            Cancel
+          </button>
+          <button type="submit" class="submit-button" [disabled]="submitting || !pinForm.valid">
+            <div class="spinner-small" *ngIf="submitting"></div>
+            <span *ngIf="!submitting">{{ getActionLabel() }}</span>
+            <span *ngIf="submitting">Processing...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

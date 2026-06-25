@@ -1,0 +1,148 @@
+.activity-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+  border: 1px solid rgba(194, 198, 212, 0.2);
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activity-header h2 {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #131B2E;
+}
+
+.activity-view-all {
+  font-size: 0.78em;
+  font-weight: 700;
+  color: #005FB8;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.activity-view-all:hover {
+  text-decoration: underline;
+}
+
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.activity-table th {
+  text-align: left;
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #727783;
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.activity-table th:nth-child(1) { width: 28%; }
+.activity-table th:nth-child(2) { width: 34%; }
+.activity-table th:nth-child(3) { width: 22%; }
+.activity-table th:nth-child(4) { width: 16%; }
+
+.activity-table td {
+  padding: 0.85em 0.75em;
+  font-size: 0.88em;
+  color: #131B2E;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.event-type-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.event-type-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.event-icon--new {
+  background: #D6E3FF;
+  color: #00468B;
+}
+
+.event-icon--translated {
+  background: #EADDFF;
+  color: #5A00C6;
+}
+
+.event-icon--error {
+  background: #FFDAD6;
+  color: #93000A;
+}
+
+.event-icon--synchronized {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.resource-id-cell {
+  color: #515F74;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 0;
+}
+
+.timestamp-cell {
+  color: #727783;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-badge--new {
+  background: #D6E3FF;
+  color: #00468B;
+}
+
+.status-badge--translated {
+  background: #EADDFF;
+  color: #5A00C6;
+}
+
+.status-badge--error {
+  background: #FFDAD6;
+  color: #93000A;
+}
+
+.status-badge--synchronized {
+  background: #D1FAE5;
+  color: #065F46;
+}

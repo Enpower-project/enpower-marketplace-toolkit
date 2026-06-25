@@ -1,0 +1,57 @@
+    <div class="market-selection-modal">
+      <div mat-dialog-title class="modal-header">
+        <mat-icon class="modal-icon">store</mat-icon>
+        <h2>{{ data.title || 'Select Market' }}</h2>
+      </div>
+
+      <div mat-dialog-content class="modal-content">
+        <p class="modal-message">
+          {{ data.message || 'You have access to multiple markets. Please select one to continue:' }}
+        </p>
+
+        <mat-form-field appearance="outline" class="market-select-field">
+          <mat-label>Available Markets</mat-label>
+          <mat-select [(value)]="selectedMarket" [disabled]="isLoading">
+            <mat-option *ngFor="let market of data.availableMarkets" [value]="market">
+              {{ getMarketDisplayName(market) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div *ngIf="errorMessage" class="error-message">
+          <div class="error-content">
+            <mat-icon>error</mat-icon>
+            <span class="error-text">{{ errorMessage }}</span>
+          </div>
+          <button
+            mat-button
+            color="accent"
+            class="retry-button"
+            (click)="retrySelection()"
+            *ngIf="selectedMarket && !isLoading">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      </div>
+
+      <div mat-dialog-actions class="modal-actions">
+        <button
+          mat-button
+          (click)="onCancel()"
+          [disabled]="isLoading"
+          class="cancel-button">
+          Cancel
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="onConfirm()"
+          [disabled]="!selectedMarket || isLoading"
+          [class.loading]="isLoading"
+          class="confirm-button">
+          <span>Continue</span>
+          <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        </button>
+      </div>
+    </div>

@@ -1,0 +1,94 @@
+<div class="token-approval-container" [ngClass]="{'compact': compact}">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="approval-loading">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span>Checking token allowance...</span>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !isLoading" class="approval-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+        <button mat-icon-button (click)="checkAllowance()" matTooltip="Retry">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <!-- Already Approved -->
+      <div *ngIf="!isLoading && !error && !needsApproval" class="approval-success">
+        <mat-icon>check_circle</mat-icon>
+        <div class="approval-info">
+          <span class="approval-title">Tokens Approved</span>
+          <span class="approval-detail" *ngIf="showDetails">
+            Allowance: {{ formatAmount(currentAllowance) }} FLEX
+          </span>
+        </div>
+      </div>
+
+      <!-- Needs Approval -->
+      <div *ngIf="!isLoading && !error && needsApproval" class="approval-required">
+        <div class="approval-header">
+          <mat-icon color="warn">warning</mat-icon>
+          <div class="approval-info">
+            <span class="approval-title">Token Approval Required</span>
+            <span class="approval-detail" *ngIf="showDetails">
+              Current: {{ formatAmount(currentAllowance) }} FLEX |
+              Required: {{ formatAmount(requiredAmount) }} FLEX
+            </span>
+          </div>
+        </div>
+
+        <!-- PIN Input for Approval -->
+        <div *ngIf="showPinInput" class="pin-section">
+          <div class="pin-input-group">
+            <label>Enter PIN to approve:</label>
+            <input
+              type="password"
+              [(ngModel)]="pin"
+              placeholder="Enter your PIN"
+              maxlength="6"
+              class="pin-input"
+              [disabled]="isApproving"
+              (keyup.enter)="approveTokens()"
+            />
+          </div>
+          <div class="approval-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="approveTokens()"
+              [disabled]="!pin || pin.length < 4 || isApproving"
+            >
+              <mat-spinner *ngIf="isApproving" diameter="18"></mat-spinner>
+              <mat-icon *ngIf="!isApproving">check</mat-icon>
+              <span>{{ isApproving ? 'Approving...' : 'Approve FLEX Tokens' }}</span>
+            </button>
+            <button mat-button (click)="cancelApproval()" [disabled]="isApproving">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Initial Approve Button -->
+        <div *ngIf="!showPinInput" class="approval-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="startApproval()"
+            [disabled]="isApproving"
+          >
+            <mat-icon>verified_user</mat-icon>
+            <span>Approve {{ formatAmount(requiredAmount) }} FLEX</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Transaction Hash -->
+      <div *ngIf="txHash" class="tx-info">
+        <mat-icon>receipt</mat-icon>
+        <span>TX: {{ txHash.slice(0, 10) }}...{{ txHash.slice(-8) }}</span>
+        <button mat-icon-button (click)="copyTxHash()" matTooltip="Copy transaction hash">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+    </div>

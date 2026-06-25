@@ -1,0 +1,37 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <div class="dialog-header" [class.warning]="data.type === 'warning'" 
+       [class.danger]="data.type === 'danger'" 
+       [class.info]="data.type === 'info'">
+    <div class="header-icon">
+      <mat-icon>{{ getIcon() }}</mat-icon>
+    </div>
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content>
+    <div class="message-content">
+      <p>{{ data.message }}</p>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions align="end">
+    <button 
+      mat-stroked-button 
+      (click)="onCancel()"
+      class="cancel-button">
+      {{ data.cancelText }}
+    </button>
+    <button 
+      mat-raised-button 
+      (click)="onConfirm()"
+      [class.warning-btn]="data.type === 'warning'"
+      [class.danger-btn]="data.type === 'danger'"
+      [class.info-btn]="data.type === 'info'"
+      class="confirm-button">
+      {{ data.confirmText }}
+    </button>
+  </mat-dialog-actions>
+</div>

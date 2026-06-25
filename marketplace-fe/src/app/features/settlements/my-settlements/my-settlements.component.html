@@ -1,0 +1,210 @@
+<div class="my-settlements">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>My Settlements</h1>
+    <button mat-raised-button color="primary" (click)="loadMySettlements()" [disabled]="loading">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="summary-card total">
+      <div class="card-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ settlements.length }}</span>
+        <span class="card-label">Total Settlements</span>
+      </div>
+    </div>
+
+    <div class="summary-card executed">
+      <div class="card-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ countByStatus('EXECUTED') }}</span>
+        <span class="card-label">Executed</span>
+      </div>
+    </div>
+
+    <div class="summary-card pending">
+      <div class="card-icon">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ countByStatus('PENDING') + countByStatus('CALCULATED') + countByStatus('SUBMITTED')
+          }}</span>
+        <span class="card-label">In Progress</span>
+      </div>
+    </div>
+
+    <div class="summary-card earnings">
+      <div class="card-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="card-content">
+        <span class="card-value">{{ formatWei(totalPayment) }}</span>
+        <span class="card-label">FLEX Received</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial Summary -->
+  <div class="financial-summary" *ngIf="settlements.length > 0">
+    <div class="summary-item">
+      <span class="summary-label">Total Payment:</span>
+      <span class="summary-value">{{ formatWei(totalPayment) }} FLEX</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Total Penalties:</span>
+      <span class="summary-value penalty">-{{ formatWei(totalPenalties) }} FLEX</span>
+    </div>
+    <div class="summary-item" *ngIf="totalCollateralForfeited !== '0'">
+      <span class="summary-label">Collateral Forfeited:</span>
+      <span class="summary-value penalty">-{{ formatWei(totalCollateralForfeited) }} FLEX</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading settlements...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-container" *ngIf="error">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error }}</span>
+    <button mat-button (click)="loadMySettlements()">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && !error && settlements.length === 0">
+    <mat-icon>inbox</mat-icon>
+    <h3>No settlements yet</h3>
+    <p>You don't have any settlements registered. Settlements will appear here when your offers are settled.</p>
+  </div>
+
+  <!-- Settlements Table -->
+  <div class="table-container" *ngIf="!loading && !error && settlements.length > 0">
+    <table mat-table [dataSource]="settlements" class="settlements-table">
+      <!-- Delivery Date Column -->
+      <ng-container matColumnDef="deliveryDate">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let settlement">
+          {{ formatDate(settlement.deliveryDate) }}
+        </td>
+      </ng-container>
+
+      <!-- Hour Slot Column -->
+      <ng-container matColumnDef="hourSlot">
+        <th mat-header-cell *matHeaderCellDef>Hour</th>
+        <td mat-cell *matCellDef="let settlement">
+          {{ settlement.hourSlot }}:00 - {{ settlement.hourSlot + 1 }}:00
+        </td>
+      </ng-container>
+
+      <!-- Delivered Quantity Column -->
+      <ng-container matColumnDef="deliveredQuantity">
+        <th mat-header-cell *matHeaderCellDef>Committed / Delivered</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="quantity-cell">
+            <span class="committed">{{ formatWei(settlement.committedQuantity) }} KWh</span>
+            <span class="separator">/</span>
+            <span class="delivered" [ngClass]="getDeviationClass(settlement.deviationType)">
+              {{ formatWei(settlement.deliveredQuantity) }} KWh
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Deviation Column -->
+      <ng-container matColumnDef="deviationPercentage">
+        <th mat-header-cell *matHeaderCellDef>Deviation</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="deviation-cell">
+            <span [ngClass]="getDeviationClass(settlement.deviationType)">
+              {{ settlement.deviationPercentage | number:'1.2-2' }}%
+            </span>
+            <mat-chip *ngIf="settlement.deviationType"
+              [ngClass]="'deviation-chip-' + settlement.deviationType?.toLowerCase()">
+              {{ getDeviationLabel(settlement.deviationType) }}
+            </mat-chip>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Collateral Column -->
+      <ng-container matColumnDef="collateral">
+        <th mat-header-cell *matHeaderCellDef>Collateral</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="collateral-cell" *ngIf="settlement.collateralAmount">
+            <span class="collateral-returned" *ngIf="settlement.collateralReturned">
+              ✓ {{ formatWei(settlement.collateralReturned) }}
+            </span>
+            <span class="collateral-forfeited"
+              *ngIf="settlement.collateralForfeited && settlement.collateralForfeited !== '0'">
+              ✗ {{ formatWei(settlement.collateralForfeited) }}
+            </span>
+          </div>
+          <span *ngIf="!settlement.collateralAmount">-</span>
+        </td>
+      </ng-container>
+
+      <!-- Payment Column -->
+      <ng-container matColumnDef="payment">
+        <th mat-header-cell *matHeaderCellDef>Payment</th>
+        <td mat-cell *matCellDef="let settlement" class="payment-cell">
+          <span class="net-payment">{{ formatWei(settlement.payment) }} FLEX</span>
+          <span class="penalty" *ngIf="settlement.penaltyAmount && +settlement.penaltyAmount > 0">
+            (Penalty: -{{ formatWei(settlement.penaltyAmount) }})
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- NFT Column -->
+      <ng-container matColumnDef="nft">
+        <th mat-header-cell *matHeaderCellDef>NFT</th>
+        <td mat-cell *matCellDef="let settlement">
+          <span class="nft-id" *ngIf="settlement.flexibilityNftId"
+            matTooltip="NFT ID: {{ settlement.flexibilityNftId }}">
+            <mat-icon>token</mat-icon>
+            #{{ settlement.flexibilityNftId }}
+          </span>
+          <span *ngIf="!settlement.flexibilityNftId">-</span>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let settlement">
+          <span class="status-chip" [ngClass]="getStatusClass(settlement.status)">
+            {{ getStatusLabel(settlement.status) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>TX</th>
+        <td mat-cell *matCellDef="let settlement">
+          <div class="action-buttons">
+            <a mat-icon-button *ngIf="settlement.executeTxHash"
+              [href]="'https://etherscan.io/tx/' + settlement.executeTxHash" target="_blank"
+              matTooltip="View transaction">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+            <span *ngIf="!settlement.executeTxHash" class="no-tx">-</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

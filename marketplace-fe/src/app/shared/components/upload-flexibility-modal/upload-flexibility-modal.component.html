@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>
+  Upload Flexibility Data
+  <mat-icon class="close-icon" (click)="close()">close</mat-icon>
+</h2>
+
+<mat-dialog-content>
+  <p class="fsp-info">
+    <strong>FSP:</strong> {{ data.fspName }}
+  </p>
+
+  <div *ngIf="!result" class="upload-section">
+    <label class="file-label">
+      <mat-icon>attach_file</mat-icon>
+      Select file (.xlsx or .csv)
+    </label>
+
+    <div class="file-input-row">
+      <label class="file-button" [class.has-file]="selectedFile">
+        <mat-icon>folder_open</mat-icon>
+        Choose file
+        <input
+          type="file"
+          accept=".xlsx,.csv"
+          (change)="onFileSelected($event)"
+          style="display: none"
+        />
+      </label>
+      <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+      <span class="file-name placeholder" *ngIf="!selectedFile">No file selected</span>
+    </div>
+  </div>
+
+  <div *ngIf="isUploading" class="processing-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p class="processing-text">Processing file...</p>
+  </div>
+
+  <div *ngIf="result" class="result-success">
+    <mat-icon>check_circle</mat-icon>
+    <div class="result-text">
+      <strong>{{ result.days }} days</strong> of <strong>{{ result.pilotType }}</strong> pilot data loaded successfully.
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="result-error">
+    <mat-icon>error</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center">
+  <div class="button-group">
+    <button mat-button (click)="close()" [disabled]="isUploading">
+      {{ result ? 'Close' : 'Cancel' }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="upload()"
+      [disabled]="!selectedFile || isUploading || !!result"
+      class="upload-button"
+      *ngIf="!result"
+    >
+      <mat-icon>cloud_upload</mat-icon>
+      Upload & Process
+    </button>
+  </div>
+</mat-dialog-actions>

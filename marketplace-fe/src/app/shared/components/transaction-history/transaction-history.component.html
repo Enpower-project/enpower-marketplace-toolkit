@@ -1,0 +1,267 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>compare_arrows</mat-icon>
+        Transactions History
+      </h1>
+      <p *ngIf="!isAdmin && !isFMO" class="page-subtitle">Information about the transaction history of your wallet</p>
+      <p *ngIf="isFMO" class="page-subtitle">Information about the transaction history of your market</p>
+      <p *ngIf="isAdmin" class="page-subtitle">Information about the transaction history of all markets</p>
+    </div>
+    <div class="header-actions">
+      <button mat-button (click)="refreshTransactions()" [disabled]="isLoading" matTooltip="Refresh">
+        <mat-icon [class.spinning]="isLoading">refresh</mat-icon>
+        Refresh
+      </button>
+      <button mat-button (click)="exportTransactions()" [disabled]="transactions.length === 0"
+        matTooltip="Export to CSV">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Summary -->
+  <div class="stats-summary" *ngIf="!isLoading && pagination">
+    <div class="stat-card">
+      <mat-icon class="stat-icon">receipt_long</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">{{ pagination.totalTransactions }}</span>
+        <span class="stat-label">Total Transactions</span>
+      </div>
+    </div>
+    <div class="stat-card success">
+      <mat-icon class="stat-icon">check_circle</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">{{ successfulTransactions }}</span>
+        <span class="stat-label">Successful (this page)</span>
+      </div>
+    </div>
+    <div class="stat-card failed">
+      <mat-icon class="stat-icon">error</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">{{ failedTransactions }}</span>
+        <span class="stat-label">Failed (this page)</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <mat-icon class="stat-icon">local_gas_station</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">{{ formatGasUsed(totalGasUsed.toString()) }}</span>
+        <span class="stat-label">Gas Used (this page)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters">
+    <!-- SELECT + CHIPS for Status -->
+    <div class="filter-container">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter by Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange()">
+          <mat-option *ngFor="let status of allStatuses" [value]="status">
+            {{ status | capitalize }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="chip-container" *ngIf="selectedStatus != ''">
+        <div class="chip">
+          {{ selectedStatus | capitalize }}
+          <button class="remove-btn" (click)="removeStatusFilter()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Field -->
+    <div class="search-wrapper">
+      <mat-form-field appearance="fill" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (ngModelChange)="filterTransactions()"
+          placeholder="Search by hash, log, address">
+        <mat-icon matPrefix>search</mat-icon>
+
+        <button class="close-search-button" *ngIf="searchTerm" mat-icon-button matSuffix aria-label="Clear search"
+          (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="transactions-container">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-text">Loading transactions...</p>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoading" class="table-container">
+      <table mat-table [dataSource]="filteredTransactions" class="transactions-table">
+
+        <ng-container matColumnDef="hash">
+          <th mat-header-cell *matHeaderCellDef> Transaction Hash </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="hash-cell" *ngIf="transaction.status !== 'reverted'">
+              <span class="hash-text" (click)="copy(transaction.hash)">
+                {{ truncateHash(transaction.hash) }}
+              </span>
+              <mat-icon class="copy-icon" matTooltip="Copy hash" (click)="copy(transaction.hash)">
+                content_copy
+              </mat-icon>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="transactionLog">
+          <th mat-header-cell *matHeaderCellDef> Transaction Log </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="transaction-log-cell">
+              <div class="tx-type-icon" [ngClass]="getTransactionTypeClass(transaction.transactionLog)">
+                <mat-icon>{{ getTransactionTypeIcon(transaction.transactionLog) }}</mat-icon>
+              </div>
+              <span class="tx-log-text">{{ transaction.transactionLog || 'Transfer' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef> TimeStamp </th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ formatTimestamp(transaction.timestamp) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="from">
+          <th mat-header-cell *matHeaderCellDef> From </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="hash-cell">
+              <span class="hash-text">
+                {{ getUsernameByAddress(transaction.from) }}
+                <mat-icon class="copy-icon" matTooltip="Copy hash" (click)="copy(transaction.from)">
+                  content_copy
+                </mat-icon>
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="to">
+          <th mat-header-cell *matHeaderCellDef> To </th>
+          <td mat-cell *matCellDef="let transaction">
+
+            <div class="hash-cell">
+              <span class="hash-text">
+                {{ getUsernameByAddress(transaction.to) }}
+                <mat-icon class="copy-icon" matTooltip="Copy hash" (click)="copy(transaction.to)">
+                  content_copy
+                </mat-icon>
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="gasUsed">
+          <th mat-header-cell *matHeaderCellDef> Gas Used </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div *ngIf="transaction.status !== 'reverted'">
+              {{ `${transaction.gasUsed} wei` }}
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="gasPrice">
+          <th mat-header-cell *matHeaderCellDef> Gas Price </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div *ngIf="transaction.status !== 'reverted'">
+              {{ transaction.gasPrice }}
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="status-badge-wrapper" [class.status-success]="transaction.status === 'success'"
+              [class.status-failed]="transaction.status !== 'success'">
+              <mat-icon class="status-icon">{{ transaction.status === 'success' ? 'check_circle' : 'cancel'
+                }}</mat-icon>
+              <span class="status-text">{{ transaction.status | capitalize }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Header row -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <!-- Normal data row -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Empty footer row -->
+        <ng-container matColumnDef="empty">
+          <td mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumns.length" class="empty-state">
+            <div class="empty-state-content">
+              <mat-icon class="empty-state-icon">receipt_long</mat-icon>
+              <h3 class="empty-state-title">No Transactions Found</h3>
+              <p class="empty-state-message">
+                {{ searchTerm || selectedStatus !== '' 
+                  ? 'No transactions match your current filters. Try adjusting your search criteria.' 
+                  : 'Your transaction history is empty. Transactions will appear here once you start interacting with the blockchain.' 
+                }}
+              </p>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-footer-row *matFooterRowDef="['empty']" [hidden]="filteredTransactions.length > 0"></tr>
+
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="pagination">
+
+        <button class="page-btn" [disabled]="!pagination.hasPreviousPage" (click)="goToFirstPage()">
+          ‹‹
+        </button>
+
+        <!-- Previous -->
+        <button class="page-btn" [disabled]="!pagination.hasPreviousPage" (click)="previousPage()">
+          ‹ Prev
+        </button>
+
+        <!-- Page numbers -->
+        <button class="page-btn" [ngClass]="{'current-page' : currentPage == page}"
+          *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage" (click)="goTopage(page)">
+          {{ page }}
+        </button>
+
+        <!-- Next -->
+        <button class="page-btn" [disabled]="!pagination.hasNextPage" (click)="nextPage()">
+          Next ›
+        </button>
+
+        <button class="page-btn" [disabled]="!pagination.hasNextPage" (click)="goToLastPage()">
+          ››
+        </button>
+
+        <!-- Items per page -->
+        <div class="page-size">
+          <span>Rows:</span>
+          <select [(ngModel)]="itemsPerPage" (change)="changeItemsPerPage(itemsPerPage)">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,877 @@
+.settlements-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.back-button {
+  margin-top: 8px;
+  color: #3B7DBF;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.back-button:hover {
+  background-color: rgba(59, 125, 191, 0.1);
+  transform: translateX(-2px);
+}
+
+.back-button mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.header-content h1 {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  color: #333;
+}
+
+.session-address {
+  color: #666;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.step-button-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.check-icon {
+  animation: spinIn 0.3s ease-out;
+}
+
+@keyframes spinIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Step buttons state styling */
+.header-actions button.step-active {
+  border: 2px solid #3B7DBF;
+  background: #f0f7ff;
+  transition: all 0.3s ease;
+}
+
+.header-actions button.step-active:not(:disabled):hover {
+  border-color: #2D5A8C;
+  background: #e8f1ff;
+  box-shadow: 0 4px 12px rgba(59, 125, 191, 0.3);
+}
+
+.header-actions button.step-completed {
+  border: 2px solid #4caf50;
+  background: #e8f5e9;
+  transition: all 0.3s ease;
+}
+
+.header-actions button.step-completed:disabled {
+  opacity: 1;
+  cursor: default;
+  color: #4caf50;
+}
+
+.header-actions button.step-completed:disabled mat-icon {
+  color: #4caf50;
+}
+
+.header-actions button.step-locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border: 2px solid #ccc;
+  background: #f5f5f5;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #3498db;
+}
+
+.summary-card.calculated {
+  border-left-color: #f39c12;
+}
+
+.summary-card.submitted {
+  border-left-color: #9b59b6;
+}
+
+.summary-card.executed {
+  border-left-color: #27ae60;
+}
+
+.summary-card.failed {
+  border-left-color: #e74c3c;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f0f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-card.calculated .card-icon {
+  background: #fff8e6;
+}
+
+.summary-card.submitted .card-icon {
+  background: #f5f0ff;
+}
+
+.summary-card.executed .card-icon {
+  background: #e8f8ef;
+}
+
+.summary-card.failed .card-icon {
+  background: #fdf2f2;
+}
+
+.card-icon mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #3498db;
+}
+
+.summary-card.calculated .card-icon mat-icon {
+  color: #f39c12;
+}
+
+.summary-card.submitted .card-icon mat-icon {
+  color: #9b59b6;
+}
+
+.summary-card.executed .card-icon mat-icon {
+  color: #27ae60;
+}
+
+.summary-card.failed .card-icon mat-icon {
+  color: #e74c3c;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Totals Section */
+.totals-section {
+  display: flex;
+  gap: 32px;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.total-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.total-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.total-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.total-value.fee {
+  color: #e74c3c;
+}
+
+.total-value.highlight {
+  color: #27ae60;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  min-height: 450px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #dee2e6;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading-container ::ng-deep .mat-mdc-progress-spinner circle {
+  stroke: #3B7DBF !important;
+}
+
+.loading-text {
+  text-align: center;
+}
+
+.loading-text h3 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.loading-text p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Error */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 32px;
+  background: linear-gradient(135deg, #fff5f5 0%, #fde8e8 100%);
+  border-radius: 12px;
+  border: 2px solid #ffcccb;
+  box-shadow: 0 8px 24px rgba(231, 76, 60, 0.12);
+  color: #c0392b;
+  margin: 24px 0;
+  animation: slideInError 0.3s ease-out;
+}
+
+@keyframes slideInError {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.error-icon-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: #ffebee;
+  border-radius: 50%;
+  border: 2px solid #e74c3c;
+}
+
+.error-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #e74c3c;
+}
+
+.error-message-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  text-align: left;
+}
+
+.error-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.error-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #d64545;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.error-retry-btn {
+  background-color: #e74c3c !important;
+  color: white !important;
+  padding: 10px 24px !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.error-retry-btn:hover:not(:disabled) {
+  background-color: #c0392b !important;
+  box-shadow: 0 6px 16px rgba(192, 57, 43, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.error-retry-btn mat-icon {
+  margin-right: 6px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #666;
+}
+
+/* Table */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.settlements-table {
+  width: 100%;
+}
+
+.settlements-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.settlements-table td {
+  color: #666;
+}
+
+.settlements-table .warning {
+  color: #f39c12;
+  font-weight: 500;
+}
+
+/* Status Chip */
+.status-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.status-calculated {
+  background: #fff8e6;
+  color: #f39c12;
+}
+
+.status-submitted {
+  background: #f5f0ff;
+  color: #9b59b6;
+}
+
+.status-executed {
+  background: #e8f8ef;
+  color: #27ae60;
+}
+
+.status-failed {
+  background: #fdf2f2;
+  color: #e74c3c;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.action-buttons button {
+  transition: all 0.3s ease !important;
+}
+
+.action-buttons button:not(:disabled):hover {
+  background-color: rgba(255, 152, 0, 0.15) !important;
+  transform: scale(1.15) !important;
+}
+
+.action-buttons button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Force hover for disabled buttons */
+.action-buttons button[disabled]:hover,
+.action-buttons button[disabled]:focus {
+  background-color: rgba(244, 67, 54, 0.2) !important;
+  opacity: 0.75 !important;
+  cursor: not-allowed !important;
+}
+
+.action-buttons button[disabled]:hover::before,
+.action-buttons button[disabled]:focus::before {
+  background-color: transparent !important;
+}
+
+/* Material button ripple override */
+.action-buttons button:disabled::after {
+  display: none !important;
+}
+
+.action-buttons button:disabled .mat-mdc-button-ripple {
+  display: none !important;
+}
+
+/* Quantity Cell */
+.quantity-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quantity-cell .committed {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.quantity-cell .separator {
+  color: #ccc;
+}
+
+.quantity-cell .delivered {
+  font-weight: 500;
+}
+
+/* Deviation Cell */
+.deviation-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.deviation-over {
+  color: #27ae60;
+}
+
+.deviation-under {
+  color: #e74c3c;
+}
+
+.deviation-exact {
+  color: #3498db;
+}
+
+.deviation-chip-over_delivery,
+.deviation-chip-under_delivery,
+.deviation-chip-exact {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.deviation-chip-over_delivery {
+  background: #e8f8ef;
+  color: #27ae60;
+}
+
+.deviation-chip-under_delivery {
+  background: #fdf2f2;
+  color: #e74c3c;
+}
+
+.deviation-chip-exact {
+  background: #f0f7ff;
+  color: #3498db;
+}
+
+/* Collateral Cell */
+.collateral-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.collateral-cell .collateral-amount {
+  font-weight: 500;
+  color: #333;
+}
+
+.collateral-cell .collateral-returned {
+  font-size: 0.75rem;
+  color: #27ae60;
+}
+
+.collateral-cell .collateral-forfeited {
+  font-size: 0.75rem;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+/* NFT Cell */
+.nft-id {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: #9b59b6;
+}
+
+.nft-id.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.nft-id.clickable:hover {
+  background-color: rgba(155, 89, 182, 0.1);
+  color: #7d3c98;
+  transform: scale(1.05);
+}
+
+.nft-id mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Bid Type Chip */
+.bid-type-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.bid-type-demand {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.bid-type-supply {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+/* FRP Payment Section */
+.frp-payment-section {
+  margin-bottom: 24px;
+}
+
+.payment-request-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #3B7DBF;
+  transition: all 0.3s ease;
+}
+
+.payment-request-card:hover {
+  box-shadow: 0 6px 16px rgba(59, 125, 191, 0.15);
+  transform: translateY(-2px);
+}
+
+.payment-request-card.status-pending {
+  border-left-color: #3B7DBF;
+  background: #f0f7ff;
+}
+
+.payment-request-card.status-pending:hover {
+  background: #e8f1ff;
+}
+
+.payment-request-card.status-deposited {
+  border-left-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.payment-request-card.status-completed {
+  border-left-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.payment-request-card.status-cancelled {
+  border-left-color: #f44336;
+  background: #ffebee;
+}
+
+.payment-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.payment-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #3B7DBF;
+  background: #e3f2fd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-icon.icon-pending {
+  color: #3B7DBF;
+  background: #e3f2fd;
+}
+
+.payment-icon.icon-success {
+  color: #4caf50;
+  background: #e8f5e9;
+}
+
+.payment-icon.icon-error {
+  color: #f44336;
+  background: #ffebee;
+}
+
+.payment-icon.icon-warning {
+  color: #ff9800;
+  background: #fff8e1;
+}
+
+.payment-text h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.payment-text small {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+/* Style for Request FRP Payment button */
+.payment-request-card button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #3B7DBF 0%, #2D5A8C 100%);
+  color: white;
+  border: none;
+  font-weight: 600;
+  padding: 10px 24px;
+  min-width: 180px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(59, 125, 191, 0.3);
+}
+
+.payment-request-card button[mat-raised-button][color="primary"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2D5A8C 0%, #1f3d5c 100%);
+  box-shadow: 0 4px 16px rgba(59, 125, 191, 0.4);
+  transform: translateY(-2px);
+}
+
+.payment-request-card button[mat-raised-button][color="primary"]:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 125, 191, 0.3);
+}
+
+.payment-request-card button[mat-raised-button][color="primary"] mat-icon {
+  margin-right: 8px;
+}
+
+/* FRP Request Button specific styling */
+.frp-request-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+
+.frp-request-button:disabled {
+  opacity: 0.7;
+}
+
+.deactivated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background-color: transparent;
+  color: #c62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.deactivated-badge mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #c62828;
+  flex-shrink: 0;
+}
+
+.header-actions button{
+  pointer-events: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .settlements-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .totals-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .payment-request-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payment-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

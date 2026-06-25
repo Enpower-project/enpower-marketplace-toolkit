@@ -1,0 +1,9 @@
+{
+  "errors": {
+    "user_not_found": "Usuario no encontrado",
+    "wallet_not_found": "Billetera no encontrada",
+    "invalid_pin": "PIN inválido",
+    "blockchain_error": "Ocurrió un error en la blockchain",
+    "contract_error": "Ocurrió un error en el contrato inteligente"
+  }
+}

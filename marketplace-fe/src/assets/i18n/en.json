@@ -1,0 +1,177 @@
+{
+  "market": {
+    "list": {
+      "title": "Markets",
+      "createButton": "Create New Market",
+      "noData": "No markets found. Create your first market!",
+      "columns": {
+        "name": "Market Name",
+        "description": "Description",
+        "region": "Region",
+        "ownerEmail": "Market Owner",
+        "state": "State",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "create": {
+      "title": "Create Market",
+      "subtitle": "Create a new energy marketplace with Market Owner assignment",
+      "fields": {
+        "name": {
+          "label": "Market Name",
+          "placeholder": "e.g., Mercato Energia Roma Nord",
+          "required": "Market name is required",
+          "minlength": "Market name must be at least 3 characters"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Describe the market purpose and characteristics",
+          "required": "Description is required",
+          "minlength": "Description must be at least 10 characters"
+        },
+        "ownerEmail": {
+          "label": "Market Owner Email",
+          "placeholder": "owner@example.com",
+          "required": "Market Owner email is required",
+          "email": "Please enter a valid email address",
+          "hint": "If this email doesn't exist, a new Market Owner will be created with temporary credentials."
+        },
+        "dsoAddress": {
+          "label": "DSO Address",
+          "placeholder": "e.g., Via Roma 123, Rome",
+          "required": "DSO Address is required"
+        },
+        "region": {
+          "label": "Region",
+          "placeholder": "e.g., Lazio",
+          "required": "Region is required"
+        }
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create Market",
+        "creating": "Creating..."
+      },
+      "confirmation": {
+        "title": "Create Market",
+        "message": "Are you sure you want to create this market? If the Market Owner email doesn't exist, a new user will be created and notified."
+      }
+    },
+    "delete": {
+      "title": "Delete Market",
+      "message": "Are you sure you want to delete this market?",
+      "confirmButton": "Delete",
+      "cancelButton": "Cancel"
+    },
+    "states": {
+      "CREATED_OFFLINE": "Created Offline",
+      "PENDING_ACTIVATION": "Pending Activation",
+      "ACTIVE_ONCHAIN": "Active On-Chain"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "close": "Close",
+    "processing": "Processing..."
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "network": "Network error",
+    "validation": "Validation error",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "notFound": "Resource not found",
+    "serverError": "Server error"
+  },
+  "landing": {
+    "brand": "ENPOWER MARKETPLACE",
+    "welcome": {
+      "title": "Enpower Marketplace",
+      "tagline": "Power in our hands",
+      "description": "The innovative platform for energy trading and management. Join our energy marketplace community and discover new opportunities for sustainable energy trading.",
+      "welcomeBack": "Welcome back"
+    },
+    "features": {
+      "title": "Platform Features",
+      "market": {
+        "title": "Energy Markets",
+        "description": "Access and participate in energy markets with transparent pricing and efficient trading mechanisms."
+      },
+      "blockchain": {
+        "title": "Blockchain Security",
+        "description": "All transactions are secured by blockchain technology ensuring transparency and immutability."
+      },
+      "analytics": {
+        "title": "Advanced Analytics",
+        "description": "Real-time analytics and reporting to optimize your energy trading strategies."
+      }
+    },
+    "cta": {
+      "access": "Access Platform",
+      "goToMarkets": "Go to Markets",
+      "logout": "Logout"
+    },
+    "loading": {
+      "pleaseWait": "Please wait"
+    },
+    "footer": {
+      "copyright": "© 2026, Enpower Application. All Rights Reserved."
+    }
+  },
+  "invitation": {
+    "inviteUser": "Invite User",
+    "market": "Market",
+    "emailAddress": "Email Address",
+    "emailPlaceholder": "user@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "role": "Role",
+    "selectRole": "Select Role",
+    "roleRequired": "Please select a role",
+    "sendInvitation": "Send Invitation",
+    "frpAlreadyAssigned": "This market already has an FRP assigned",
+    "frpLimitHint": "Only one FRP is allowed per market",
+    "removeFRP": "Remove FRP",
+    "loadingInvitation": "Loading invitation details...",
+    "invalidInvitation": "Invalid Invitation",
+    "goToHome": "Go to Home",
+    "welcomeTitle": "You've Been Invited!",
+    "welcomeBack": "Welcome Back!",
+    "invitedBy": "Invited by",
+    "email": "Email",
+    "createAccount": "Create Your Account",
+    "existingUserTitle": "You Already Have an Account",
+    "existingUserMessage": "We've detected that you already have an account with us. By accepting this invitation, you'll gain access to this new market using your existing credentials.",
+    "loginUsername": "Your username",
+    "acceptInvitation": "Accept & Grant Access",
+    "firstName": "First Name",
+    "firstNameRequired": "First name is required",
+    "lastName": "Last Name",
+    "lastNameRequired": "Last name is required",
+    "username": "Username",
+    "usernameRequired": "Username is required",
+    "usernameMinLength": "Username must be at least 3 characters",
+    "password": "Password",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordPattern": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+    "passwordHint": "Must be at least 8 characters with uppercase, lowercase, number, and special character",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordMismatch": "Passwords do not match",
+    "acceptAndCreateAccount": "Accept Invitation & Create Account"
+  }
+}

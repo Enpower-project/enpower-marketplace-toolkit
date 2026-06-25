@@ -1,0 +1,75 @@
+<div class="market-subscription-modal">
+  <h2 mat-dialog-title>
+    <mat-icon>store</mat-icon>
+    Select Your Market
+  </h2>
+
+  <mat-dialog-content>
+    <p class="description">
+      You have access to multiple markets. Please select the market you want to work with:
+    </p>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-icon class="spinning">sync</mat-icon>
+      <p>Loading your markets...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Markets List -->
+    <div *ngIf="!loading && !error" class="markets-list">
+      <div *ngIf="markets.length === 0" class="no-markets">
+        <mat-icon>info</mat-icon>
+        <p>No markets available for your account.</p>
+      </div>
+
+      <mat-card *ngFor="let market of marketsFull"
+                class="market-card"
+                [class.selecting]="selectingMarketId === market.id"
+                (click)="selectMarket(market)"
+                [class.deactivated-card]="market.state == 'DEACTIVATED'"
+                >
+        <mat-card-header>
+          <mat-icon mat-card-avatar>{{market.state == 'DEACTIVATED' ? 'warning' : 'energy_savings_leaf'}}</mat-icon>
+          <mat-card-title>{{ market.name }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="market-status deactivated-status" *ngIf="market.state === 'DEACTIVATED'">
+            <mat-icon>remove_circle</mat-icon>
+            <span>Deactivated</span>
+          </div>
+          <div class="market-status" *ngIf="market.state != 'DEACTIVATED'">
+            <mat-icon>check_circle</mat-icon>
+            <span>Available</span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [disabled]="selectingMarketId !== null">
+            <span class="button-content">
+              <mat-icon *ngIf="selectingMarketId === market.id" class="button-spinner spinning">sync</mat-icon>
+              <mat-icon *ngIf="selectingMarketId !== market.id">arrow_forward</mat-icon>
+              <span>{{ selectingMarketId === market.id ? 'Selecting...' : 'Select Market' }}</span>
+            </span>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button 
+            *ngIf="(error || markets.length === 0) && !loading" 
+            (click)="loadUserMarkets()"
+            class="retry-button">
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </mat-dialog-actions>
+</div>

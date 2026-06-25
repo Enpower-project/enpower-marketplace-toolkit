@@ -1,0 +1,158 @@
+<div class="details-body">
+    <div class="metadata-timestamp-container">
+        <div class="primary-container">
+            <div class="body-header metadata-header">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M9 18C6.48333 18 4.35417 17.6125 2.6125 16.8375C0.870833 16.0625 0 15.1167 0 14V4C0 2.9 0.879167 1.95833 2.6375 1.175C4.39583 0.391667 6.51667 0 9 0C11.4833 0 13.6042 0.391667 15.3625 1.175C17.1208 1.95833 18 2.9 18 4V14C18 15.1167 17.1292 16.0625 15.3875 16.8375C13.6458 17.6125 11.5167 18 9 18ZM9 6.025C10.4833 6.025 11.975 5.8125 13.475 5.3875C14.975 4.9625 15.8167 4.50833 16 4.025C15.8167 3.54167 14.9792 3.08333 13.4875 2.65C11.9958 2.21667 10.5 2 9 2C7.48333 2 5.99583 2.2125 4.5375 2.6375C3.07917 3.0625 2.23333 3.525 2 4.025C2.23333 4.525 3.07917 4.98333 4.5375 5.4C5.99583 5.81667 7.48333 6.025 9 6.025ZM9 11C9.7 11 10.375 10.9667 11.025 10.9C11.675 10.8333 12.2958 10.7375 12.8875 10.6125C13.4792 10.4875 14.0375 10.3333 14.5625 10.15C15.0875 9.96667 15.5667 9.75833 16 9.525V6.525C15.5667 6.75833 15.0875 6.96667 14.5625 7.15C14.0375 7.33333 13.4792 7.4875 12.8875 7.6125C12.2958 7.7375 11.675 7.83333 11.025 7.9C10.375 7.96667 9.7 8 9 8C8.3 8 7.61667 7.96667 6.95 7.9C6.28333 7.83333 5.65417 7.7375 5.0625 7.6125C4.47083 7.4875 3.91667 7.33333 3.4 7.15C2.88333 6.96667 2.41667 6.75833 2 6.525V9.525C2.41667 9.75833 2.88333 9.96667 3.4 10.15C3.91667 10.3333 4.47083 10.4875 5.0625 10.6125C5.65417 10.7375 6.28333 10.8333 6.95 10.9C7.61667 10.9667 8.3 11 9 11ZM9 16C9.76667 16 10.5458 15.9417 11.3375 15.825C12.1292 15.7083 12.8583 15.5542 13.525 15.3625C14.1917 15.1708 14.75 14.9542 15.2 14.7125C15.65 14.4708 15.9167 14.225 16 13.975V11.525C15.5667 11.7583 15.0875 11.9667 14.5625 12.15C14.0375 12.3333 13.4792 12.4875 12.8875 12.6125C12.2958 12.7375 11.675 12.8333 11.025 12.9C10.375 12.9667 9.7 13 9 13C8.3 13 7.61667 12.9667 6.95 12.9C6.28333 12.8333 5.65417 12.7375 5.0625 12.6125C4.47083 12.4875 3.91667 12.3333 3.4 12.15C2.88333 11.9667 2.41667 11.7583 2 11.525V14C2.08333 14.25 2.34583 14.4917 2.7875 14.725C3.22917 14.9583 3.78333 15.1708 4.45 15.3625C5.11667 15.5542 5.85 15.7083 6.65 15.825C7.45 15.9417 8.23333 16 9 16Z"
+                        fill="#00488D" />
+                </svg>
+                <h3>Metadata</h3>
+            </div>
+            <div class="metadata-body">
+                <div class="metadata-item">
+                    <p class="item-title">Offering Name</p>
+                    <p class="item-info">{{entry.offeringName}}</p>
+                </div>
+                <div class="metadata-item">
+                    <p class="item-title">Source File ID</p>
+                    @if(entry.sourceFileId){
+                    <p class="item-info">{{entry.sourceFileId}}</p>
+                    }@else {
+                    <p class="item-info">There's no source file Id saved for this file</p>
+                    }
+                </div>
+
+                <div class="metadata-item">
+                    <p class="item-title">Original Filename</p>
+                    <p class="item-info">{{entry.originalFileName}}</p>
+                </div>
+                <div class="metadata-item">
+                    <p class="item-title">Mime Type</p>
+                    <p class="item-info">{{entry.mimeType}}</p>
+                </div>
+            </div>
+
+            <div class="metadata-footer">
+                <div class="metadata-item">
+                    <p class="item-title">File Hash (Sha-256)</p>
+                    @if(entry.fileHash){
+                    <p class="item-sha item-info">{{entry.fileHash}}</p>
+                    }@else {
+                    <p class="item-sha item-info">There's no hash saved for this file</p>
+                    }
+
+                </div>
+                <div class="metadata-item">
+                    <p class="item-title">File Size</p>
+                    <p class="item-info">{{`${(entry.fileSize!)/ 1000} KB`}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timestamp-container secondary-container">
+            <div class="body-header timestamp-header">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M13.3 14.7L14.7 13.3L11 9.6V5H9V10.4L13.3 14.7ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20ZM10 18C12.2167 18 14.1042 17.2208 15.6625 15.6625C17.2208 14.1042 18 12.2167 18 10C18 7.78333 17.2208 5.89583 15.6625 4.3375C14.1042 2.77917 12.2167 2 10 2C7.78333 2 5.89583 2.77917 4.3375 4.3375C2.77917 5.89583 2 7.78333 2 10C2 12.2167 2.77917 14.1042 4.3375 15.6625C5.89583 17.2208 7.78333 18 10 18Z"
+                        fill="#00488D" />
+                </svg>
+
+                <h3>Timestamps</h3>
+            </div>
+            <div class="timestamp-body">
+
+                <div class="metadata-item created-timestamp">
+                    <div class="timestamp-text">
+                        <p class="item-title">CREATED</p>
+                        <p class="item-info">{{entry.entryCreationTimestamp | date:'MMM dd, yyyy · HH:mm:ss'}}</p>
+                    </div>
+                </div>
+
+                <div class="metadata-item translated-timestamp">
+                    <div class="timestamp-text">
+                        <p class="item-title">TRANSLATED</p>
+                        @if (entry.translationTimestamp) {
+                        <p class="item-info">{{entry.translationTimestamp | date:'MMM dd, yyyy · HH:mm:ss'}}</p>
+                        } @else {
+                        <p class="item-info-missing">The file hasn't been translated yet</p>
+                        }
+                    </div>
+                </div>
+
+                <div class="metadata-item synchronized-timestamp">
+                    <div class="timestamp-text">
+                        <p class="item-title">SYNCHRONIZED</p>
+                        @if (entry.synchronizationTimestamp) {
+                        <p class="item-info">{{entry.synchronizationTimestamp | date:'MMM dd, yyyy · HH:mm:ss'}}</p>
+                        } @else {
+                        <p class="item-info-missing">The file hasn't been synchronized yet</p>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="system-status-container">
+        <div class="system-info-container secondary-container">
+            <div class="body-header">
+                <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M2 16C1.45 16 0.979167 15.8042 0.5875 15.4125C0.195833 15.0208 0 14.55 0 14V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H8L10 2H18C18.55 2 19.0208 2.19583 19.4125 2.5875C19.8042 2.97917 20 3.45 20 4H9.175L7.175 2H2V14L4.4 6H21.5L18.925 14.575C18.7917 15.0083 18.5458 15.3542 18.1875 15.6125C17.8292 15.8708 17.4333 16 17 16H2ZM4.1 14H17L18.8 8H5.9L4.1 14ZM4.1 14L5.9 8L4.1 14ZM2 4V2V4Z"
+                        fill="#00488D" />
+                </svg>
+
+                <h3>System Paths</h3>
+            </div>
+            <div class="system-body">
+                <div class="metadata-item">
+                    <div class="timestamp-text">
+                        <p class="item-title">ARCHIVE PATH</p>
+                        @if (entry.localArchivePath) {
+                        <p class="item-info system-info">{{entry.localArchivePath}}</p>
+                        } @else {
+                        <p class="item-info-missing">The file hasn't been synchronized yet</p>
+                        }
+                    </div>
+                </div>
+
+                <div class="metadata-item">
+                    <div class="timestamp-text">
+                        <p class="item-title">TRANSLATED PATH</p>
+                        @if (entry.translatedFilePath) {
+                        <p class="item-info system-info">{{entry.translatedFilePath}}</p>
+                        } @else {
+                        <p class="item-info-missing">The file hasn't been translated yet</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="primary-container status-history-container">
+            <div class="status-header">
+                <div class="body-header">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M9 18C6.7 18 4.69583 17.2375 2.9875 15.7125C1.27917 14.1875 0.3 12.2833 0.05 10H2.1C2.33333 11.7333 3.10417 13.1667 4.4125 14.3C5.72083 15.4333 7.25 16 9 16C10.95 16 12.6042 15.3208 13.9625 13.9625C15.3208 12.6042 16 10.95 16 9C16 7.05 15.3208 5.39583 13.9625 4.0375C12.6042 2.67917 10.95 2 9 2C7.85 2 6.775 2.26667 5.775 2.8C4.775 3.33333 3.93333 4.06667 3.25 5H6V7H0V1H2V3.35C2.85 2.28333 3.8875 1.45833 5.1125 0.875C6.3375 0.291667 7.63333 0 9 0C10.25 0 11.4208 0.2375 12.5125 0.7125C13.6042 1.1875 14.5542 1.82917 15.3625 2.6375C16.1708 3.44583 16.8125 4.39583 17.2875 5.4875C17.7625 6.57917 18 7.75 18 9C18 10.25 17.7625 11.4208 17.2875 12.5125C16.8125 13.6042 16.1708 14.5542 15.3625 15.3625C14.5542 16.1708 13.6042 16.8125 12.5125 17.2875C11.4208 17.7625 10.25 18 9 18ZM11.8 13.2L8 9.4V4H10V8.6L13.2 11.8L11.8 13.2Z"
+                            fill="#00488D" />
+                    </svg>
+                    <h3>Status Lifecycle</h3>
+                </div>
+
+                <button class="change-status-button" (click)="onChangeStatus()">
+                    <svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M0 7.5V6H5.25V7.5H0ZM0 4.5V3H8.25V4.5H0ZM0 1.5V0H8.25V1.5H0ZM6.75 12V9.69375L10.8938 5.56875C11.0063 5.45625 11.1313 5.375 11.2688 5.325C11.4062 5.275 11.5437 5.25 11.6812 5.25C11.8312 5.25 11.975 5.27812 12.1125 5.33437C12.25 5.39062 12.375 5.475 12.4875 5.5875L13.1812 6.28125C13.2812 6.39375 13.3594 6.51875 13.4156 6.65625C13.4719 6.79375 13.5 6.93125 13.5 7.06875C13.5 7.20625 13.475 7.34687 13.425 7.49062C13.375 7.63438 13.2937 7.7625 13.1812 7.875L9.05625 12H6.75ZM12.375 7.06875L11.6812 6.375L12.375 7.06875ZM7.875 10.875H8.5875L10.8562 8.5875L10.5188 8.23125L10.1625 7.89375L7.875 10.1625V10.875ZM10.5188 8.23125L10.1625 7.89375L10.8562 8.5875L10.5188 8.23125Z"
+                            fill="#005FB8" />
+                    </svg>
+
+                    Change Status
+                </button>
+            </div>
+
+
+            <app-status-history-items-list [items]="statusHistoryItems" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+<!-- Only show market info for users who need market context (not market_crud) -->
+<ng-container *ngIf="shouldShowMarketInfo">
+    <div class="market-info" *ngIf="currentMarket">
+      <button
+        mat-button
+        class="market-button"
+        [matMenuTriggerFor]="marketMenu"
+        [disabled]="isLoading || isSwitching"
+        [matTooltip]="getTooltipText()"
+        matTooltipPosition="below">
+        <mat-icon style="color: #00234eff;">store</mat-icon>
+        <span class="market-name">{{ getMarketDisplayName(currentMarket) }}</span>
+        <mat-icon class="dropdown-icon" [class.loading]="isSwitching">
+          {{ isSwitching ? 'hourglass_empty' : 'arrow_drop_down' }}
+        </mat-icon>
+      </button>
+
+      <mat-menu #marketMenu="matMenu" class="market-menu">
+        <div class="menu-header">
+          <mat-icon>store</mat-icon>
+          <span>Switch Market</span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div *ngIf="loadingMarkets" class="menu-loading">
+          <mat-icon>hourglass_empty</mat-icon>
+          <span>Loading markets...</span>
+        </div>
+
+        <ng-container *ngIf="!loadingMarkets">
+          <button
+            mat-menu-item
+            *ngFor="let market of availableMarkets"
+            [disabled]="market === currentMarket || isSwitching"
+            (click)="switchToMarket(market)"
+            [class.current-market]="market === currentMarket"
+            [class.deactivated-market]="isMarketDeactivated && market === currentMarket"
+            >
+            <mat-icon>{{ market === currentMarket ? isMarketDeactivated ?  'remove_circle'  : 'check_circle' : 'store' }}</mat-icon>
+            <span>{{ getMarketDisplayName(market) }}</span>
+            <span *ngIf="market === currentMarket" class="current-label" [class.deactivated-label]="isMarketDeactivated">{{isMarketDeactivated ? '(deactivated)' : '(current)'}}</span>
+          </button>
+
+          <div *ngIf="availableMarkets.length === 0" class="no-markets">
+            <mat-icon>info</mat-icon>
+            <span>No other markets available</span>
+          </div>
+        </ng-container>
+
+        <mat-divider *ngIf="!loadingMarkets && availableMarkets.length > 0"></mat-divider>
+
+        <button mat-menu-item (click)="refreshMarkets(); $event.stopPropagation()" [disabled]="loadingMarkets || isSwitching">
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh Markets</span>
+        </button>
+      </mat-menu>
+    </div>
+
+    <div class="market-info loading" *ngIf="isLoading">
+      <mat-icon class="loading-spinner">sync</mat-icon>
+    </div>
+
+    <div class="market-info error" *ngIf="!currentMarket && !isLoading">
+      <mat-icon>error_outline</mat-icon>
+      <span>No market selected</span>
+    </div>
+</ng-container>

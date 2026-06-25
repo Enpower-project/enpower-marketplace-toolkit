@@ -1,0 +1,76 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3>{{ title }}</h3>
+      <button class="close-button" (click)="onCancel()" [disabled]="submitting">&times;</button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <p class="message">{{ message }}</p>
+
+      <form (ngSubmit)="onSubmit()" #pinForm="ngForm">
+        <!-- PIN Input -->
+        <div class="form-group">
+          <label for="pin">PIN * (6 digits)</label>
+          <div class="pin-input-group">
+            <input [type]="showPin ? 'text' : 'password'" id="pin" name="pin" [(ngModel)]="pin"
+              (input)="onPinInput($event)" required maxlength="6" class="pin-input" [disabled]="submitting"
+              placeholder="Enter 6-digit PIN" autocomplete="off" inputmode="numeric" />
+            <button type="button" class="toggle-pin-button" (click)="togglePinVisibility()" [disabled]="submitting">
+              <mat-icon>{{ showPin ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <!-- Financial Summary -->
+        <div *ngIf="offerValue > 0" class="financial-summary">
+          <h4 class="summary-title">Transaction Summary</h4>
+          <div class="summary-row">
+            <span class="summary-label">Offer Value:</span>
+            <span class="summary-value">{{ offerValue | number: '1.2-2' }} FLEX</span>
+          </div>
+          <div class="summary-row highlight-collateral">
+            <span class="summary-label">Collateral to Deposit (5%):</span>
+            <span class="summary-value"> {{ collateral | number: '1.2-2' }} FLEX</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Platform Fee (2%):</span>
+            <span class="summary-value fee">{{ platformFee | number: '1.2-2'}} FLEX</span>
+          </div>
+          <div class="summary-row highlight-tokens">
+            <span class="summary-label">FLEX Tokens to Receive:</span>
+            <span class="summary-value">{{ flexTokens | number: '1.2-2' }} FLEX</span>
+          </div>
+        </div>
+
+        <!-- Info Message -->
+        <div class="info-message">
+          <strong>Note:</strong> This will execute two blockchain transactions:
+          <ol>
+            <li>Approve collateral tokens (5% of offer value)</li>
+            <li>Publish offer to blockchain</li>
+          </ol>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="button" class="cancel-button" (click)="onCancel()" [disabled]="submitting">
+            Cancel
+          </button>
+          <button type="submit" class="submit-button" [disabled]="submitting || !pinForm.valid">
+            <div class="spinner-small" *ngIf="submitting"></div>
+            <span *ngIf="!submitting">Confirm</span>
+            <span *ngIf="submitting">Processing...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

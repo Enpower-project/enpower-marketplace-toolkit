@@ -1,0 +1,252 @@
+.flexibility-comparison-card {
+  margin: 16px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.card-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.offer-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.offer-id {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.hour-slot {
+  font-size: 0.9rem;
+  color: #666;
+  padding: 4px 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.delivery-date {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Deviation Badge */
+.deviation-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.deviation-badge mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.deviation-over {
+  background: #e8f8ef;
+  color: #27ae60;
+}
+
+.deviation-under {
+  background: #fdf2f2;
+  color: #e74c3c;
+}
+
+.deviation-exact {
+  background: #f0f7ff;
+  color: #3498db;
+}
+
+/* Comparison Section */
+.comparison-section {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comparison-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.comparison-row .label {
+  min-width: 180px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.value-bar {
+  flex: 1;
+  position: relative;
+  height: 36px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.theoretical-bar .bar-fill {
+  background: linear-gradient(90deg, #3498db, #5dade2);
+}
+
+.actual-bar .bar-fill {
+  background: linear-gradient(90deg, #27ae60, #52c77a);
+}
+
+.actual-bar.progress-warning .bar-fill {
+  background: linear-gradient(90deg, #f39c12, #f5b041);
+}
+
+.actual-bar.progress-danger .bar-fill {
+  background: linear-gradient(90deg, #e74c3c, #ec7063);
+}
+
+.bar-value {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+  line-height: 36px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Progress Section */
+.progress-section {
+  margin: 24px 0;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-label span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.progress-percentage {
+  font-weight: 600;
+}
+
+::ng-deep .progress-good .mdc-linear-progress__bar-inner {
+  border-color: #27ae60 !important;
+}
+
+::ng-deep .progress-warning .mdc-linear-progress__bar-inner {
+  border-color: #f39c12 !important;
+}
+
+::ng-deep .progress-danger .mdc-linear-progress__bar-inner {
+  border-color: #e74c3c !important;
+}
+
+/* Financial Section */
+.financial-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.financial-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.financial-row.penalty {
+  background: #fdf2f2;
+}
+
+.financial-row.success {
+  background: #e8f8ef;
+}
+
+.financial-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #666;
+}
+
+.financial-row.penalty .financial-icon {
+  color: #e74c3c;
+}
+
+.financial-row.success .financial-icon {
+  color: #27ae60;
+}
+
+.financial-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.financial-label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.financial-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.penalty-value {
+  color: #e74c3c;
+}
+
+.success-value {
+  color: #27ae60;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .comparison-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .comparison-row .label {
+    min-width: unset;
+  }
+
+  .value-bar {
+    width: 100%;
+  }
+}

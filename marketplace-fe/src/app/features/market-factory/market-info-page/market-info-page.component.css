@@ -1,0 +1,1431 @@
+/* Global icon fixes */
+::ng-deep mat-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+.market-info-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  height: auto;
+  overflow: visible !important;
+}
+
+/* Remove any potential scrollbars from parent containers */
+:host {
+  display: block;
+  overflow: visible !important;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #00234e;
+  margin: 0 0 8px 0;
+}
+
+.page-title mat-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.page-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+  margin-left: 44px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 64px;
+}
+
+.spinner-wrapper {
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #00234e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-wrapper p {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Error State */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px;
+  text-align: center;
+}
+
+.error-container mat-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.error-container h3 {
+  color: #d32f2f;
+  margin: 0 0 8px 0;
+}
+
+.error-container p {
+  color: #666;
+  margin: 0 0 24px 0;
+  max-width: 400px;
+}
+
+/* Market Details */
+.market-details {
+  display: grid;
+  gap: 24px;
+  height: auto;
+  overflow: visible;
+}
+
+.info-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 35, 78, 0.1);
+  border: 1px solid rgba(0, 35, 78, 0.08);
+  height: auto;
+  overflow: visible;
+  margin-bottom: 20px;
+}
+
+/* Users Card Styles */
+.users-card {
+  border-left: 5px solid #274b95;
+}
+
+.users-actions {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-bottom: 1px solid rgba(39, 75, 149, 0.1);
+}
+
+.users-actions button {
+  background: linear-gradient(135deg, #274b95 0%, #1a3568 100%) !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(39, 75, 149, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.users-actions button:hover {
+  background: linear-gradient(135deg, #1a3568 0%, #0f1f3d 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(39, 75, 149, 0.35);
+}
+
+.users-actions button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.users-table-section {
+  margin-top: 0;
+}
+
+.users-table {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+::ng-deep .users-table .mat-mdc-header-row {
+  background: #e8eef5 !important;
+}
+
+::ng-deep .users-table .mat-mdc-header-cell {
+  font-weight: 600 !important;
+  color: #274b95 !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 16px 12px !important;
+  border-bottom: 2px solid #274b95 !important;
+}
+
+::ng-deep .users-table .mat-mdc-cell {
+  color: #333 !important;
+  padding: 14px 12px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+::ng-deep .users-table .mat-mdc-row:hover {
+  background-color: #f8f9fa !important;
+  transition: background-color 0.2s ease !important;
+}
+
+/* Fallback for older Material versions */
+::ng-deep .users-table th.mat-header-cell {
+  font-weight: 600 !important;
+  color: #274b95 !important;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%) !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 16px 12px !important;
+  border-bottom: 2px solid #274b95 !important;
+}
+
+::ng-deep .users-table td.mat-cell {
+  color: #333 !important;
+  padding: 14px 12px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+::ng-deep .users-table tr.mat-row:hover {
+  background-color: #f8f9fa !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.no-users-message {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 2px dashed rgba(39, 75, 149, 0.3);
+}
+
+.no-users-icon {
+  color: #5a7ba6;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.no-users-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.no-users-title {
+  margin: 0;
+  color: #274b95;
+  font-weight: 600;
+}
+
+.no-users-description {
+  margin: 0;
+  color: #5a6c7d;
+  font-size: 0.95rem;
+}
+
+/* Delete button styling */
+.delete-button {
+  color: #d32f2f !important; /* red */
+  opacity: 1 !important; /* full visibility */
+}
+
+.delete-button .mat-icon {
+  color: #d32f2f !important; /* ensure icon inherits red */
+}
+
+/* Expansion Panel Styles */
+::ng-deep .info-card.mat-expansion-panel {
+  box-shadow: 0 4px 12px rgba(0, 35, 78, 0.1);
+  border: 1px solid rgba(0, 35, 78, 0.08);
+  overflow: visible !important;
+}
+
+::ng-deep .info-card .mat-expansion-panel-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px 24px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+::ng-deep .info-card .mat-expansion-panel-header-title {
+  color: #00234e;
+  font-weight: 600;
+  font-size: 1.3rem;
+  overflow: visible !important;
+}
+
+::ng-deep .info-card .mat-expansion-panel-body {
+  padding: 24px !important;
+  overflow: visible !important;
+}
+
+::ng-deep .info-card .mdc-evolution-list__list-item-container {
+  overflow: visible !important;
+}
+
+/* Force no overflow on all Material expansion panel internals */
+::ng-deep .mat-expansion-panel {
+  overflow: visible !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+::ng-deep .mdc-list__list-item-container {
+  overflow: visible !important;
+}
+
+::ng-deep .mat-mdc-expansion-panel-body {
+  overflow: visible !important;
+}
+
+::ng-deep .mat-accordion {
+  overflow: visible !important;
+}
+
+/* Disable scrollbars on any overflow elements */
+::ng-deep ::-webkit-scrollbar {
+  display: none;
+}
+
+::ng-deep * {
+  scrollbar-width: none;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.panel-header mat-icon {
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.header-title {
+  color: #00234e;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.header-subtitle {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.info-card mat-card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px 24px;
+  border-radius: 12px 12px 0 0;
+}
+
+.info-card mat-card-avatar {
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%);
+  color: white;
+}
+
+.info-card mat-card-title {
+  color: #00234e;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.info-card mat-card-subtitle {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.info-card mat-card-content {
+  padding: 24px;
+}
+
+/* Status Section */
+.status-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Status Chips */
+.status-active {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-pending {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.status-created {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-unknown {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.active-chip {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.inactive-chip {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+::ng-deep .mat-mdc-chip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-weight: 500 !important;
+  padding: 8px 12px !important;
+  border-radius: 16px !important;
+}
+
+::ng-deep .mat-mdc-chip mat-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Description Section */
+.description-section {
+  margin-bottom: 24px;
+}
+
+.description-section h4 {
+  color: #00234e;
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.description-section p {
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Metadata Section */
+.metadata-section {
+  margin-top: 24px;
+}
+
+.metadata-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.metadata-item mat-icon {
+  color: #00234e;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.metadata-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metadata-item .label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metadata-item .value {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Owner Information Grid */
+.owner-info {
+  margin-bottom: 16px;
+}
+
+.owner-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.owner-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #00234e;
+}
+
+.owner-item mat-icon {
+  color: #00234e;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.owner-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.owner-item .label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.owner-item .value {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Blockchain Information Grid */
+.blockchain-info {
+  margin-bottom: 16px;
+}
+
+.blockchain-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.blockchain-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+  border-radius: 8px;
+  border-left: 4px solid #1976d2;
+  position: relative;
+}
+
+.blockchain-item mat-icon:first-child {
+  color: #1976d2;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.blockchain-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.blockchain-item .label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.blockchain-item .value {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.blockchain-address {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem !important;
+  background: rgba(25, 118, 210, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #1976d2 !important;
+}
+
+.blockchain-item button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #1976d2;
+}
+
+.blockchain-item button:hover {
+  background: rgba(25, 118, 210, 0.1);
+}
+
+/* Configuration Grid */
+.config-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #00234e;
+}
+
+.config-item mat-icon {
+  color: #00234e;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.config-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.config-item .label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.config-item .value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Actions Card */
+.actions-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.actions-section {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.actions-section button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #00234e 0%, #003d82 100%) !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 12px 24px !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 35, 78, 0.2) !important;
+  border: none !important;
+  transition: all 0.3s ease;
+}
+
+.actions-section button:hover:not(:disabled) {
+  box-shadow: 0 8px 20px rgba(0, 35, 78, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+.actions-section button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions-section button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Wallet Card Specific Styles */
+.wallet-card {
+  border-left: 5px solid #1976d2;
+}
+
+.wallet-card .wallet-active {
+  color: #4caf50 !important;
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%) !important;
+}
+
+.wallet-card .wallet-inactive {
+  color: #f44336 !important;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%) !important;
+}
+
+.wallet-status-section {
+  margin-bottom: 16px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.status-indicator.wallet-configured {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+  border: 2px solid #c8e6c9;
+}
+
+.status-indicator.wallet-missing {
+  background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+  border: 2px solid #ffcdd2;
+}
+
+.status-indicator mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.status-indicator.wallet-configured mat-icon {
+  color: #4caf50;
+}
+
+.status-indicator.wallet-missing mat-icon {
+  color: #f44336;
+}
+
+.status-text {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.status-indicator.wallet-configured .status-text {
+  color: #2e7d32;
+}
+
+.status-indicator.wallet-missing .status-text {
+  color: #d32f2f;
+}
+
+.wallet-address-section {
+  margin: 20px 0;
+}
+
+.address-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+  border-radius: 12px;
+  border: 2px solid #bbdefb;
+}
+
+.address-display mat-icon {
+  color: #1976d2;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.address-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.address-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.address-value {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #1976d2;
+  font-weight: 600;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e3f2fd;
+}
+
+.copy-button {
+  color: #1976d2 !important;
+  background: rgba(25, 118, 210, 0.1) !important;
+}
+
+.copy-button:hover {
+  background: rgba(25, 118, 210, 0.2) !important;
+}
+
+.wallet-capabilities {
+  margin: 24px 0;
+}
+
+.wallet-capabilities h4 {
+  color: #2e7d32;
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.capabilities-list {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.capability-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #c8e6c9;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.1);
+}
+
+.capability-icon {
+  color: #4caf50;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.capability-item span {
+  font-size: 14px;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.wallet-warning {
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin: 24px 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.warning-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: #fff9e6;
+  border-left: 4px solid #fb8c00;
+}
+
+.warning-icon {
+  color: #fb8c00;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.warning-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.wallet-creation-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.create-wallet-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 200px;
+  height: 44px;
+  border-radius: 4px;
+  background: #274b95;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.create-wallet-btn:hover {
+  background: #1e3a75;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.create-wallet-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.create-wallet-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.create-wallet-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9e9e9e;
+  box-shadow: none;
+}
+
+.create-wallet-btn:disabled:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.creation-note {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 450px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .market-info-page {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+    margin-left: 36px;
+  }
+
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .owner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blockchain-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blockchain-item {
+    padding: 12px;
+  }
+
+  .blockchain-item button {
+    position: static;
+    margin-left: auto;
+  }
+
+  .status-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions-section {
+    flex-direction: column;
+  }
+
+  .actions-section button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-card mat-card-content {
+    padding: 16px;
+  }
+
+  .info-card mat-card-header {
+    padding: 16px;
+  }
+
+  .page-title mat-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Blockchain Activation Card Styles */
+.blockchain-card {
+  .mat-card-avatar {
+    transition: all 0.3s ease;
+
+    &.blockchain-active {
+      color: #4caf50;
+      background-color: rgba(76, 175, 80, 0.1);
+    }
+
+    &.blockchain-inactive {
+      color: #ff9800;
+      background-color: rgba(255, 152, 0, 0.1);
+    }
+  }
+}
+
+.blockchain-status-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    &.blockchain-activated {
+      background-color: rgba(76, 175, 80, 0.1);
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+
+      mat-icon {
+        color: #4caf50;
+      }
+    }
+
+    &.blockchain-pending {
+      background-color: rgba(255, 152, 0, 0.1);
+      border: 2px solid #ff9800;
+      color: #e65100;
+
+      mat-icon {
+        color: #ff9800;
+      }
+    }
+
+    .status-text {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+}
+
+.blockchain-address-section {
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  .address-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    > mat-icon {
+      color: #1976d2;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .address-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+
+      .address-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .address-value {
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1976d2;
+        word-break: break-all;
+      }
+    }
+
+    .copy-button {
+      flex-shrink: 0;
+      color: #1976d2;
+
+      &:hover {
+        background-color: rgba(25, 118, 210, 0.08);
+      }
+    }
+  }
+}
+
+.blockchain-benefits {
+  h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.87);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .benefits-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background-color: rgba(76, 175, 80, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #4caf50;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: rgba(76, 175, 80, 0.1);
+        transform: translateX(4px);
+      }
+
+      .benefit-icon {
+        color: #4caf50;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      span {
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+    }
+  }
+}
+
+.blockchain-warning {
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin: 24px 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.blockchain-warning .warning-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: #e3f2fd;
+  border-left: 4px solid #1976d2;
+}
+
+.blockchain-warning .warning-icon {
+  color: #1976d2;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.blockchain-warning .warning-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.blockchain-warning .warning-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.blockchain-warning .warning-description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.blockchain-warning .activation-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.blockchain-warning .activate-blockchain-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 240px;
+  height: 44px;
+  border-radius: 4px;
+  background: #274b95;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.blockchain-warning .activate-blockchain-btn:not(:disabled):hover {
+  background: #1e3a75;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.blockchain-warning .activate-blockchain-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.blockchain-warning .activate-blockchain-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.blockchain-warning .activate-blockchain-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9e9e9e;
+  box-shadow: none;
+}
+
+.blockchain-warning .activate-blockchain-btn:disabled:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.blockchain-warning .activation-note {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 450px;
+}
+
+.blockchain-warning .activation-note.warning-text {
+  color: #fb8c00;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  background: #fff9e6;
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: 1px solid #ffe0b2;
+}
+
+.blockchain-warning .activation-note.warning-text .inline-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.deactivation-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background-color: #fdecea;
+  border-left: 4px solid #f44336;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  color: #b71c1c;
+}
+
+.deactivation-banner mat-icon {
+  color: #f44336;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.deactivation-banner h3 {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.deactivation-banner p {
+  margin: 0;
+  font-size: 14px;
+  color: #c62828;
+}
+
+.status-deactivated {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+}
+
+.users-actions button[disabled] {
+  pointer-events: auto;
+  background-color: #e0e0e0 !important;
+  color: gray !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .blockchain-benefits {
+    .benefits-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .blockchain-address-section {
+    .address-display {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .address-info {
+        width: 100%;
+      }
+
+      .copy-button {
+        align-self: flex-end;
+      }
+    }
+  }
+}

@@ -1,0 +1,159 @@
+    .market-selection-modal {
+      min-width: 400px;
+      max-width: 500px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 16px;
+    }
+
+    .modal-icon {
+      color: #1976d2;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .modal-content {
+      padding: 0;
+      min-height: 120px;
+    }
+
+    .modal-message {
+      margin-bottom: 24px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .market-select-field {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    /* Fix for mat-select options background */
+    ::ng-deep .mat-mdc-select-panel {
+      background: white !important;
+    }
+
+    ::ng-deep .mat-mdc-option {
+      background: white !important;
+      color: #333 !important;
+    }
+
+    ::ng-deep .mat-mdc-option:hover {
+      background: #f5f5f5 !important;
+    }
+
+    ::ng-deep .mat-mdc-option.mdc-list-item--selected {
+      background: #e3f2fd !important;
+      color: #1976d2 !important;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 16px;
+    }
+
+    .error-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .error-message mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .error-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .retry-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 8px;
+      min-height: 32px;
+    }
+
+    .retry-button mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 0 0 0;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 16px;
+    }
+
+    .cancel-button {
+      min-width: 80px;
+    }
+
+    .confirm-button {
+      min-width: 100px;
+      position: relative;
+    }
+
+    .confirm-button mat-spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .confirm-button span {
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      visibility: visible;
+    }
+
+    .confirm-button.loading span {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .confirm-button mat-spinner {
+      color: white;
+    }
+
+    @media (max-width: 480px) {
+      .market-selection-modal {
+        min-width: 300px;
+        max-width: 90vw;
+      }
+
+      .modal-actions {
+        flex-direction: column-reverse;
+        gap: 8px;
+      }
+
+      .cancel-button,
+      .confirm-button {
+        width: 100%;
+      }
+    }

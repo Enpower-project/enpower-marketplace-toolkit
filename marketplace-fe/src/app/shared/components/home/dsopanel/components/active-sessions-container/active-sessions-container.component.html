@@ -1,0 +1,82 @@
+<!-- Loading Spinner -->
+<div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-wrapper">
+        <div class="spinner"></div>
+        <p>Loading market information...</p>
+    </div>
+</div>
+
+<div class="empty-state" *ngIf="getFilteredSessions().length <= 0">
+    <p>There's no sessions available right now</p>
+</div>
+
+<div *ngIf="!isLoading && getFilteredSessions().length > 0" class="sessions-grid">
+    <mat-card *ngFor="let session of getFilteredSessions(); trackBy: trackBySessionId" class="session-card"
+        [style.--status-color]="'#4CAF50'">
+
+        <mat-card-header>
+            <div mat-card-avatar class="session-avatar">
+                <mat-icon>event</mat-icon>
+            </div>
+            <mat-card-title>{{ session.name }}</mat-card-title>
+            <mat-card-subtitle>
+                {{ formatDate(session.sessionDate) }}
+            </mat-card-subtitle>
+        </mat-card-header>
+
+        <div class="status-chip">
+            <mat-chip [ngClass]="'green'" selected>
+                {{ 'Active-Offers Open' }}
+            </mat-chip>
+        </div>
+
+        <mat-card-content>
+            <div class="session-info">
+                <div class="info-row">
+                    <mat-icon>schedule</mat-icon>
+                    <span>{{ session.totalBids }} time slots</span>
+                </div>
+                <div class="info-row">
+                    <mat-icon>flash_on</mat-icon>
+                    <span>{{ session.totalPowerMw | number:'1.2-2' }} KW total</span>
+                </div>
+                <div class="info-row">
+                    <mat-icon>euro_symbol</mat-icon>
+                    <span>{{ session.averagePricePerMwh | number:'1.2-2' }} €/KWh avg</span>
+                </div>
+                <div class="info-row" *ngIf="session.description">
+                    <mat-icon>description</mat-icon>
+                    <span class="description">{{ session.description }}</span>
+                </div>
+                <div class="info-row" *ngIf="session.contractAddress">
+                    <mat-icon>link</mat-icon>
+                    <span class="contract-address">{{ session.contractAddress | slice:0:10 }}...{{
+                        session.contractAddress | slice:-8 }}</span>
+                </div>
+            </div>
+
+            <div class="session-metadata">
+                <div class="metadata-item">
+                    <mat-icon>person</mat-icon>
+                    <span>Created by {{ session.createdBy.username }}</span>
+                </div>
+                <div class="metadata-item">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span>{{ formatDateTime(session.createdAt) }}</span>
+                </div>
+            </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+            <button mat-button color="primary" (click)="viewSession(session)" class="action-button">
+                <mat-icon>visibility</mat-icon>
+                <span>View</span>
+            </button>
+
+            <!-- <button mat-button color="primary" (click)="viewOffers(session)" class="action-button">
+                <mat-icon>visibility</mat-icon>
+                <span>Check offers</span>
+            </button> -->
+        </mat-card-actions>
+    </mat-card>
+</div>

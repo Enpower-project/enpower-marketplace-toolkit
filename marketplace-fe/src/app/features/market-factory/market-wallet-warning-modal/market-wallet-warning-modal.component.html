@@ -1,0 +1,64 @@
+<div class="wallet-warning-modal">
+  <mat-dialog-content>
+    <div class="warning-header">
+      <mat-icon class="warning-icon">warning</mat-icon>
+      <h2>Wallet Required for Market Operations</h2>
+    </div>
+
+    <div class="warning-content">
+      <div class="warning-message">
+        <p class="primary-message">
+          The market <strong>"{{ data.marketName }}"</strong> does not have a wallet configured for blockchain operations.
+        </p>
+        <p class="secondary-message">
+          Without a wallet, this market cannot:
+        </p>
+        <ul class="limitations-list">
+          <li><mat-icon>block</mat-icon> Process energy transactions</li>
+          <li><mat-icon>block</mat-icon> Handle smart contract interactions</li>
+          <li><mat-icon>block</mat-icon> Manage flexibility tokens</li>
+          <li><mat-icon>block</mat-icon> Execute automated settlements</li>
+        </ul>
+      </div>
+
+      <div class="action-section" *ngIf="!isCreatingWallet">
+        <div class="action-info">
+          <mat-icon>info</mat-icon>
+          <p>As the market owner, you can create a secure wallet now. This will generate a unique PIN that you'll need to keep safe for future transactions.</p>
+        </div>
+      </div>
+
+      <div class="loading-section" *ngIf="isCreatingWallet">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="loading-text">Creating market wallet...</p>
+        <p class="loading-subtext">This may take a few moments to complete securely.</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="action-buttons" *ngIf="!isCreatingWallet && !walletCreated">
+      <button mat-button (click)="onCancel()">
+        Maybe Later
+      </button>
+      <button mat-raised-button color="primary" (click)="onCreateWallet()">
+        <mat-icon>account_balance_wallet</mat-icon>
+        Create Market Wallet
+      </button>
+    </div>
+
+    <div class="action-buttons" *ngIf="walletCreated">
+      <button mat-raised-button color="primary" (click)="onClose()">
+        <mat-icon>check</mat-icon>
+        Continue to Market
+      </button>
+    </div>
+
+    <div class="action-buttons" *ngIf="isCreatingWallet">
+      <button mat-raised-button color="primary" disabled>
+        <mat-icon class="spinning">sync</mat-icon>
+        <span>Creating...</span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

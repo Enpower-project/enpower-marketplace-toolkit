@@ -1,0 +1,34 @@
+<div class="main-container">
+  <h2 mat-dialog-title>Change Status</h2>
+  <mat-dialog-content class="dialog-container">
+    <div class="dialog-section current-section">
+      <p class="dialog-title">CURRENT STATUS</p>
+      <strong class="current-status" [ngClass]="data.status | statusBadgePipe">{{ data.status }}</strong>
+    </div>
+
+    <div class="dialog-section field-container">
+      <label class="field-label dialog-title">TARGET STATUS</label>
+      <select class="field-select" [(ngModel)]="selectedStatus">
+        @for (status of availableStatuses; track status) {
+        <option [value]="status" [disabled]="status === data.status">{{ status }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="dialog-section field-container">
+      <label class="field-label dialog-title">JUSTIFICATION <span class="required-label">(REQUIRED)</span></label>
+      <textarea class="field-input" name="" id="" [(ngModel)]="message"
+        placeholder="Reason for status change..."></textarea>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <div class="buttons-section">
+      <button class="dialog-button cancel-btn" (click)="onCancel()">Cancel</button>
+      <button class="dialog-button confirm-btn" 
+        matTooltip="The status must be different from the current one and the justification can't be empty"
+        [matTooltipDisabled]="isValid"
+        [disabled]="!isValid" 
+        (click)="onConfirm()">Confirm</button>
+    </div>
+  </mat-dialog-actions>
+</div>

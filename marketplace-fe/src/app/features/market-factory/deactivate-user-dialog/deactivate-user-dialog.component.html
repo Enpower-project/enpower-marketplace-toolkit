@@ -1,0 +1,17 @@
+<div class="deactivate-container">
+    <div class="deactivate-header">
+        <h2 mat-dialog-title>Are you sure you want to Deactivate the user <span class="username">{{data.username}}</span>?</h2>
+        <button mat-icon-button class="close-button" (click)="close()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content class="deactivate-content">
+        <p>If a user is deactivated they won't be able to access the marketplace</p>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button class="close-button" (click)="close()">Close</button>
+        <button mat-button class="remove-button" (click)="deactivateUser()">Deactivate user</button>
+    </mat-dialog-actions>
+</div>

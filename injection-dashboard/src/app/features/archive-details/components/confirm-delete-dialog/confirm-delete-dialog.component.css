@@ -1,0 +1,65 @@
+.delete-btn {
+  background-color: #BA1A1A;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 0.3em;
+  cursor: pointer;
+}
+
+.entry-id {
+  font-family: monospace;
+  font-size: 12px;
+  background: #F2F3FF;
+  padding: 6px 8px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.cancel-btn {
+  background: none;
+  border: none;
+  color: #131B2E;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.confirmation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.confirmation-label {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.9em;
+  line-height: 15px;
+  color: #727783;
+}
+
+.confirmation-input {
+  padding: 10px 4px;
+  background: #FFFFFF;
+  border-width: 1px 1px 2px 1px;
+  border-style: solid;
+  border-color: rgba(194, 198, 212, 0.3);
+}
+
+.delete-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #9B1515;
+}
