@@ -448,8 +448,5 @@ required to reproduce the results reported in the manuscript:
 | External Scheduler service | Proprietary orchestration service executing Groovy cron tasks | The ingestion pipeline is triggered manually via documented commands (see `FLEXIBILITY_GUIDE.md`, Section 6) instead of on a schedule. |
 | Protection Framework (ReBAC) | Not publicly released for security reasons | Access control is enforced by the included Keycloak realm; the additional ReBAC layer is not exercised. |
 
-The reproducible scope of this release therefore covers the ENPOWER Marketplace
-Toolkit and its ingestion microservice operating on the bundled example
-datasets — that is, the entirety of the software contribution described in this
-manuscript.
+The reproducible scope of this release therefore covers the ENPOWER Marketplace Toolkit and its ingestion microservice operating on the bundled example datasets — that is, the entirety of the software contribution described in this manuscript.
 

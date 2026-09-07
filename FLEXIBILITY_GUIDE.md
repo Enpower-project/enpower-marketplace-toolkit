@@ -218,9 +218,16 @@ sudo apt install python3-pandas python3-openpyxl -y
 
 CSV files are stored in `marketplace-be/test-data/IE/`.
 
+> **Note:** The Irish pilot dataset is bundled with this repository, including
+> both the source spreadsheet and the derived CSV files
+> (`datos_historicos.csv` and the `_STD` / `_MIN` / `_MAX` reference profiles).
+> Steps 1 and 2 below therefore only need to be re-run if you modify the source
+> data or want to regenerate the profiles from scratch; otherwise start at
+> step 3.
+
 ```bash
 # 1. Convert Excel to CSV (run on host, from marketplace-be/test-data/IE/)
-python3 -c "import pandas as pd; df=pd.read_excel('ESB_016_flex.xlsx'); df.to_csv('datos_historicos.csv', index=False)"
+python3 -c "import pandas as pd; df=pd.read_excel('ESB_016_flex_modificado.xlsx'); df.to_csv('datos_historicos.csv', index=False)"
 
 # 2. Generate STD/MIN/MAX profiles (run on host, from marketplace-be/)
 python3 scripts/build_profiles.py test-data/IE/datos_historicos.csv
@@ -240,57 +247,26 @@ docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-d
 docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/IE/datos_historicos.csv
 ```
 
-### Greek Pilot
+### Greek and Portuguese Pilots
 
-CSV files are stored in `marketplace-be/test-data/GR/`.
+The ingestion and profile-generation pipelines for the Greek and Portuguese
+pilots are fully implemented and included in this repository:
 
-```bash
-# 1. Convert Excel to CSV (run on host, from marketplace-be/)
-python3 -c "import pandas as pd; df=pd.read_excel('test-data/GR/prod_consumption.xlsx'); df.to_csv('test-data/GR/prod_consumption.csv', index=False)"
+| Pilot | Profile generation script | Seed script | Expected data directory |
+|---|---|---|---|
+| Greece | `marketplace-be/scripts/build_profiles_greek.py` | `dist/scripts/seed-greek-flexibility-data.js` | `marketplace-be/test-data/GR/` |
+| Portugal | `marketplace-be/scripts/build_profiles_portuguese.py` | `dist/scripts/seed-portuguese-flexibility-data.js` | `marketplace-be/test-data/PT/` |
 
-# 2. Generate STD/MIN/MAX profiles (run on host, from marketplace-be/)
-python3 scripts/build_profiles_greek.py test-data/GR/prod_consumption.csv
+**The Greek and Portuguese pilot datasets are not distributed with this
+repository.** They are held by the respective pilot operators. Only the Irish
+pilot dataset is bundled, and it is sufficient to exercise the complete
+ingestion and flexibility computation pipeline end to end.
 
-# 3. If files were added after the last build, copy them into the container (run from project root)
-docker cp marketplace-be/test-data/GR/prod_consumption.csv backend:/usr/src/app/test-data/GR/
-docker cp marketplace-be/test-data/GR/prod_consumption_STD.csv backend:/usr/src/app/test-data/GR/
-docker cp marketplace-be/test-data/GR/prod_consumption_MIN.csv backend:/usr/src/app/test-data/GR/
-docker cp marketplace-be/test-data/GR/prod_consumption_MAX.csv backend:/usr/src/app/test-data/GR/
-
-# 4. Load reference profiles (run from project root, executes inside container)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-greek-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/GR/prod_consumption_STD.csv --reference=STD
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-greek-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/GR/prod_consumption_MIN.csv --reference=MIN
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-greek-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/GR/prod_consumption_MAX.csv --reference=MAX
-
-# 5. Load ACTUAL data (all historical days in one go)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-greek-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/GR/prod_consumption.csv
-```
-
-### Portuguese Pilot
-
-CSV files are stored in `marketplace-be/test-data/PT/`.
-
-```bash
-# 1. Convert Excel to CSV (run on host, from marketplace-be/)
-python3 -c "import pandas as pd; df=pd.read_excel('test-data/PT/P3.xlsx'); df.to_csv('test-data/PT/P3.csv', index=False)"
-
-# 2. Generate STD/MIN/MAX profiles (run on host, from marketplace-be/)
-python3 scripts/build_profiles_portuguese.py test-data/PT/P3.csv
-
-# 3. If files were added after the last build, copy them into the container (run from project root)
-docker cp marketplace-be/test-data/PT/P3.csv backend:/usr/src/app/test-data/PT/
-docker cp marketplace-be/test-data/PT/P3_STD.csv backend:/usr/src/app/test-data/PT/
-docker cp marketplace-be/test-data/PT/P3_MIN.csv backend:/usr/src/app/test-data/PT/
-docker cp marketplace-be/test-data/PT/P3_MAX.csv backend:/usr/src/app/test-data/PT/
-
-# 4. Load reference profiles (run from project root, executes inside container)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-portuguese-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/PT/P3_STD.csv --reference=STD
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-portuguese-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/PT/P3_MIN.csv --reference=MIN
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-portuguese-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/PT/P3_MAX.csv --reference=MAX
-
-# 5. Load ACTUAL data (all historical days in one go)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-portuguese-flexibility-data.js --market=<ID> --fsp=<ID> --file=test-data/PT/P3.csv
-```
+To run either of the other two pipelines, place the source data in the
+directory listed above and follow the same five steps documented for the Irish
+pilot, substituting the script and file names accordingly. The expected input
+is a single time series at 15-minute resolution; see the bundled Irish CSV
+files for the exact column layout.
 
 > Steps 1–3 run on the host. Steps 4–5 run inside the `backend` container via `docker compose exec` (always from the project root).
 

@@ -1,5 +1,5 @@
 {
-  "name": "NuevosContratos11-25",
+  "name": "enpower-flexibility-market-contracts",
   "version": "1.0.0",
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "2.0.8",
