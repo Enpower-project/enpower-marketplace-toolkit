@@ -214,37 +214,43 @@ sudo apt install python3-pandas python3-openpyxl -y
 >
 > The `test-data/` directory is copied into the container image at build time (`/usr/src/app/test-data/`). If you add new CSV files after the last build, copy them manually with `docker cp` before running the seed commands.
 
-### Irish Pilot
+### Demonstration dataset
 
-CSV files are stored in `marketplace-be/test-data/IE/`.
+CSV files are stored in `marketplace-be/test-data/demo/`.
 
-> **Note:** The Irish pilot dataset is bundled with this repository, including
-> both the source spreadsheet and the derived CSV files
-> (`datos_historicos.csv` and the `_STD` / `_MIN` / `_MAX` reference profiles).
+> **Note:** A demonstration dataset is bundled with this repository, comprising
+> the source spreadsheet and the derived CSV files (`datos_historicos.csv` and
+> the `_STD` / `_MIN` / `_MAX` reference profiles). Its values were modified and
+> its timestamps shifted to a recent period so that MarketSessions can be
+> simulated on it; it is **not authentic measurement data** and does not
+> represent the actual consumption of any installation, individual or
+> household. It is provided solely so that the ingestion and settlement
+> pipeline can be exercised.
+>
 > Steps 1 and 2 below therefore only need to be re-run if you modify the source
 > data or want to regenerate the profiles from scratch; otherwise start at
 > step 3.
 
 ```bash
-# 1. Convert Excel to CSV (run on host, from marketplace-be/test-data/IE/)
-python3 -c "import pandas as pd; df=pd.read_excel('ESB_016_flex_modificado.xlsx'); df.to_csv('datos_historicos.csv', index=False)"
+# 1. Convert Excel to CSV (run on host, from marketplace-be/test-data/demo/)
+python3 -c "import pandas as pd; df=pd.read_excel('demo_flex_source.xlsx'); df.to_csv('datos_historicos.csv', index=False)"
 
 # 2. Generate STD/MIN/MAX profiles (run on host, from marketplace-be/)
-python3 scripts/build_profiles.py test-data/IE/datos_historicos.csv
+python3 scripts/build_profiles.py test-data/demo/datos_historicos.csv
 
 # 3. If files were added after the last build, copy them into the container (run from project root)
-docker cp marketplace-be/test-data/IE/datos_historicos.csv backend:/usr/src/app/test-data/IE/
-docker cp marketplace-be/test-data/IE/datos_historicos_STD.csv backend:/usr/src/app/test-data/IE/
-docker cp marketplace-be/test-data/IE/datos_historicos_MIN.csv backend:/usr/src/app/test-data/IE/
-docker cp marketplace-be/test-data/IE/datos_historicos_MAX.csv backend:/usr/src/app/test-data/IE/
+docker cp marketplace-be/test-data/demo/datos_historicos.csv backend:/usr/src/app/test-data/demo/
+docker cp marketplace-be/test-data/demo/datos_historicos_STD.csv backend:/usr/src/app/test-data/demo/
+docker cp marketplace-be/test-data/demo/datos_historicos_MIN.csv backend:/usr/src/app/test-data/demo/
+docker cp marketplace-be/test-data/demo/datos_historicos_MAX.csv backend:/usr/src/app/test-data/demo/
 
 # 4. Load reference profiles (run from project root, executes inside container)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/IE/datos_historicos_STD.csv --reference=STD
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/IE/datos_historicos_MIN.csv --reference=MIN
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/IE/datos_historicos_MAX.csv --reference=MAX
+docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_STD.csv --reference=STD
+docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_MIN.csv --reference=MIN
+docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_MAX.csv --reference=MAX
 
 # 5. Load ACTUAL data (all historical days in one go)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/IE/datos_historicos.csv
+docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos.csv
 ```
 
 ### Greek and Portuguese Pilots
@@ -257,16 +263,16 @@ pilots are fully implemented and included in this repository:
 | Greece | `marketplace-be/scripts/build_profiles_greek.py` | `dist/scripts/seed-greek-flexibility-data.js` | `marketplace-be/test-data/GR/` |
 | Portugal | `marketplace-be/scripts/build_profiles_portuguese.py` | `dist/scripts/seed-portuguese-flexibility-data.js` | `marketplace-be/test-data/PT/` |
 
-**The Greek and Portuguese pilot datasets are not distributed with this
-repository.** They are held by the respective pilot operators. Only the Irish
-pilot dataset is bundled, and it is sufficient to exercise the complete
-ingestion and flexibility computation pipeline end to end.
+**No pilot datasets are distributed with this repository.** Pilot data is held
+by the respective pilot operators. Only the demonstration dataset described
+above is bundled, and it is sufficient to exercise the complete ingestion and
+flexibility computation pipeline end to end.
 
 To run either of the other two pipelines, place the source data in the
-directory listed above and follow the same five steps documented for the Irish
-pilot, substituting the script and file names accordingly. The expected input
-is a single time series at 15-minute resolution; see the bundled Irish CSV
-files for the exact column layout.
+directory listed above and follow the same five steps documented for the
+demonstration dataset, substituting the script and file names accordingly. The
+expected input is a single time series at 15-minute resolution; see the bundled
+CSV files for the exact column layout.
 
 > Steps 1–3 run on the host. Steps 4–5 run inside the `backend` container via `docker compose exec` (always from the project root).
 
