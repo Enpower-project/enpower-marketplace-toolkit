@@ -1,128 +1,171 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { UserStatus, UserStatusManager } from './user-status.enum';
 
+/**
+ * The participant account lifecycle. A user is created pending wallet creation,
+ * becomes active once a wallet exists and the account is verified, and may be
+ * deactivated or blocked by an administrator thereafter.
+ *
+ * These are pure functions over the status model, so the suite needs no database,
+ * identity provider or blockchain connection.
+ */
 describe('UserStatusManager', () => {
-  
   describe('determineStatusFromFlags', () => {
-    it('should return PENDING_FIRST_LOGIN for user with temporary password', () => {
-      const flags = {
-        temporaryPassword: true,
-        firstLoginCompleted: false,
-        profileCompleted: false,
-        walletCreated: false,
-        isVerified: false
-      };
-      
-      const status = UserStatusManager.determineStatusFromFlags(flags);
-      expect(status).toBe(UserStatus.PENDING_FIRST_LOGIN);
+    const flags = (overrides: Partial<Parameters<typeof UserStatusManager.determineStatusFromFlags>[0]> = {}) => ({
+      temporaryPassword: false,
+      firstLoginCompleted: true,
+      profileCompleted: true,
+      walletCreated: true,
+      isVerified: true,
+      ...overrides,
     });
 
-    it('should return PENDING_PROFILE_COMPLETION after first login', () => {
-      const flags = {
-        temporaryPassword: false,
-        firstLoginCompleted: true,
-        profileCompleted: false,
-        walletCreated: false,
-        isVerified: false
-      };
-      
-      const status = UserStatusManager.determineStatusFromFlags(flags);
-      expect(status).toBe(UserStatus.PENDING_PROFILE_COMPLETION);
+    it('reports an account as active once a wallet exists and it is verified', () => {
+      expect(UserStatusManager.determineStatusFromFlags(flags())).toBe(
+        UserStatus.ACTIVE,
+      );
     });
 
-    it('should return PENDING_WALLET_CREATION after profile completion', () => {
-      const flags = {
-        temporaryPassword: false,
-        firstLoginCompleted: true,
-        profileCompleted: true,
-        walletCreated: false,
-        isVerified: false
-      };
-      
-      const status = UserStatusManager.determineStatusFromFlags(flags);
-      expect(status).toBe(UserStatus.PENDING_WALLET_CREATION);
+    it('waits for wallet creation while no wallet exists', () => {
+      expect(
+        UserStatusManager.determineStatusFromFlags(flags({ walletCreated: false })),
+      ).toBe(UserStatus.PENDING_WALLET_CREATION);
     });
 
-    it('should return PENDING_EMAIL_VERIFICATION after wallet creation', () => {
-      const flags = {
-        temporaryPassword: false,
-        firstLoginCompleted: true,
-        profileCompleted: true,
-        walletCreated: true,
-        isVerified: false
-      };
-      
-      const status = UserStatusManager.determineStatusFromFlags(flags);
-      expect(status).toBe(UserStatus.PENDING_EMAIL_VERIFICATION);
+    it('waits for wallet creation while the account is unverified', () => {
+      expect(
+        UserStatusManager.determineStatusFromFlags(flags({ isVerified: false })),
+      ).toBe(UserStatus.PENDING_WALLET_CREATION);
     });
 
-    it('should return ACTIVE when all steps are completed', () => {
-      const flags = {
-        temporaryPassword: false,
-        firstLoginCompleted: true,
-        profileCompleted: true,
-        walletCreated: true,
-        isVerified: true
-      };
-      
-      const status = UserStatusManager.determineStatusFromFlags(flags);
-      expect(status).toBe(UserStatus.ACTIVE);
-    });
-  });
-
-  describe('getNextRequiredStep', () => {
-    it('should return correct next step for each status', () => {
-      expect(UserStatusManager.getNextRequiredStep(UserStatus.PENDING_FIRST_LOGIN))
-        .toBe('Complete first login and change temporary password');
-      
-      expect(UserStatusManager.getNextRequiredStep(UserStatus.PENDING_PROFILE_COMPLETION))
-        .toBe('Complete user profile information');
-      
-      expect(UserStatusManager.getNextRequiredStep(UserStatus.PENDING_WALLET_CREATION))
-        .toBe('Create and configure wallet');
-      
-      expect(UserStatusManager.getNextRequiredStep(UserStatus.PENDING_EMAIL_VERIFICATION))
-        .toBe('Verify email address');
-      
-      expect(UserStatusManager.getNextRequiredStep(UserStatus.ACTIVE))
-        .toBe('User account is fully activated');
+    it('does not activate an account on the remaining onboarding flags alone', () => {
+      expect(
+        UserStatusManager.determineStatusFromFlags({
+          temporaryPassword: false,
+          firstLoginCompleted: true,
+          profileCompleted: true,
+          walletCreated: false,
+          isVerified: false,
+        }),
+      ).toBe(UserStatus.PENDING_WALLET_CREATION);
     });
   });
 
   describe('canPerformAction', () => {
-    it('should allow login for all statuses except BLOCKED', () => {
-      expect(UserStatusManager.canPerformAction(UserStatus.PENDING_FIRST_LOGIN, 'login')).toBe(true);
-      expect(UserStatusManager.canPerformAction(UserStatus.ACTIVE, 'login')).toBe(true);
+    it('allows trading only to active accounts', () => {
+      for (const action of ['trade', 'create_offers', 'bid']) {
+        expect(UserStatusManager.canPerformAction(UserStatus.ACTIVE, action)).toBe(true);
+        for (const status of [
+          UserStatus.PENDING_WALLET_CREATION,
+          UserStatus.INACTIVE,
+          UserStatus.BLOCKED,
+        ]) {
+          expect(UserStatusManager.canPerformAction(status, action)).toBe(false);
+        }
+      }
+    });
+
+    it('denies login only to blocked accounts', () => {
       expect(UserStatusManager.canPerformAction(UserStatus.BLOCKED, 'login')).toBe(false);
+      for (const status of [
+        UserStatus.PENDING_WALLET_CREATION,
+        UserStatus.ACTIVE,
+        UserStatus.INACTIVE,
+      ]) {
+        expect(UserStatusManager.canPerformAction(status, 'login')).toBe(true);
+      }
     });
 
-    it('should only allow trading for ACTIVE users', () => {
-      expect(UserStatusManager.canPerformAction(UserStatus.PENDING_FIRST_LOGIN, 'trade')).toBe(false);
-      expect(UserStatusManager.canPerformAction(UserStatus.PENDING_PROFILE_COMPLETION, 'trade')).toBe(false);
-      expect(UserStatusManager.canPerformAction(UserStatus.ACTIVE, 'trade')).toBe(true);
+    it('denies profile updates to inactive and blocked accounts', () => {
+      expect(
+        UserStatusManager.canPerformAction(UserStatus.ACTIVE, 'update_profile'),
+      ).toBe(true);
+      expect(
+        UserStatusManager.canPerformAction(
+          UserStatus.PENDING_WALLET_CREATION,
+          'update_profile',
+        ),
+      ).toBe(true);
+      expect(
+        UserStatusManager.canPerformAction(UserStatus.INACTIVE, 'update_profile'),
+      ).toBe(false);
+      expect(
+        UserStatusManager.canPerformAction(UserStatus.BLOCKED, 'update_profile'),
+      ).toBe(false);
     });
 
-    it('should allow profile updates for non-blocked users', () => {
-      expect(UserStatusManager.canPerformAction(UserStatus.PENDING_PROFILE_COMPLETION, 'update_profile')).toBe(true);
-      expect(UserStatusManager.canPerformAction(UserStatus.ACTIVE, 'update_profile')).toBe(true);
-      expect(UserStatusManager.canPerformAction(UserStatus.BLOCKED, 'update_profile')).toBe(false);
+    it('allows wallet creation while pending, and again once active', () => {
+      expect(
+        UserStatusManager.canPerformAction(
+          UserStatus.PENDING_WALLET_CREATION,
+          'create_wallet',
+        ),
+      ).toBe(true);
+      expect(
+        UserStatusManager.canPerformAction(UserStatus.ACTIVE, 'create_wallet'),
+      ).toBe(true);
+      expect(
+        UserStatusManager.canPerformAction(UserStatus.INACTIVE, 'create_wallet'),
+      ).toBe(false);
+    });
+
+    it('refuses an unrecognised action from any status', () => {
+      for (const status of Object.values(UserStatus)) {
+        expect(UserStatusManager.canPerformAction(status, 'mint_tokens')).toBe(false);
+      }
     });
   });
 
   describe('getPossibleTransitions', () => {
-    it('should return correct possible transitions', () => {
-      const transitions = UserStatusManager.getPossibleTransitions(UserStatus.PENDING_FIRST_LOGIN);
-      expect(transitions).toContain(UserStatus.PENDING_PROFILE_COMPLETION);
-      expect(transitions).toContain(UserStatus.BLOCKED);
+    it('allows a pending account to activate or be blocked, but not to go inactive', () => {
+      const transitions = UserStatusManager.getPossibleTransitions(
+        UserStatus.PENDING_WALLET_CREATION,
+      );
+      expect(transitions).toEqual([UserStatus.ACTIVE, UserStatus.BLOCKED]);
+      expect(transitions).not.toContain(UserStatus.INACTIVE);
     });
 
-    it('should allow blocking from any status', () => {
-      Object.values(UserStatus).forEach(status => {
-        if (status !== UserStatus.BLOCKED) {
-          const transitions = UserStatusManager.getPossibleTransitions(status);
-          expect(transitions).toContain(UserStatus.BLOCKED);
+    it('does not allow an active account to return to pending', () => {
+      const transitions = UserStatusManager.getPossibleTransitions(UserStatus.ACTIVE);
+      expect(transitions).toEqual([UserStatus.INACTIVE, UserStatus.BLOCKED]);
+      expect(transitions).not.toContain(UserStatus.PENDING_WALLET_CREATION);
+    });
+
+    it('allows a blocked account to be restored', () => {
+      expect(UserStatusManager.getPossibleTransitions(UserStatus.BLOCKED)).toEqual([
+        UserStatus.ACTIVE,
+        UserStatus.INACTIVE,
+      ]);
+    });
+
+    it('never offers a transition to the status already held', () => {
+      for (const status of Object.values(UserStatus)) {
+        expect(UserStatusManager.getPossibleTransitions(status)).not.toContain(status);
+      }
+    });
+
+    it('offers only states defined by the enum', () => {
+      const valid = Object.values(UserStatus);
+      for (const status of valid) {
+        for (const next of UserStatusManager.getPossibleTransitions(status)) {
+          expect(valid).toContain(next);
         }
-      });
+      }
+    });
+  });
+
+  describe('getNextRequiredStep', () => {
+    it('describes the outstanding step for every defined status', () => {
+      for (const status of Object.values(UserStatus)) {
+        const step = UserStatusManager.getNextRequiredStep(status);
+        expect(step).toBeTruthy();
+        expect(step).not.toBe('Unknown status');
+      }
+    });
+
+    it('points a pending account at wallet creation', () => {
+      expect(
+        UserStatusManager.getNextRequiredStep(UserStatus.PENDING_WALLET_CREATION),
+      ).toContain('wallet');
     });
   });
 });
