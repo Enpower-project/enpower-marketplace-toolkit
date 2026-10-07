@@ -9,7 +9,7 @@ import { ErrorLogService } from './core/services/error/error-log.service';
 import { FormErrorHandlerService } from './core/services/error/form-error-handler.service';
 import { TranslateModule, TranslateService, TranslateLoader } from '@ngx-translate/core';
 import { Observable, of, firstValueFrom } from 'rxjs';
-import { SnackUserNotifyModule, SnackUserNotifyService, ConfirmDialogModule } from 'dst-ui-kit';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { initializeKeycloak } from './core/services/keycloak/keycloak-init';
 import { CacheService } from './core/services/cache/cache.service';
 
@@ -85,15 +85,14 @@ export const appConfig: ApplicationConfig = {
           deps: [HttpClient]
         },
         defaultLanguage: 'en'
-      }),
-      SnackUserNotifyModule,
-      ConfirmDialogModule
+      })
     ),
+    // Angular Material dialogs, menus and expansion panels animate.
+    provideAnimations(),
     BlockchainService,
     ErrorLogService,
     FormErrorHandlerService,
     RFC7807ErrorInterceptor,
-    SnackUserNotifyService,
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloakFactory,

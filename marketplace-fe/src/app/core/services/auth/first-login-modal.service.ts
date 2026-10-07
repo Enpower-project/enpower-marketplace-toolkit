@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EventService, EventListener } from 'hateoas-utils';
+import { EventService, EventListener } from '../../events';
 import { CompleteProfileModalComponent } from '../../../shared/components/complete-profile-modal/complete-profile-modal.component';
 
 @Injectable({ providedIn: 'root' })

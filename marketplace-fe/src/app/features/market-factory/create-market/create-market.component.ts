@@ -10,7 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { Confirmable } from 'dst-ui-kit';
 import { FormErrorHandlerService } from '../../../core/services/error/form-error-handler.service';
 import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
 import { Market, CreateMarketRequest, UpdateMarketRequest, MyMarket } from '../../../shared/models/market-place/market-model';
@@ -126,10 +125,6 @@ export class CreateMarketComponent implements OnInit {
     });
   }
 
-  @Confirmable({
-    title: 'market.save.confirmation.title',
-    message: 'market.save.confirmation.message'
-  })
   saveMarket(): void {
     if (this.marketForm.valid && !this.isSubmitting) {
       this.submitForm();

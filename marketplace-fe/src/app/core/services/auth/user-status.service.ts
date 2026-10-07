@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EventService, EventListener } from 'hateoas-utils';
+import { EventService, EventListener } from '../../events';
 import { AuthEvents } from '../../enums/auth-events.enum';
 import { FirstLoginService } from './first-login.service';
 import { KeycloakService } from '../keycloak/keycloak.service';

@@ -9,7 +9,7 @@ import {
 import { Observable, from, throwError, of } from 'rxjs';
 import { mergeMap, finalize, catchError, retry } from 'rxjs/operators';
 import { KeycloakService } from './keycloak.service';
-import { EventService } from 'hateoas-utils';
+import { EventService } from '../../events';
 import { INFINITE_LOADER_EVENT } from '../../../shared/enums/const';
 import { waitForKeycloakInit } from './keycloak-init';
 

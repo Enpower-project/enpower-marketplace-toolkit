@@ -4,7 +4,7 @@ import { getKeycloakInstance, login, logout, isAuthenticated, getToken, setAuthS
 import { map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { EventService } from 'hateoas-utils';
+import { EventService } from '../../events';
 import { AuthEvents, AuthEventPayload } from '../../enums/auth-events.enum';
 
 @Injectable({ providedIn: 'root' })

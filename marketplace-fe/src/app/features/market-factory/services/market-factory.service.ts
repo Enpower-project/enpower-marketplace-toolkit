@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Market, CreateMarketRequest, UpdateMarketRequest, MyMarketsResponse } from '../../../shared/models/market-place/market-model';
-import { EventService } from 'hateoas-utils';
+import { EventService } from '../../../core/events';
 import { MarketEvents } from '../enums/market-enums';
 import { MarketUser } from '../interfaces/market-user';
 import { MarketByIdResponse } from '../interfaces/market-by-id-response';

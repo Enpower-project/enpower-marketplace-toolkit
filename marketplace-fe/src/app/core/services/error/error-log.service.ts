@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EventService, EventListener } from 'hateoas-utils';
+import { EventService, EventListener } from '../../events';
 import { AppErrorEvent } from '../../../shared/models/error/rfc7807-error.model';
 
 @Injectable({ 

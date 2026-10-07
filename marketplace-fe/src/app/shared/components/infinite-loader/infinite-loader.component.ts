@@ -1,7 +1,7 @@
 import {AfterContentInit, Component, Input, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {BehaviorSubject} from "rxjs";
-import {EventListener, EventService} from "hateoas-utils";
+import {EventListener, EventService} from "../../../core/events";
 import {INFINITE_LOADER_EVENT} from "../../enums/const";
 import {MatProgressBarModule } from '@angular/material/progress-bar';
 

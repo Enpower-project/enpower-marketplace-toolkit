@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { KeycloakService } from '../../../core/services/keycloak/keycloak.service';
-import { EventService, EventListener } from 'hateoas-utils';
+import { EventService, EventListener } from '../../../core/events';
 import { AuthEvents, AuthEventPayload } from '../../../core/enums/auth-events.enum';
 import { MarketAuthService } from '../../../core/services/auth/market-auth.service';
 

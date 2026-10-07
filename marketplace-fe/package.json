@@ -22,9 +22,7 @@
     "@angular/router": "^19.0.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
-    "dst-ui-kit": "^9.2.2",
     "ethers": "^6.14.0",
-    "hateoas-utils": "^9.2.0",
     "keycloak-angular": "^19.0.2",
     "keycloak-js": "^26.2.0",
     "keycloak-ts": "^1.0.0",
@@ -32,7 +30,6 @@
     "or": "^0.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "underscore": "^1.13.7",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

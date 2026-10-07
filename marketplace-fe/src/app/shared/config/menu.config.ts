@@ -1,4 +1,4 @@
-import { MenuElement } from 'dst-ui-kit';
+import { MenuElement } from '../models/menu-element';
 
 // Interfaz extendida para soportar categorías
 export interface MenuCategory {

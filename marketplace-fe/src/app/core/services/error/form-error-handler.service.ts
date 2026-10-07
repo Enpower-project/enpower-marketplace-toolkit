@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { EventService, EventListener } from 'hateoas-utils';
+import { EventService, EventListener } from '../../events';
 import { AppErrorEvent, ProblemDetail } from '../../../shared/models/error/rfc7807-error.model';
 
 @Injectable({

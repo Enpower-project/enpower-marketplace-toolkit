@@ -7,8 +7,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
-import { MenuElementInterface, SnackUserNotifyModule } from 'dst-ui-kit';
-import { EventService, EventListener } from 'hateoas-utils';
+import { MenuElementInterface } from './shared/models/menu-element';
+import { EventService, EventListener } from './core/events';
 import { KeycloakService } from './core/services/keycloak/keycloak.service';
 import { MarketAuthService } from './core/services/auth/market-auth.service';
 import { ProsumerWalletCheckService } from './core/services/wallet/prosumer-wallet-check.service';
@@ -50,7 +50,6 @@ import { UserService } from './core/services/user.service';
     MatMenuModule,
     FormsModule,
     MarketInfoComponent,
-    SnackUserNotifyModule,
     MatProgressSpinnerModule,
     ToastNotificationComponent,
     BalanceInfoComponent

@@ -18,7 +18,7 @@ import { Session, SessionDraft, BidType, CreateBidRequest } from '../../../share
 import { ToastNotificationComponent } from '../../../shared/components/toast-notification/toast-notification.component';
 import { FormErrorHandlerService } from '../../../core/services/error/form-error-handler.service';
 import { ErrorLogService } from '../../../core/services/error/error-log.service';
-import { EventService, EventListener } from 'hateoas-utils';
+import { EventService, EventListener } from '../../../core/events';
 import { AppErrorEvent } from '../../../shared/models/error/rfc7807-error.model';
 import { Subscription } from 'rxjs';
 import { CustomDateAdapter } from '../../../shared/utils/custom-date-adapter';
