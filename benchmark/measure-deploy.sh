@@ -57,6 +57,10 @@ probe() {
     mongodb)                (exec 3<>/dev/tcp/127.0.0.1/27018) 2>/dev/null ;;
     postgres)               (exec 3<>/dev/tcp/127.0.0.1/5433) 2>/dev/null ;;
     mailhog)                curl -fsS -m 3 -o /dev/null http://localhost:8025/ 2>/dev/null ;;
+    # Not published on the host; its Compose healthcheck is the readiness signal.
+    keycloak-db)
+      [ "$(docker inspect -f '{{.State.Health.Status}}' \
+            "$(docker compose ps -q keycloak-db)" 2>/dev/null)" = healthy ] ;;
     keycloak)               curl -fsS -m 5 -o /dev/null http://localhost:8088/realms/enpower-marketplace 2>/dev/null ;;
     backend)                curl -fsS -m 5 -o /dev/null http://localhost:3000/auth/health 2>/dev/null ;;
     frontend)               curl -fsS -m 5 -o /dev/null http://localhost:4200/ 2>/dev/null ;;
