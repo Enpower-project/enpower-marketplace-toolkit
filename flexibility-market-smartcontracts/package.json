@@ -26,6 +26,8 @@
   "scripts": {
     "build": "hardhat compile",
     "test": "hardhat test",
+    "coverage": "hardhat coverage",
+    "benchmark": "hardhat run scripts/benchmark.ts",
     "node": "hardhat node",
     "deploy:localhost": "hardhat run scripts/deploy-complete-system.ts --network localhost",
     "deploy:remoteNode": "hardhat run scripts/deploy-complete-system.ts --network remoteNode"
