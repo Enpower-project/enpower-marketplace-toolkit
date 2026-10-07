@@ -16,7 +16,6 @@ const deployments = JSON.parse(
 export const CONTRACT_ADDRESSES = {
   FlexibilityToken: deployments.FlexibilityToken,
   Treasury: deployments.Treasury,
-  DisputeResolution: deployments.DisputeResolution,
   FlexibilityNFT: deployments.FlexibilityNFT,
   ParticipantRegistry: deployments.ParticipantRegistry,
   MarketFactory: deployments.MarketFactory,

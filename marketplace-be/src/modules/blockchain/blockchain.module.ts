@@ -18,7 +18,6 @@ import { FlexibilityNFTContractModule } from './contracts/flexibility-nft/flexib
 import { MarketFactoryContractModule } from './contracts/market-factory/market-factory.contract.module';
 import { MarketContractModule } from './contracts/market/market.contract.module';
 import { MarketSessionContractModule } from './contracts/market-session/market-session.contract.module';
-import { DisputeResolutionContractModule } from './contracts/dispute-resolution/dispute-resolution.contract.module';
 
 // Contract services (for direct export)
 import { FlexibilityTokenContractService } from './contracts/flexibility-token/flexibility-token.contract.service';
@@ -28,7 +27,6 @@ import { FlexibilityNFTContractService } from './contracts/flexibility-nft/flexi
 import { MarketFactoryContractService } from './contracts/market-factory/market-factory.contract.service';
 import { MarketContractService } from './contracts/market/market.contract.service';
 import { MarketSessionContractService } from './contracts/market-session/market-session.contract.service';
-import { DisputeResolutionContractService } from './contracts/dispute-resolution/dispute-resolution.contract.service';
 
 /**
  * BlockchainModule
@@ -54,7 +52,6 @@ import { DisputeResolutionContractService } from './contracts/dispute-resolution
     MarketFactoryContractModule,
     MarketContractModule,
     MarketSessionContractModule,
-    DisputeResolutionContractModule,
   ],
   providers: [
     // Legacy service (mantener compatibilidad)
@@ -71,7 +68,6 @@ import { DisputeResolutionContractService } from './contracts/dispute-resolution
     MarketFactoryContractService,
     MarketContractService,
     MarketSessionContractService,
-    DisputeResolutionContractService,
   ],
   exports: [
     // Legacy service (mantener compatibilidad)
@@ -88,7 +84,6 @@ import { DisputeResolutionContractService } from './contracts/dispute-resolution
     MarketFactoryContractService,
     MarketContractService,
     MarketSessionContractService,
-    DisputeResolutionContractService,
   ],
 })
 export class BlockchainModule {}
