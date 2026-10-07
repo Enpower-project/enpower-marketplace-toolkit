@@ -22,20 +22,41 @@ providers. Gas is invariant across EVM-compatible networks, so these figures do
 not depend on the host. The wall-clock column of that script is **not**
 reportable: the in-process Hardhat network has no block time.
 
-## 2. Cold deployment time
+## 2. Deployment time
+
+This script **instruments the procedure in README section 4.2**. That procedure has two automated phases separated by a
+manual configuration step in the identity provider — redirect URIs are
+registered and two client secrets are copied into the backend environment — so
+deployment cannot honestly be reduced to a single number.
 
 ```bash
-./benchmark/measure-deploy.sh --reset
+./benchmark/measure-deploy.sh prepare --reset --without-frontend
+./benchmark/measure-deploy.sh phase1
+#   ... do the manual steps it prints ...
+./benchmark/measure-deploy.sh phase2 --without-frontend
 ```
 
-Times each service from `docker compose up` to the moment it can answer a
-request, which is the figure that matters to someone reproducing the deployment.
-Images are pulled before timing starts, so the result excludes download time.
+Three figures are reported, and they mean different things:
 
-`--reset` removes containers **and volumes** first, for a true cold start. It
-deletes all platform data and prompts for five seconds before doing so. Without
-it the script times a restart over existing volumes, which is faster and should
-not be reported as a cold deployment.
+| Figure | Recurs |
+|---|---|
+| Image preparation | Once per code change |
+| Phase 1, identity provider | Every start |
+| Phase 2, remaining services | Every start |
+
+The manual step between the phases is operator time, not machine time, and is
+excluded from all three. `phase2` refuses to start if that step was skipped,
+rather than letting the backend come up and reject every request.
+
+`--reset` removes containers **and volumes** before preparing, for a true cold
+start. It deletes all platform data and waits five seconds first. Without it the
+figures describe a restart over existing volumes, which is faster and must not be
+reported as a cold deployment.
+
+`--without-frontend` omits the web interface, whose component library is
+published to a private registry. On a host without credentials for it the image
+cannot be built; its absence is recorded in the results rather than hidden. No
+measurement in this directory depends on the web interface.
 
 ## 3. Resource footprint
 

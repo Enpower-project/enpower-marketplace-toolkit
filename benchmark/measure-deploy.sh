@@ -1,144 +1,258 @@
 #!/usr/bin/env bash
 #
-# Cold deployment timing for the ENPOWER Marketplace Toolkit.
+# Deployment timing for the ENPOWER Marketplace Toolkit.
 #
-# Measures the wall-clock time from `docker compose up` to each service being
-# able to answer a request, which is the figure that matters to someone trying to
-# reproduce the deployment: not when the container started, but when the stack
-# became usable.
+# This script instruments the deployment procedure documented in README section
+# 4.2. That procedure has two automated phases separated by
+# a manual configuration step in the identity provider, so it 
+# cannot be reduced to a single figure, and this script does not pretend
+# otherwise: it reports image preparation, phase 1 and phase 2 separately, and
+# states where the human step falls.
 #
-# Usage:
-#   ./measure-deploy.sh                 # bring the stack up and time it
-#   ./measure-deploy.sh --reset         # DESTROYS volumes first, for a true cold start
-#   ./measure-deploy.sh --no-pull       # skip image pulls, time the build only
+#   ./measure-deploy.sh prepare   # copy env files, build images, time the build
+#   ./measure-deploy.sh phase1    # start the identity provider, time it
+#                                 # ... then do the manual steps it prints ...
+#   ./measure-deploy.sh phase2    # start the remaining services, time them
 #
-# Output: a Markdown table on stdout, plus deploy-timing.csv.
+# Options:
+#   --without-frontend   Skip the web interface. Its component library is
+#                        published to a private registry, so on a host without
+#                        credentials for it the image cannot be built. Its
+#                        absence is recorded in the results, not hidden.
+#   --reset              Before `prepare`, remove containers AND volumes for a
+#                        true cold start. This deletes all platform data.
+#
+# Results accumulate in benchmark/RESULTS.md.
 
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+RESULTS="${RESULTS:-benchmark/RESULTS.md}"
+TIMEOUT="${TIMEOUT:-600}"
+
+BUILT_SERVICES="backend frontend ingestion-microservice ingestion-dashboard hardhat"
+PHASE2_SERVICES="hardhat mongodb postgres mailhog backend ingestion-microservice ingestion-dashboard frontend"
+
+STAGE="${1:-}"
+shift 2>/dev/null || true
+
+WITHOUT_FRONTEND=0
 RESET=0
-PULL=1
 for arg in "$@"; do
   case "$arg" in
+    --without-frontend) WITHOUT_FRONTEND=1 ;;
     --reset) RESET=1 ;;
-    --no-pull) PULL=0 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
 
-TIMEOUT="${TIMEOUT:-900}"   # seconds to wait for the whole stack
-OUT="${OUT:-benchmark/deploy-timing.csv}"
+if [ "$WITHOUT_FRONTEND" -eq 1 ]; then
+  BUILT_SERVICES="$(echo  "$BUILT_SERVICES"  | tr ' ' '\n' | grep -vx frontend | tr '\n' ' ')"
+  PHASE2_SERVICES="$(echo "$PHASE2_SERVICES" | tr ' ' '\n' | grep -vx frontend | tr '\n' ' ')"
+fi
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Readiness probes. Each returns 0 once the service can answer a request.
-# Ports are the host-side ports declared in docker-compose.yml.
-# ─────────────────────────────────────────────────────────────────────────────
+note() { printf '%s\n' "$*" >> "$RESULTS"; }
+say()  { printf '%s\n' "$*" >&2; }
 
-probe_hardhat() {
-  curl -fsS -m 3 -X POST http://localhost:8545 \
-    -H 'content-type: application/json' \
-    -d '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}' \
-    2>/dev/null | grep -q '"result"'
+# ── readiness probes, keyed by Compose service name ─────────────────────────
+
+probe() {
+  case "$1" in
+    hardhat)
+      curl -fsS -m 3 -X POST http://localhost:8545 \
+        -H 'content-type: application/json' \
+        -d '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}' \
+        2>/dev/null | grep -q '"result"' ;;
+    mongodb)                (exec 3<>/dev/tcp/127.0.0.1/27018) 2>/dev/null ;;
+    postgres)               (exec 3<>/dev/tcp/127.0.0.1/5433) 2>/dev/null ;;
+    mailhog)                curl -fsS -m 3 -o /dev/null http://localhost:8025/ 2>/dev/null ;;
+    keycloak)               curl -fsS -m 5 -o /dev/null http://localhost:8088/realms/enpower-marketplace 2>/dev/null ;;
+    backend)                curl -fsS -m 5 -o /dev/null http://localhost:3000/auth/health 2>/dev/null ;;
+    frontend)               curl -fsS -m 5 -o /dev/null http://localhost:4200/ 2>/dev/null ;;
+    ingestion-microservice) curl -fsS -m 5 -o /dev/null http://localhost:8082/swagger-ui/index.html 2>/dev/null ;;
+    ingestion-dashboard)    curl -fsS -m 5 -o /dev/null http://localhost:4201/ 2>/dev/null ;;
+    *) return 1 ;;
+  esac
 }
-probe_mongodb()   { (exec 3<>/dev/tcp/127.0.0.1/27018) 2>/dev/null; }
-probe_postgres()  { (exec 3<>/dev/tcp/127.0.0.1/5433) 2>/dev/null; }
-probe_mailhog()   { curl -fsS -m 3 -o /dev/null http://localhost:8025/ 2>/dev/null; }
-probe_keycloak()  { curl -fsS -m 5 -o /dev/null http://localhost:8088/realms/enpower-marketplace 2>/dev/null; }
-probe_backend()   { curl -fsS -m 5 -o /dev/null http://localhost:3000/auth/health 2>/dev/null; }
-probe_frontend()  { curl -fsS -m 5 -o /dev/null http://localhost:4200/ 2>/dev/null; }
-probe_ingestion() { curl -fsS -m 5 -o /dev/null http://localhost:8082/swagger-ui/index.html 2>/dev/null; }
-probe_dashboard() { curl -fsS -m 5 -o /dev/null http://localhost:4201/ 2>/dev/null; }
 
-SERVICES=(hardhat mongodb postgres mailhog keycloak backend frontend ingestion dashboard)
+# Starts the given services and records when each first answers a request.
+# Prints a Markdown table and appends it to RESULTS.
+time_startup() {
+  local label="$1"; shift
+  local services="$*"
+  local t0 remaining svc t last=0
+  declare -A ready=()
 
-declare -A READY_AT=()
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-if [ "$RESET" -eq 1 ]; then
-  echo "Removing containers and volumes for a cold start." >&2
-  echo "This deletes all platform data. Press Ctrl-C within 5 s to abort." >&2
-  sleep 5
-  docker compose down -v --remove-orphans >/dev/null 2>&1 || true
-fi
-
-# Five of the services are built from local Dockerfiles rather than pulled, and
-# building them compiles an Angular bundle, a NestJS backend and a Spring
-# service. That is image preparation, not deployment: it happens once per code
-# change, whereas deployment happens on every start. The two are timed
-# separately so that neither figure misrepresents the other.
-PREP=""
-if [ "$PULL" -eq 1 ]; then
-  echo "Preparing images: pulling and building (timed separately)..." >&2
-  PREP_T0=$(date +%s.%N)
-  docker compose pull --quiet >/dev/null 2>&1 || true
-  if ! docker compose build >/dev/null 2>&1; then
-    echo "docker compose build failed; run it directly to see why." >&2
-    exit 1
+  say "Starting: $services"
+  t0=$(date +%s.%N)
+  if ! docker compose up -d $services >/dev/null 2>&1; then
+    say "docker compose up failed. Run it directly to see why; if it is the web"
+    say "interface, re-run with --without-frontend."
+    return 1
   fi
-  PREP=$(echo "$(date +%s.%N) $PREP_T0" | awk '{ printf "%.1f", $1 - $2 }')
-  echo "  images ready after ${PREP}s" >&2
-fi
 
-echo "Starting the stack..." >&2
-T0=$(date +%s.%N)
-if ! docker compose up -d >/dev/null 2>&1; then
-  echo "docker compose up failed; run it directly to see why." >&2
-  exit 1
-fi
+  elapsed() { echo "$(date +%s.%N) $t0" | awk '{ printf "%.1f", $1 - $2 }'; }
 
-elapsed() { echo "$(date +%s.%N) $T0" | awk '{ printf "%.1f", $1 - $2 }'; }
+  remaining=$(echo "$services" | wc -w)
+  while [ "$remaining" -gt 0 ]; do
+    if awk -v e="$(elapsed)" -v t="$TIMEOUT" 'BEGIN { exit !(e > t) }'; then
+      say "Timed out after ${TIMEOUT}s with $remaining service(s) not answering."
+      break
+    fi
+    for svc in $services; do
+      [ -n "${ready[$svc]:-}" ] && continue
+      if probe "$svc"; then
+        ready[$svc]=$(elapsed)
+        remaining=$((remaining - 1))
+        printf '  %-24s ready at %6ss\n' "$svc" "${ready[$svc]}" >&2
+      fi
+    done
+    [ "$remaining" -gt 0 ] && sleep 2
+  done
 
-remaining=${#SERVICES[@]}
-while [ "$remaining" -gt 0 ]; do
-  now=$(elapsed)
-  if awk -v e="$now" -v t="$TIMEOUT" 'BEGIN { exit !(e > t) }'; then
-    echo "Timed out after ${TIMEOUT}s with $remaining service(s) not ready." >&2
-    break
-  fi
-  for svc in "${SERVICES[@]}"; do
-    [ -n "${READY_AT[$svc]:-}" ] && continue
-    if "probe_$svc"; then
-      READY_AT[$svc]=$(elapsed)
-      remaining=$((remaining - 1))
-      printf '  %-12s ready at %6ss\n' "$svc" "${READY_AT[$svc]}" >&2
+  note ""
+  note "#### $label"
+  note ""
+  note "| Service | Ready after |"
+  note "|---|---:|"
+  for svc in $services; do
+    t="${ready[$svc]:-}"
+    if [ -z "$t" ]; then
+      note "| $svc | did not answer |"
+    else
+      note "| $svc | $t s |"
+      last=$(echo "$t $last" | awk '{ print ($1 > $2) ? $1 : $2 }')
     fi
   done
-  [ "$remaining" -gt 0 ] && sleep 2
-done
+  note "| **All of $label answering** | **${last} s** |"
+  say ""
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-mkdir -p "$(dirname "$OUT")"
-echo "service,ready_seconds" > "$OUT"
+case "$STAGE" in
 
-echo
-echo "### Cold deployment timing"
-echo
-echo "| Service | Ready after |"
-echo "|---|---:|"
-last=0
-for svc in "${SERVICES[@]}"; do
-  t="${READY_AT[$svc]:-}"
-  if [ -z "$t" ]; then
-    echo "| $svc | not ready |"
-    echo "$svc," >> "$OUT"
-  else
-    printf '| %s | %s s |\n' "$svc" "$t"
-    echo "$svc,$t" >> "$OUT"
-    last=$(echo "$t $last" | awk '{ print ($1 > $2) ? $1 : $2 }')
+prepare)
+  if [ "$RESET" -eq 1 ]; then
+    say "Removing containers and volumes for a cold start."
+    say "This deletes all platform data. Press Ctrl-C within 5 s to abort."
+    sleep 5
+    docker compose down -v --remove-orphans >/dev/null 2>&1 || true
   fi
-done
-echo "| **Whole stack usable** | **${last} s** |"
-echo
-if [ -n "$PREP" ]; then
-  echo "Image preparation, pulling and building, took a further ${PREP} s. It is"
-  echo "reported separately because it recurs only on a code change, whereas the"
-  echo "figures above recur on every start."
-  echo
-fi
-echo "Host: $(uname -srm), $(nproc) CPUs, $(free -g 2>/dev/null | awk '/^Mem:/ { print $2 }') GiB RAM,"
-echo "Docker $(docker --version 2>/dev/null | sed 's/Docker version //; s/,.*//')."
+
+  # README 4.2.2. Copying is idempotent: an existing file is never overwritten,
+  # because it may already hold the secrets retrieved in phase 1.
+  for pair in ".env.example:.env" "marketplace-be/.env.example:marketplace-be/.env.docker"; do
+    src="${pair%%:*}"; dst="${pair##*:}"
+    if [ -f "$dst" ]; then
+      say "Keeping existing $dst"
+    elif [ -f "$src" ]; then
+      cp "$src" "$dst"; say "Created $dst from $src"
+    else
+      say "Missing $src — cannot continue."; exit 1
+    fi
+  done
+  say ""
+  say "Set SERVER_URL in .env before phase 2 if this host is reached by address."
+  say ""
+
+  : > "$RESULTS"
+  note "## Deployment"
+  note ""
+  note "Measured by instrumenting the procedure in README section 4.2. The"
+  note "procedure has two automated phases separated by a manual configuration"
+  note "step in the identity provider, so three figures are reported rather than"
+  note "one."
+
+  say "Building images for: $BUILT_SERVICES"
+  say "On a small host this compiles for several minutes. Output is left visible."
+  say ""
+  T0=$(date +%s.%N)
+  if ! docker compose build $BUILT_SERVICES; then
+    say ""
+    say "Image preparation failed. If this is the web interface, its component"
+    say "library needs a private registry; re-run with --without-frontend."
+    exit 1
+  fi
+  PREP=$(echo "$(date +%s.%N) $T0" | awk '{ printf "%.1f", $1 - $2 }')
+
+  note ""
+  note "#### Image preparation"
+  note ""
+  note "| Step | Time |"
+  note "|---|---:|"
+  note "| Pull and build $(echo "$BUILT_SERVICES" | wc -w) images | ${PREP} s |"
+  note ""
+  note "Image preparation recurs only on a code change, whereas the phases below"
+  note "recur on every start, so it is reported apart from them."
+  if [ "$WITHOUT_FRONTEND" -eq 1 ]; then
+    note ""
+    note "The web interface was not built. Its component library is published to a"
+    note "private registry that this host cannot reach, so the image cannot be"
+    note "produced here. No measurement below depends on it."
+  fi
+  say "Images ready after ${PREP}s. Next: ./benchmark/measure-deploy.sh phase1"
+  ;;
+
+phase1)
+  # README 4.2.3
+  time_startup "phase 1, identity provider" keycloak-db keycloak || exit 1
+  note ""
+  note "A manual configuration step follows phase 1: the deployment's redirect"
+  note "URIs are registered with the identity provider and two client secrets are"
+  note "retrieved from it and written into the backend environment. That step is"
+  note "operator time rather than machine time and is excluded from every figure"
+  note "reported here."
+
+  cat >&2 <<'MANUAL'
+
+Now the manual steps, from README 4.2.3 and 4.2.4:
+
+  1. Open http://<this-host>:8088/admin and sign in. The credentials are
+     KEYCLOAK_ADMIN and KEYCLOAK_ADMIN_PASSWORD in marketplace-keycloak/.env
+  2. Realm enpower-marketplace -> Clients -> frontend -> Settings
+     Add http://<this-host>:4200/* to Valid redirect URIs
+     Add http://<this-host>:4200   to Web origins, then Save
+  3. Clients -> backend   -> Credentials: copy the client secret
+     Clients -> admin-cli -> Credentials: copy the client secret
+  4. Edit marketplace-be/.env.docker and set:
+       KEYCLOAK_CLIENT_SECRET        the backend secret
+       KEYCLOAK_ADMIN_CLIENT_SECRET  the admin-cli secret
+       ADMIN_PK                      a private key from the Hardhat node
+     Leave the contract addresses empty: Compose fills them on startup.
+
+Then: ./benchmark/measure-deploy.sh phase2
+
+MANUAL
+  ;;
+
+phase2)
+  # Fail before starting anything if the manual step was skipped. Without these
+  # the backend starts and then refuses every request, which is a slow and
+  # confusing way to discover the same thing.
+  ENVF="marketplace-be/.env.docker"
+  [ -f "$ENVF" ] || { say "$ENVF does not exist. Run: $0 prepare"; exit 1; }
+  for v in KEYCLOAK_CLIENT_SECRET KEYCLOAK_ADMIN_CLIENT_SECRET ADMIN_PK; do
+    val="$(grep -E "^${v}=" "$ENVF" | head -1 | cut -d= -f2- | tr -d '[:space:]')"
+    case "$val" in
+      ""|your-*|0xYOUR_*)
+        say "$v is still unset in $ENVF."
+        say "Complete the manual steps printed by: $0 phase1"
+        exit 1 ;;
+    esac
+  done
+
+  time_startup "phase 2, remaining services" $PHASE2_SERVICES || exit 1
+  note ""
+  note "Host: $(uname -srm), $(nproc) CPUs, $(free -g 2>/dev/null | awk '/^Mem:/ { print $2 }') GiB RAM,"
+  note "Docker $(docker --version 2>/dev/null | sed 's/Docker version //; s/,.*//'),"
+  note "Node $(node --version 2>/dev/null)."
+  say "Done. Results in $RESULTS"
+  ;;
+
+*)
+  sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
+  exit 2 ;;
+esac
