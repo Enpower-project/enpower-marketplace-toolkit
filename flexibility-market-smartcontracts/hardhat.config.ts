@@ -1,6 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-chai-matchers";
+// Enables `npx hardhat coverage`, used to report test coverage of the contract layer.
+import "solidity-coverage";
 
 const config: HardhatUserConfig = {
   solidity: {
