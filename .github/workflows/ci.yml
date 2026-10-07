@@ -91,14 +91,18 @@ jobs:
   images:
     name: Container images
     runs-on: ubuntu-latest
+    # The marketplace-fe image is deliberately absent from this matrix. Its
+    # package.json declares dst-ui-kit, a component library published only to a
+    # private registry, so the image cannot be built without credentials for
+    # that registry. Building it here would fail on every run for a reason this
+    # workflow cannot act on. To cover it, publish dst-ui-kit to a registry the
+    # workflow can read and add a `frontend` entry below.
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: backend
             context: marketplace-be
-          - name: frontend
-            context: marketplace-fe
           - name: ingestion-microservice
             context: dataspace-file-ingestion-microservice
           - name: ingestion-dashboard
