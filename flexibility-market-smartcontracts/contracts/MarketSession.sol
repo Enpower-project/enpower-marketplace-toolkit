@@ -17,6 +17,26 @@ import "./interfaces/IParticipantRegistry.sol";
  *      - FMO/LMO: Neutral market operator managing sessions and acting as Oracle
  *      - FSP: Flexibility Service Provider submitting offers
  *      - FRP: Flexibility Requesting Party paying for delivered flexibility
+ *
+ * @dev TEMPORAL GUARDS ARE DELIBERATELY DISABLED IN THIS RELEASE.
+ *      A production session spans D-2 to D+1: offers open before D-1, close at
+ *      D-1, delivery runs through D, and metered data arrives after D+1.
+ *      Enforcing that schedule on-chain would make a single complete lifecycle
+ *      take three days of wall-clock time, which would prevent anyone from
+ *      exercising the bundled deployment, or the automated test suite, in one run.
+ *
+ *      The four guards are therefore retained as comments at their enforcement
+ *      points so that a production deployment can restore them without redesign:
+ *        - openOffers()                            block.timestamp <  deliveryDay - 1 days
+ *        - closeOffers()                           block.timestamp >= deliveryDay - 1 days
+ *        - submitMeasurementData()                 block.timestamp >= deliveryDay + 1 days
+ *        - cancelIfOffersStillOpenTwoHoursBefore() block.timestamp >= deliveryDay - 2 hours
+ *
+ *      What this contract still enforces is ordering: the state machine rejects
+ *      any operation attempted out of sequence. What it does not enforce is
+ *      timing; the delivery schedule is orchestrated by the application layer.
+ *      See the repository README, Section 6.2, and the test suite under test/,
+ *      which pins this behaviour explicitly.
  */
 contract MarketSession is AccessControl {
     bytes32 public constant FSP = keccak256("FSP");
@@ -304,6 +324,7 @@ contract MarketSession is AccessControl {
         onlyRole(DEFAULT_ADMIN_ROLE)
         inStatus(SessionStatus.CREATED)
     {
+        // Temporal guard disabled for reproducibility — see contract header.
         // require(
         //     block.timestamp < deliveryDay - 1 days,
         //     "Too close to delivery"
@@ -544,6 +565,7 @@ contract MarketSession is AccessControl {
         onlyQualifiedFMOLMO
         inStatus(SessionStatus.OFFERS_OPEN)
     {
+        // Temporal guard disabled for reproducibility — see contract header.
         // require(block.timestamp >= deliveryDay - 1 days, "Too early to close");
         status = SessionStatus.IN_DELIVERY;
         IMarket(marketAddress).updateSessionStatus(
@@ -555,6 +577,7 @@ contract MarketSession is AccessControl {
     function submitMeasurementData(
         bytes32 _measurementHash
     ) external onlyRole(ORACLE) inStatus(SessionStatus.IN_DELIVERY) {
+        // Temporal guard disabled for reproducibility — see contract header.
         // require(
         //     block.timestamp >= deliveryDay + 1 days,
         //     "Delivery not complete"
@@ -753,6 +776,7 @@ contract MarketSession is AccessControl {
         onlyQualifiedFMOLMO
         inStatus(SessionStatus.OFFERS_OPEN)
     {
+        // Temporal guard disabled for reproducibility — see contract header.
         // require(
         //     block.timestamp >= deliveryDay - 2 hours,
         //     "Too early to cancel"

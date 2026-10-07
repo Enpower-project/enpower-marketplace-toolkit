@@ -198,7 +198,7 @@ Activation deploys the market as a smart contract on the blockchain. This is a o
    - Register you in the on-chain ParticipantRegistry
    - Mint initial FlexibilityTokens (FLEX)
    - Deploy the Market smart contract via MarketFactory
-4. Once complete, the market transitions to `ACTIVE` and is ready for trading sessions.
+4. Once complete, the market transitions to `ACTIVE_ONCHAIN` and is ready for trading sessions.
 
 ## 5.5 Inviting Participants (FRP and FSP)
 
@@ -225,12 +225,17 @@ After the FRP has created and approved a MarketSession (see [Section 6](#6-flexi
 
 As FMO/LMO, you control the lifecycle of each MarketSession through the following steps:
 
+> **A note on state names.** The platform tracks a session in two places: the
+> application database, whose names the interface displays, and the MarketSession
+> contract, whose names appear in block explorers and in the contract source. They
+> do not use the same vocabulary. Where the two differ, both are given below.
+
 | Step | Action | PIN Required | Result |
 |---|---|---|---|
-| 1 | **Open Offers** | Yes | Session moves to `OFFERS_OPEN`. FSPs can now submit offers. |
-| 2 | **Close Offers** | Yes | Session moves to `OFFERS_CLOSED`. No more offers accepted. Matched offers are locked and FlexibilityNFTs are minted to accepted FSPs. |
-| 3 | *(Automatic)* | No | The system automatically transitions to `IN_DELIVERY` when the delivery window begins. |
-| 4 | *(Automatic)* | No | The system automatically transitions to `SETTLEMENT_PENDING` when the delivery window closes and measurement data is available. |
+| 1 | **Open Offers** | Yes | Session moves to `ACTIVE` in the platform, `OFFERS_OPEN` on-chain. FSPs can now submit offers. |
+| 2 | **Close Offers** | Yes | Session moves to `OFFERS_CLOSED` in the platform; on-chain the contract moves directly to `IN_DELIVERY`. No more offers accepted and the matched commitments are locked. The FlexibilityNFT certificates were already minted when each offer was published; they are transferred to the FRP and become non-transferable at settlement. |
+| 3 | *(Automatic)* | No | The platform moves the session to `IN_DELIVERY` when the delivery window begins. The contract is already in that state from step 2. |
+| 4 | *(Automatic)* | No | Measurement data is submitted on-chain by the oracle once the delivery window closes, which moves both the platform and the contract to `SETTLEMENT_PENDING`. |
 | 5 | **Execute Settlement** | Yes | See [Section 5.8](#58-settlement-execution). |
 | 6 | **Finalize Session** | Yes | Session moves to `SETTLED`. All offers must be settled before finalisation. |
 
@@ -381,10 +386,10 @@ When you are satisfied with a draft offer:
 
 1. Click **Publish** on the draft offer.
 2. A **PIN dialog** appears. Enter your 6-digit PIN.
-3. The platform executes the following on-chain:
-   - Locks your **FlexibilityToken collateral** (5% of the offer value)
-   - Locks the **platform fee** (2% of the offer value)
-   - Registers the offer in the MarketSession smart contract
+3. The platform executes three transactions on your behalf:
+   - An **ERC-20 approval** covering the collateral (5% of the offer value) and the platform fee (2%)
+   - An **ERC-1155 operator approval**, so the session contract can transfer your certificate to the FRP at settlement
+   - The **offer submission** itself, which registers the offer in the MarketSession contract, locks the collateral and the fee, and **mints your FlexibilityNFT certificate**
 4. The offer status changes to `PUBLISHED`.
 5. Offers are **auto-matched** in order of arrival (FIFO — First In, First Out) until each hour slot is filled. If your offer fills the last available spot, it may be **partially matched**.
 

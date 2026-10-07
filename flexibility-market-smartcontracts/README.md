@@ -19,7 +19,7 @@
 # 1. Overview
 
 <p align="justify">
-The flexibility-market-smartcontracts sub-project contains seven Solidity 0.8.20 contracts implementing the on-chain logic of the ENPOWER Marketplace. Five are deployed once per platform (FlexibilityToken, ParticipantRegistry, Treasury, FlexibilityNFT, MarketFactory) and two are instantiated dynamically per energy community (Market, MarketSession). The architecture follows a factory pattern with a six-phase state machine: MarketFactory deploys Markets, each Market deploys MarketSessions, and each MarketSession governs one trading day from flexibility request publication, through FIFO offer matching and collateral locking, to two-step on-chain settlement.
+The flexibility-market-smartcontracts sub-project contains seven Solidity 0.8.20 contracts implementing the on-chain logic of the ENPOWER Marketplace. Five are deployed once per platform (FlexibilityToken, ParticipantRegistry, Treasury, FlexibilityNFT, MarketFactory) and two are instantiated dynamically per energy community (Market, MarketSession). The architecture follows a factory pattern with a five-stage session lifecycle plus a terminal cancelled state: MarketFactory deploys Markets, each Market deploys MarketSessions, and each MarketSession governs one trading day from flexibility request publication, through FIFO offer matching and collateral locking, to two-step on-chain settlement.
 </p>
 
 <p align="justify">
@@ -55,7 +55,7 @@ The on-chain logic is structured around a factory pattern: MarketFactory is the 
 |---|---|
 | MarketFactory | Genesis component — deploys and tracks Market instances |
 | Market | Per-community trading venue — manages participants, sessions, and role hierarchies |
-| MarketSession | Six-phase state machine governing each trading window |
+| MarketSession | Five-stage lifecycle governing each trading window, plus a terminal cancelled state |
 | FlexibilityToken | Fungible value transfer, collateral locking, and fee collection |
 | FlexibilityNFT | Flexibility commitments that become settlement certificates upon delivery |
 | ParticipantRegistry | On-chain participant qualification and role management |
