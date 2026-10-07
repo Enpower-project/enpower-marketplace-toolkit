@@ -30,10 +30,10 @@ registered and two client secrets are copied into the backend environment — so
 deployment cannot honestly be reduced to a single number.
 
 ```bash
-./benchmark/measure-deploy.sh prepare --reset --without-frontend
+./benchmark/measure-deploy.sh prepare --reset
 ./benchmark/measure-deploy.sh phase1
 #   ... do the manual steps it prints ...
-./benchmark/measure-deploy.sh phase2 --without-frontend
+./benchmark/measure-deploy.sh phase2
 ```
 
 Three figures are reported, and they mean different things:
@@ -52,11 +52,6 @@ rather than letting the backend come up and reject every request.
 start. It deletes all platform data and waits five seconds first. Without it the
 figures describe a restart over existing volumes, which is faster and must not be
 reported as a cold deployment.
-
-`--without-frontend` omits the web interface, whose component library is
-published to a private registry. On a host without credentials for it the image
-cannot be built; its absence is recorded in the results rather than hidden. No
-measurement in this directory depends on the web interface.
 
 ## 3. Resource footprint
 

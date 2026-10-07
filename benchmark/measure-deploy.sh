@@ -15,10 +15,6 @@
 #   ./measure-deploy.sh phase2    # start the remaining services, time them
 #
 # Options:
-#   --without-frontend   Skip the web interface. Its component library is
-#                        published to a private registry, so on a host without
-#                        credentials for it the image cannot be built. Its
-#                        absence is recorded in the results, not hidden.
 #   --reset              Before `prepare`, remove containers AND volumes for a
 #                        true cold start. This deletes all platform data.
 #
@@ -38,20 +34,13 @@ PHASE2_SERVICES="hardhat mongodb postgres mailhog backend ingestion-microservice
 STAGE="${1:-}"
 shift 2>/dev/null || true
 
-WITHOUT_FRONTEND=0
 RESET=0
 for arg in "$@"; do
   case "$arg" in
-    --without-frontend) WITHOUT_FRONTEND=1 ;;
     --reset) RESET=1 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
-
-if [ "$WITHOUT_FRONTEND" -eq 1 ]; then
-  BUILT_SERVICES="$(echo  "$BUILT_SERVICES"  | tr ' ' '\n' | grep -vx frontend | tr '\n' ' ')"
-  PHASE2_SERVICES="$(echo "$PHASE2_SERVICES" | tr ' ' '\n' | grep -vx frontend | tr '\n' ' ')"
-fi
 
 note() { printf '%s\n' "$*" >> "$RESULTS"; }
 say()  { printf '%s\n' "$*" >&2; }
@@ -88,8 +77,7 @@ time_startup() {
   say "Starting: $services"
   t0=$(date +%s.%N)
   if ! docker compose up -d $services >/dev/null 2>&1; then
-    say "docker compose up failed. Run it directly to see why; if it is the web"
-    say "interface, re-run with --without-frontend."
+    say "docker compose up failed. Run it directly to see why."
     return 1
   fi
 
@@ -172,8 +160,7 @@ prepare)
   T0=$(date +%s.%N)
   if ! docker compose build $BUILT_SERVICES; then
     say ""
-    say "Image preparation failed. If this is the web interface, its component"
-    say "library needs a private registry; re-run with --without-frontend."
+    say "Image preparation failed; the build output above says which image and why."
     exit 1
   fi
   PREP=$(echo "$(date +%s.%N) $T0" | awk '{ printf "%.1f", $1 - $2 }')
@@ -187,12 +174,6 @@ prepare)
   note ""
   note "Image preparation recurs only on a code change, whereas the phases below"
   note "recur on every start, so it is reported apart from them."
-  if [ "$WITHOUT_FRONTEND" -eq 1 ]; then
-    note ""
-    note "The web interface was not built. Its component library is published to a"
-    note "private registry that this host cannot reach, so the image cannot be"
-    note "produced here. No measurement below depends on it."
-  fi
   say "Images ready after ${PREP}s. Next: ./benchmark/measure-deploy.sh phase1"
   ;;
 
@@ -253,6 +234,7 @@ phase2)
   ;;
 
 *)
-  sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
+  # Print the header comment as usage.
+  awk 'NR > 1 && /^#/ { sub(/^# ?/, ""); print; next } NR > 1 { exit }' "$0"
   exit 2 ;;
 esac
