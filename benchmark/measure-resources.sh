@@ -7,7 +7,7 @@
 # stack idle, and once while a workload is running against it.
 #
 # Usage:
-#   ./measure-resources.sh                    # 60 samples at 1 s, idle
+#   ./measure-resources.sh                    # 60 s, idle
 #   DURATION=300 INTERVAL=5 ./measure-resources.sh
 #   LABEL=under-load ./measure-resources.sh
 #
@@ -26,12 +26,14 @@ OUT="${OUT:-benchmark/resources-$LABEL.csv}"
 mkdir -p "$(dirname "$OUT")"
 echo "sample,container,cpu_percent,mem_mib" > "$OUT"
 
-samples=$((DURATION / INTERVAL))
-[ "$samples" -lt 1 ] && samples=1
+# DURATION is wall-clock time. Each `docker stats` call itself takes one to two
+# seconds, so counting samples would overrun the requested window several-fold.
+echo "Sampling for ${DURATION}s, pausing ${INTERVAL}s between samples (label: $LABEL)..." >&2
 
-echo "Sampling $samples times at ${INTERVAL}s intervals (label: $LABEL)..." >&2
-
-for i in $(seq 1 "$samples"); do
+end=$((SECONDS + DURATION))
+i=0
+while [ "$SECONDS" -lt "$end" ]; do
+  i=$((i + 1))
   # MemUsage looks like "123.4MiB / 7.654GiB"; take the used side and normalise.
   docker stats --no-stream \
     --format '{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}' 2>/dev/null \
@@ -48,8 +50,9 @@ for i in $(seq 1 "$samples"); do
         else                    mib = val;        # MiB
         printf "%s,%s,%.2f,%.2f\n", s, $1, cpu, mib;
       }' >> "$OUT"
-  [ "$i" -lt "$samples" ] && sleep "$INTERVAL"
+  [ "$SECONDS" -lt "$end" ] && sleep "$INTERVAL"
 done
+samples=$i
 
 echo >&2
 
@@ -77,4 +80,4 @@ awk -F',' 'NR > 1 { n[$1] += $4 } END {
   }' "$OUT"
 
 echo
-echo "Samples: $samples at ${INTERVAL}s. Raw data in $OUT."
+echo "Samples: $samples over ${DURATION}s. Raw data in $OUT."

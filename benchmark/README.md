@@ -65,6 +65,22 @@ plus the total across the stack. Run it twice, idle and under load, and report
 both: the idle figure is what the stack costs to keep available, the loaded
 figure is what it costs to use.
 
+For the loaded figure, the workload must cover the whole sampling window, or
+idle samples dilute the mean. Keep the on-chain workload running against the
+deployed node for as long as the measurement lasts:
+
+```bash
+# terminal A
+LABEL=under-load DURATION=180 ./benchmark/measure-resources.sh
+
+# terminal B, started immediately after
+cd flexibility-market-smartcontracts
+end=$((SECONDS + 180))
+while [ $SECONDS -lt $end ]; do
+  MARKETS=3 SESSIONS=2 FSPS=5 npm run benchmark -- --network localhost
+done
+```
+
 ## 4. API latency
 
 ```bash
