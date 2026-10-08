@@ -366,7 +366,7 @@ On your first login, if you do not yet have a wallet, the platform will guide yo
 
 ## 7.2 Browsing Open Sessions
 
-1. From the Dashboard or from the 'Market Session Active' side bar section, view sessions that are currently in `OFFERS_OPEN` status.
+1. From the Dashboard or from the 'Market Session Active' side bar section, view sessions that are currently in `ACTIVE` status (`OFFERS_OPEN` on-chain).
 2. Click on a session to see the details:
    - Delivery date
    - Per-hour flexibility requests (quantity and price for each time slot)

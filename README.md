@@ -493,3 +493,23 @@ required to reproduce the results reported in the manuscript:
 
 The reproducible scope of this release therefore covers the ENPOWER Marketplace Toolkit and its ingestion microservice operating on the bundled demonstration dataset — that is, the entirety of the software contribution described in this manuscript.
 
+## 6.4 Measuring a deployment
+
+The performance figures reported in the manuscript are produced by the scripts in
+[`benchmark/`](./benchmark/README.md), which instrument the deployment procedure of
+Section 4.2 step by step. They report on-chain cost per lifecycle operation,
+deployment time, per-container CPU and memory at rest and under load, and API
+latency, each as a Markdown table, so the measurements can be repeated on any host
+from a clean clone.
+
+The on-chain cost model needs no deployment at all:
+
+```bash
+cd flexibility-market-smartcontracts
+npm ci
+MARKETS=3 SESSIONS=2 FSPS=5 npm run benchmark
+```
+
+Gas figures transfer between EVM-compatible networks; timing, memory and latency
+are properties of the host they were measured on and should be reported with it.
+
