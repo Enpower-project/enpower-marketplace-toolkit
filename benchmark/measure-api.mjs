@@ -193,11 +193,17 @@ async function main() {
   }
 
   const rejected = results.filter((r) => !r.skipped && !r.error && (r.status < 200 || r.status >= 300));
-  if (rejected.length) {
+  if (rejected.some((r) => r.status === 401)) {
     console.error(
-      `\n${rejected.length} endpoint(s) were rejected. A 401 with a valid token usually means` +
-        `\nKEYCLOAK_URL differs from the backend's KEYCLOAK_AUTH_SERVER_URL: the token's` +
-        `\nissuer must match the address the backend validates against.`,
+      `\nA 401 with a valid token usually means KEYCLOAK_URL differs from the` +
+        `\nbackend's KEYCLOAK_AUTH_SERVER_URL: the token's issuer must match the` +
+        `\naddress the backend validates against.`,
+    );
+  }
+  if (rejected.some((r) => r.status === 403)) {
+    console.error(
+      `\nA 403 means the token was accepted but the account lacks the role the` +
+        `\nendpoint requires. That is access control working, not a fault.`,
     );
   }
 
