@@ -280,17 +280,21 @@ CSV files for the exact column layout.
 
 ---
 
-## 7. Data Flow: Scheduler & Ingestion Microservice
+## 7. Data Flow: External Scheduler & Ingestion Microservice
 
-The manual seed commands described in Section 6 are used for **initial setup**. After, the ingestion of daily consumption data is fully automated through a pipeline managed by two components: the **Scheduler** (a Spring Boot + Quartz service) and the **dataspace-file-ingestion-microservice** (a Spring Boot service that acts as the state machine for file processing).
+The manual seed commands described in Section 6 are used for **initial setup**. In production, the ingestion of daily consumption data is then automated through a pipeline involving two components: the **dataspace-file-ingestion-microservice**, which is part of this project, and an **external scheduler**, which is not.
+
+> **The scheduler is not part of this project.** It is not included in this repository or in the release: it is a separate tool that each operator provides. Without it, every step below can be run manually with the commands in Section 6.
 
 ### Components
 
-**`Scheduler/`** — A Spring Boot service (port 8085) that executes dynamic Groovy scripts on a cron schedule via Quartz. It contains three tasks relevant to this pipeline.
+**External scheduler** *(not part of this project)* — a separate orchestration tool that runs three Groovy tasks on a cron schedule. Any scheduler able to execute these tasks can play this role; the scripts are reproduced below as a reference.
 
 **`dataspace-file-ingestion-microservice/`** — Tracks every file through its processing lifecycle using a `FileIngestionEntry` entity with statuses: `NEW → TRANSLATED → SYNCHRONIZED` (or `ERROR` at any stage). Also stores the `FspDataspaceMapping` table that links each dataspace `provider_id` to the corresponding `marketplaceFspId` and `marketplaceMarketId` in the marketplace backend.
 
 ### The Three Scheduler Tasks
+
+These tasks run inside the external scheduler, not in this project.
 
 #### 1. `SyncDataspaceEntries`
 

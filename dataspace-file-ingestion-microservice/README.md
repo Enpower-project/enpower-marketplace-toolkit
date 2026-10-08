@@ -69,8 +69,10 @@ Full reference available at <code>http://SERVER_IP:8082/swagger-ui.html</code>. 
 ## 3.1 Scheduler Tasks (Automated Pipeline Triggers)
 
 <p align="justify">
-The pipeline is driven by three Groovy tasks stored in the DSTechScheduler database and executed by its Quartz engine. Runtime parameters (URLs, credentials, directory paths, database connection) are supplied via the Quartz job data map, allowing reconfiguration without redeployment. Full task source files are in <code>Scheduler/DSTechScheduler/SampleTasks/</code>.
+The pipeline is driven by three Groovy tasks executed by an <strong>external scheduler</strong>, which is <strong>not part of this project</strong> and is not included in this repository or in the release. Within ENPOWER the tasks run in DSTechScheduler, where runtime parameters (URLs, credentials, directory paths, database connection) are supplied through the job data map, allowing reconfiguration without redeployment.
 </p>
+
+> The scripts below are reproduced **as a reference** for operators who connect the pipeline to their own scheduler. Without a scheduler, the same steps can be run manually with the commands in [`FLEXIBILITY_GUIDE.md`](../FLEXIBILITY_GUIDE.md), Section 6.
 
 ## 3.1.1 Ingestion Task — SyncDataspaceEntries
 

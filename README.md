@@ -108,7 +108,7 @@ This monorepo contains the complete ENPOWER Marketplace Toolkit. The core of the
 | `dataspace-file-ingestion-microservice/` | Dataspace File Ingestion Microservice (DFIM) — automated ingestion, translation, and import of energy data from the Energy Data Space into the Marketplace | [README](./dataspace-file-ingestion-microservice/README.md) |
 | `injection-dashboard/` | Monitoring UI for the ingestion pipeline — file registry, error tracking, manual state management | [README](./injection-dashboard/README.md) |
 
-> **Note on the DataSpace integration:** The pipeline is automated by an external Scheduler service (not included in this repository) that executes Groovy tasks on cron schedules. The three task implementations are documented inside [`dataspace-file-ingestion-microservice/README.md`](./dataspace-file-ingestion-microservice/README.md).
+> **Note on the Data Space integration:** in production, the ingestion pipeline is triggered by an **external scheduler**, a separate orchestration tool that runs three Groovy tasks on cron schedules. **The scheduler is not part of this project: it is neither in this repository nor in the release, and each operator provides their own.** The three task scripts are reproduced in [`dataspace-file-ingestion-microservice/README.md`](./dataspace-file-ingestion-microservice/README.md) only as a reference for operators connecting the pipeline to a scheduler. Without one, the same steps are run manually with the commands in [`FLEXIBILITY_GUIDE.md`](./FLEXIBILITY_GUIDE.md), Section 6.
 
 <br>
 
@@ -402,23 +402,22 @@ The Marketplace Toolkit integrates with several components developed by other EN
 ## 6.1 Archived version
 
 The version of the toolkit described in the accompanying manuscript is
-published as release **v1.0.1**, permanently pinned to commit
-`a2a5019f9e202fcfbf4a5954bdff5936476f077a`:
+published as release **v1.0.2**, permanently pinned to commit `<SHA>`:
 
 | | |
 |---|---|
-| Release | https://github.com/Enpower-project/enpower-marketplace-toolkit/releases/tag/v1.0.1 |
-| Immutable source tree | https://github.com/Enpower-project/enpower-marketplace-toolkit/tree/a2a5019f9e202fcfbf4a5954bdff5936476f077a |
-| Source archive | `enpower-marketplace-toolkit-1.0.1.tar.gz` (attached to the release) |
-| SHA-256 | `fb3d79da8b43ad9cbdf1a27b243738a2672ed6aa479e93a41b86133875d6f269` |
+| Release | https://github.com/Enpower-project/enpower-marketplace-toolkit/releases/tag/v1.0.2 |
+| Immutable source tree | https://github.com/Enpower-project/enpower-marketplace-toolkit/tree/`<SHA>` |
+| Source archive | `enpower-marketplace-toolkit-1.0.2.tar.gz` (attached to the release) |
+| SHA-256 | `<CHECKSUM>` |
 
 The commit-pinned URL above is a content-addressed reference: unlike a branch
-or tag, it cannot be reassigned to different content. The `v1.0.1` tag is
+or tag, it cannot be reassigned to different content. The `v1.0.2` tag is
 additionally protected against modification and deletion by repository
 rulesets. Readers verifying the archive can confirm its integrity with:
 
 ```bash
-sha256sum enpower-marketplace-toolkit-1.0.1.tar.gz
+sha256sum enpower-marketplace-toolkit-1.0.2.tar.gz
 ```
 
 To obtain exactly this version:
@@ -426,8 +425,10 @@ To obtain exactly this version:
 ```bash
 git clone https://github.com/Enpower-project/enpower-marketplace-toolkit.git
 cd enpower-marketplace-toolkit
-git checkout v1.0.1
+git checkout v1.0.2
 ```
+
+The earlier release v1.0.1 remains available at its protected tag.
 
 ## 6.2 Scope of the automated deployment
 
@@ -488,7 +489,7 @@ required to reproduce the results reported in the manuscript:
 | Component | Reason | Effect on reproduction |
 |---|---|---|
 | TRUE Connector (Energy Data Space) | Maintained by another consortium partner; requires credentialed access to pilot infrastructure | Live data exchange with external pilot systems cannot be reproduced. The ingestion microservice is instead exercised on the bundled demonstration dataset. |
-| External Scheduler service | Proprietary orchestration service executing Groovy cron tasks | The ingestion pipeline is triggered manually via documented commands (see `FLEXIBILITY_GUIDE.md`, Section 6) instead of on a schedule. |
+| External scheduler | A separate orchestration tool, not part of this project, that runs the pipeline's Groovy tasks on cron schedules | The ingestion pipeline is triggered manually via documented commands (see `FLEXIBILITY_GUIDE.md`, Section 6) instead of on a schedule. |
 | Protection Framework (ReBAC) | Not publicly released for security reasons | Access control is enforced by the included Keycloak realm; the additional ReBAC layer is not exercised. |
 
 The reproducible scope of this release therefore covers the ENPOWER Marketplace Toolkit and its ingestion microservice operating on the bundled demonstration dataset — that is, the entirety of the software contribution described in this manuscript.

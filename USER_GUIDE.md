@@ -284,7 +284,7 @@ For ongoing daily consumption data, the platform relies on the **Energy Data Spa
 3. **Subscribe** to the appropriate data offering corresponding to the metering data of your energy community.
 4. Once subscribed, the Scheduler service automatically retrieves measurement data on a cron schedule, and the DFIM translates and imports it into the Marketplace database.
 
-> **Note:** The Scheduler service and full Data Space integration are not included in this demonstration deployment. In a demo environment, use the Historical Data Seeder (section 5.9.1) to manually upload energy data for each FSP. In a production deployment with a configured Energy Data Space, daily consumption data flows automatically without manual intervention.
+> **Note:** The Scheduler is an **external tool, not part of this project**: it is not included in the repository or in the release, and a production deployment must provide its own. Full Data Space integration likewise requires infrastructure outside the project (step 1). Without them, use the Historical Data Seeder (section 5.9.1) to upload energy data for each FSP manually. In a production deployment with a scheduler and a configured Energy Data Space, daily consumption data flows automatically without manual intervention.
 
 <br>
 

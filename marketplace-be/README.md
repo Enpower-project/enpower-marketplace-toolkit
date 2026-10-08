@@ -119,7 +119,7 @@ A market is first created off-chain by the MARKETPLACE_ADMIN, then accepted by i
 ## 5.2 MarketSession Lifecycle
 
 <p align="justify">
-A MarketSession progresses through eight backend statuses that map to the six on-chain phases of the state machine. The FRP creates the session off-chain and defines per-slot flexibility requests; the FMO/LMO then publishes the session on-chain. Two intermediate transitions — <code>OFFERS_CLOSED → IN_DELIVERY</code> and <code>IN_DELIVERY → SETTLEMENT_PENDING</code> — are performed automatically by scheduled cron jobs. Each transition that writes to the blockchain requires the caller's PIN to decrypt their wallet.
+A MarketSession progresses through ten backend statuses that map to the contract's five sequential states and its terminal cancelled state. The FRP creates the session off-chain and defines per-slot flexibility requests; the FMO/LMO then publishes the session on-chain. Two intermediate transitions — <code>OFFERS_CLOSED → IN_DELIVERY</code> and <code>IN_DELIVERY → SETTLEMENT_PENDING</code> — are performed automatically by the backend's own scheduled jobs, which are part of this project and unrelated to the external ingestion scheduler. Each transition that writes to the blockchain requires the caller's PIN to decrypt their wallet.
 </p>
 
 | Method | Endpoint | Role | Description |

@@ -100,7 +100,7 @@ Represents a single energy community trading venue. Owned by the FMO/LMO. Valida
 ## 3.3 MarketSession
 
 <p align="justify">
-The most complex contract. Governs a single trading day through six on-chain states. The FMO/LMO wallet receives three roles at construction: DEFAULT_ADMIN_ROLE, FMO_LMO, and ORACLE — meaning all state-machine transitions are signed with the FMO/LMO's PIN-encrypted custodial wallet. FSPs require both the FSP AccessControl role and a QUALIFIED status in the ParticipantRegistry to submit offers. Offers are auto-matched FIFO until each hour slot is filled; the last offer may be partially matched.
+The most complex contract. Governs a single trading day through five sequential on-chain states and a terminal cancelled state. The FMO/LMO wallet receives three roles at construction: DEFAULT_ADMIN_ROLE, FMO_LMO, and ORACLE — meaning all state-machine transitions are signed with the FMO/LMO's PIN-encrypted custodial wallet. FSPs require both the FSP AccessControl role and a QUALIFIED status in the ParticipantRegistry to submit offers. Offers are auto-matched FIFO until each hour slot is filled; the last offer may be partially matched.
 </p>
 
 
