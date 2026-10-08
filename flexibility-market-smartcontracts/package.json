@@ -1,6 +1,6 @@
 {
   "name": "enpower-flexibility-market-contracts",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "2.0.8",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",

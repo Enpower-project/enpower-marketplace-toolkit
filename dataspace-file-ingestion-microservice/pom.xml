@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>it.dstfactory</groupId>
 	<artifactId>dataspace-ingestion-microservice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name/>
 	<description/>
 	<url/>

@@ -12,7 +12,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("Enpower API Documentation")
     .setDescription("API Documentation")
-    .setVersion("1.0.0")
+    .setVersion("1.0.2")
     .addBearerAuth(
       {
         type: 'http',
