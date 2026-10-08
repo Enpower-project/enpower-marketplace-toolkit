@@ -514,3 +514,21 @@ MARKETS=3 SESSIONS=2 FSPS=5 npm run benchmark
 Gas figures transfer between EVM-compatible networks; timing, memory and latency
 are properties of the host they were measured on and should be reported with it.
 
+## 6.5 Running the smart-contract tests
+
+The smart contracts are covered by 92 automated tests: session lifecycle
+transitions and the rejection of forbidden ones, collateral and settlement
+accounting, role-based access control, soulbound certificates, and the session
+reported in the manuscript's Section 3, whose figures are asserted exactly. They
+run from a clean clone (Node.js 20 or later) and need no running stack:
+
+```bash
+cd flexibility-market-smartcontracts
+npm ci
+npm test            # runs the 92 tests
+npm run coverage    # coverage report, written to coverage/index.html
+```
+
+The continuous integration workflow (`.github/workflows/ci.yml`) runs the same
+suite and its coverage report on every push.
+

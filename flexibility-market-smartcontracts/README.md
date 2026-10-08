@@ -234,7 +234,8 @@ npm install
 npm run build                # compile contracts (= npx hardhat compile)
 npm run node                 # start Hardhat node on :8545 — keep running in a separate terminal
 npm run deploy:localhost     # deploy core contracts + copy ABIs to backend + update backend .env
-npm test                     # run full test suite
+npm test                     # run the 92-test suite (see root README §6.5)
+npm run coverage             # coverage report, written to coverage/index.html
 npm run deploy:remoteNode    # deploy to remote network (requires .env with REMOTE_RPC_URL + DEPLOYER_PRIVATE_KEY)
 ```
 
