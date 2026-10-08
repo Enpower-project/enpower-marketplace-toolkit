@@ -22,6 +22,8 @@ Reference guide for understanding how the ENPOWER system calculates, stores, and
 
 **Flexibility:** the capacity of an FSP to consume **more or less than usual** at a given time interval. Measured in Watts (W) for power and Watt-hours (Wh) for hourly accumulated energy.
 
+> **Units across the toolkit.** The ingestion pipeline described in this guide works in W and Wh, the resolution at which pilot meters report. The marketplace works in **kilowatt-hours**: flexibility requests, offers and settlements are expressed in kWh and prices in FLEX/kWh. At settlement, metered flexibility in Wh is divided by 1,000 before it is compared with the committed volume. Because every request covers a one-hour slot, a volume in kWh is numerically equal to the sustained power in kW over that hour: 2.4 kWh delivered in the 09:00–10:00 slot is 2,400 Wh of accumulated energy, or an average of 2.4 kW.
+
 **Time slot:** the minimum measurement interval. Depends on the pilot:
 - Irish Pilot: **15 minutes** → 96 slots per day
 - Greek Pilot: **30 minutes** → 48 slots per day
