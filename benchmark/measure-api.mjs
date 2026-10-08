@@ -180,6 +180,10 @@ async function main() {
       console.log(`| ${r.name} | skipped, no credentials | — | — | — | — |`);
     } else if (r.error) {
       console.log(`| ${r.name} | unreachable | — | — | — | — |`);
+    } else if (r.status < 200 || r.status >= 300) {
+      // A rejected request returns before any work is done, so its timing
+      // says nothing about how the endpoint performs.
+      console.log(`| ${r.name} | ${r.status}, not measured | — | — | — | — |`);
     } else {
       console.log(
         `| ${r.name} | ${r.status} | ${r.n} | ${r.p50.toFixed(1)} ms | ` +
@@ -188,7 +192,18 @@ async function main() {
     }
   }
 
-  const measured = results.filter((r) => !r.skipped && !r.error);
+  const rejected = results.filter((r) => !r.skipped && !r.error && (r.status < 200 || r.status >= 300));
+  if (rejected.length) {
+    console.error(
+      `\n${rejected.length} endpoint(s) were rejected. A 401 with a valid token usually means` +
+        `\nKEYCLOAK_URL differs from the backend's KEYCLOAK_AUTH_SERVER_URL: the token's` +
+        `\nissuer must match the address the backend validates against.`,
+    );
+  }
+
+  const measured = results.filter(
+    (r) => !r.skipped && !r.error && r.status >= 200 && r.status < 300,
+  );
   if (measured.length) {
     const medians = measured.map((r) => r.p50).sort((a, b) => a - b);
     console.log(
