@@ -162,7 +162,9 @@ cp marketplace-be/.env.example marketplace-be/.env.docker
 |---|---|---|
 | `SERVER_URL` | Public URL of this server. Used only for links in system emails (password reset, invitations). | `http://SERVER_IP:4200` |
 
-> **Changing server?** Edit only `.env` and set the new `SERVER_URL`. The frontend uses relative paths (`/api`, `/blockchain/`) that nginx routes internally — no other file needs to change.
+> **Set this before the first start.** If `SERVER_URL` is left at its example value, the platform runs normally but every link in system emails points to `SERVER_IP`, so invitations and password resets cannot be completed.
+
+> **Changing server?** Edit only `.env` and set the new `SERVER_URL`. The frontend uses relative paths (`/api`, `/blockchain/`) that nginx routes internally — no other file needs to change. On a running deployment, apply the change with `docker compose up -d backend`, which recreates the backend with the new value.
 
 
 ### 4.2.3 Phase 1 — Start Keycloak and Retrieve Client Secrets
