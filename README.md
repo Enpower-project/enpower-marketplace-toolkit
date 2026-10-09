@@ -402,14 +402,14 @@ The Marketplace Toolkit integrates with several components developed by other EN
 ## 6.1 Archived version
 
 The version of the toolkit described in the accompanying manuscript is
-published as release **v1.0.2**, permanently pinned to commit `<SHA>`:
+published as release **v1.0.2**, permanently pinned to commit `21d95b854b6f825deb56facc31ed82f064b29174`:
 
 | | |
 |---|---|
 | Release | https://github.com/Enpower-project/enpower-marketplace-toolkit/releases/tag/v1.0.2 |
-| Immutable source tree | https://github.com/Enpower-project/enpower-marketplace-toolkit/tree/`<SHA>` |
+| Immutable source tree | https://github.com/Enpower-project/enpower-marketplace-toolkit/tree/21d95b854b6f825deb56facc31ed82f064b29174 |
 | Source archive | `enpower-marketplace-toolkit-1.0.2.tar.gz` (attached to the release) |
-| SHA-256 | `<CHECKSUM>` |
+| SHA-256 | `be0fc9a18086e8e70b76a473bcef07e81ae4c42f1ada908b8c6aa45f85ba9843` |
 
 The commit-pinned URL above is a content-addressed reference: unlike a branch
 or tag, it cannot be reassigned to different content. The `v1.0.2` tag is
