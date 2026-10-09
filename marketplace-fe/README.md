@@ -113,11 +113,11 @@ The session detail view provides a complete picture of a single MarketSession: m
 The offer submission wizard is the primary interaction surface for FSPs. It loads the selected session's FRP flexibility requests alongside any offers the FSP has already created for that session, presenting them side-by-side grouped by hour. For each hour slot the FSP can open a create-offer modal to specify the energy quantity they can provide. Draft offers are saved off-chain and listed in the view. When the FSP is satisfied with a draft offer, they click publish and a PIN modal prompts for the 6-digit wallet PIN, which is sent with the publish request to the backend; the backend locks FlexibilityToken collateral (5%) plus the platform fee (2%) on-chain and registers the offer in the MarketSession contract. Published offers are marked accordingly in the view.
 </p>
 
-![Figure 6 - Offer submission wizard showing the session's hourly flexibility requests on the background on the left, the FSP's draft create-offer modal on front.](../images/frontend/Draft_offer_modal.png)
-*Figure 6 - Offer submission wizard showing the session's hourly flexibility requests on the background on the left, the FSP's draft create-offer modal on front.*
+![Figure 6 - Create-offer modal showing the flexibility request for the selected hour slot, the offered quantity capped by the FSP's theoretical flexibility, and the financial breakdown with collateral and platform fee.](../images/frontend/Draft_offer_modal.png)
+*Figure 6 - Create-offer modal showing the flexibility request for the selected hour slot, the offered quantity capped by the FSP's theoretical flexibility, and the financial breakdown with collateral and platform fee.*
 
-![Figure 7 - Offer submission wizard showing the draft offer created on the background on the left and the FSP's PIN offer-publication modal on front.](../images/frontend/Publication_offer_modal.png)
-*Figure 7 - Offer submission wizard showing the draft offer created on the background on the left and the FSP's PIN offer-publication modal on front.*
+![Figure 7 - PIN offer-publication modal showing the transaction summary and the three blockchain transactions executed on confirmation.](../images/frontend/Publication_offer_modal.png)
+*Figure 7 - PIN offer-publication modal showing the transaction summary and the three blockchain transactions executed on confirmation.*
 
 
 
