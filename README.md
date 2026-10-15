@@ -393,7 +393,7 @@ The Marketplace Toolkit integrates with several components developed by other EN
 |---|---|---|---|
 | ENPOWER Middleware / OneNet / TRUE Connector | European Dynamics | Energy Data Space management — data offering catalogue, subscription management, and access policies. Energy Data Space connector enabling sovereign, policy-compliant data exchange between pilot sites; includes Docker deployment configuration | [Repository](https://github.com/Enpower-project/Enpower-Data-Space-Connector-Deployment-and-Configuration-Guide) |
 | SEMAPTIC Builder / ENCOM Ontology | INESC TEC | Web tool for creating semantic maps that ensure interoperability across heterogeneous pilot systems / Energy Community Ontology (based on SAREF, QUDT, W3C Time) providing the shared vocabulary for semantic interoperability | [Documentation](https://semanticweb.inesctec.pt/ontologies/encom/index.html) |
-| Protection Framework | COMSENSUS | IAM framework providing ReBAC-based access control (Keycloak + SpiceDB + Envoy Proxy) | Not accessible for security reasons |
+| Protection Framework (Authframe) | COMSENSUS | IAM framework combining role-based access control (Keycloak) with relationship-based access control (SpiceDB, Envoy Proxy). The marketplace integration uses only its Keycloak-based RBAC. | [Repository](https://github.com/Enpower-project/authframe2) |
 
 ---
 
@@ -490,7 +490,7 @@ required to reproduce the results reported in the manuscript:
 |---|---|---|
 | TRUE Connector (Energy Data Space) | Maintained by another consortium partner; requires credentialed access to pilot infrastructure | Live data exchange with external pilot systems cannot be reproduced. The ingestion microservice is instead exercised on the bundled demonstration dataset. |
 | External scheduler | A separate orchestration tool, not part of this project, that runs the pipeline's Groovy tasks on cron schedules | The ingestion pipeline is triggered manually via documented commands (see `FLEXIBILITY_GUIDE.md`, Section 6) instead of on a schedule. |
-| Protection Framework (ReBAC) | Not publicly released for security reasons | Access control is enforced by the included Keycloak realm; the additional ReBAC layer is not exercised. |
+| Protection Framework (ReBAC layer) | Not required by the marketplace integration, which uses only the framework's Keycloak-based RBAC | Access control is enforced by the included Keycloak realm; the ReBAC layer is not exercised. |
 
 The reproducible scope of this release therefore covers the ENPOWER Marketplace Toolkit and its ingestion microservice operating on the bundled demonstration dataset — that is, the entirety of the software contribution described in this manuscript.
 
