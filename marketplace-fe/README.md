@@ -83,7 +83,7 @@ The FMO/LMO (market owner) panel displays the markets owned by the authenticated
 ## 3.4 FRP Dashboard
 
 <p align="justify">
-The FRP (Flexibility Requesting Party) panel presents the active MarketSessions of the assigned market. The FRP is responsible for creating and configuring sessions: the session creation collects the delivery date and per-hour flexibility requests (quantity in MW and price per unit for each time slot). Sessions in DRAFT status can be edited and then approved for FMO/LMO publication. On login, if the FRP has outstanding payment requests from the FMO/LMO, a modal dialog is displayed automatically listing the sessions for which FlexibilityToken deposits are required before settlement can proceed, along with the exact amounts. The wallet info card shows the FRP's current FlexibilityToken balance and ETH balance. A Treasury balance card shows the current state of funds held in escrow.
+The FRP (Flexibility Requesting Party) panel presents the active MarketSessions of the assigned market. The FRP is responsible for creating and configuring sessions: the session creation collects the delivery date and per-hour flexibility requests (power in kW, equivalent to kWh per one-hour slot, and price per unit for each time slot). Sessions in DRAFT status can be edited and then approved for FMO/LMO publication. On login, if the FRP has outstanding payment requests from the FMO/LMO, a modal dialog is displayed automatically listing the sessions for which FlexibilityToken deposits are required before settlement can proceed, along with the exact amounts. The wallet info card shows the FRP's current FlexibilityToken balance and ETH balance. A Treasury balance card shows the current state of funds held in escrow.
 </p>
 
 ![Figure 3 - FRP dashboard showing active sessions list, wallet balance card, Treasury balance, and the pending payment request modal.](../images/frontend/FRP_dashboard.png)
@@ -104,8 +104,8 @@ The FSP (Flexibility Service Provider) panel serves prosumers who submit flexibi
 The session detail view provides a complete picture of a single MarketSession: metadata (delivery date, status, blockchain contract address), the per-slot flexibility requests table showing requested quantity and price for each hour, and the list of offers submitted for each slot. For FMO/LMO users, action buttons are rendered according to the current session state (publish (with PIN dialog), open offers (with PIN), close offers (with PIN), and return tokens (for cancelled sessions)). For FRP users, edit, approve or revert-to-draft (if already approved) actions are available on DRAFT sessions. The session can also be identified by its blockchain contract address.
 </p>
 
-![Figure 5 - MarketSession detail view showing session metadata, on-chain status chip, per-hour bid table, offers by slot, and the lifecycle action buttons visible to an FMO/LMO user.](../images/frontend/Market_session_detail.png)
-*Figure 5 - MarketSession detail view showing session metadata, on-chain status chip, per-hour bid table, offers by slot, and the lifecycle action buttons visible to an FMO/LMO user.*
+![Figure 5 - MarketSession detail view showing session metadata, on-chain status chip, per-hour flexibility requests, offers by slot, and the lifecycle action buttons visible to an FMO/LMO user.](../images/frontend/Market_session_detail.png)
+*Figure 5 - MarketSession detail view showing session metadata, on-chain status chip, per-hour flexibility requests, offers by slot, and the lifecycle action buttons visible to an FMO/LMO user.*
 
 ## 3.7 Offer Submission Wizard
 

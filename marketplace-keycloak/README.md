@@ -21,7 +21,7 @@ This folder provides a pre-configured Keycloak 25.0.2 instance for the ENPOWER M
 </p>
 
 <p align="justify">
-The realm defines the four marketplace roles, four clients (backend, frontend, swagger, admin-cli), one initial user with admin role, a custom JWT claim for multi-market context propagation, and the necessary service account permissions for the backend to manage Keycloak users via the Admin API.
+The realm defines the four marketplace roles, four clients (backend, frontend, swagger, admin-cli), one initial user with admin role (plus three development accounts, see Section 5), a custom JWT claim for multi-market context propagation, and the necessary service account permissions for the backend to manage Keycloak users via the Admin API.
 </p>
 
 > [!CAUTION]
@@ -45,11 +45,7 @@ The realm defines the four marketplace roles, four clients (backend, frontend, s
 
 # 2. Quick Start
 
-Keycloak is included in the root docker compose of the marketplace repository. Start the full stack from the repository root:
-
-```bash
-docker compose up -d
-```
+Keycloak is included in the root Docker Compose stack of the marketplace repository. Start it as part of the deployment procedure in Section 4.2 of the root README, which brings it up first, before the services that depend on it.
 
 Once running, the Keycloak instance is available at:
 
@@ -124,7 +120,7 @@ Confidential client used by the NestJS backend (<code>marketplace-be</code>) to 
 |---|---|
 | Client ID | `backend` |
 | Type | Confidential (client-secret) |
-| Client secret | Retrieved from Admin Console: **Clients → backend → Credentials → Client secret** |
+| Client secret | Fixed in the imported realm and already set as `KEYCLOAK_CLIENT_SECRET` in `marketplace-be/.env.example`; regenerate it for any deployment beyond local evaluation (root README, Section 4.2.3) |
 | Redirect URIs | `/*` (no deployment-specific configuration needed) |
 | Web origins | `/*` |
 | Flows enabled | Standard flow, Direct access grants, Service accounts |
@@ -159,13 +155,13 @@ Confidential client used exclusively by the Swagger UI at <code>http://SERVER_IP
 |---|---|
 | Client ID | `swagger` |
 | Type | Confidential (client-secret) |
-| Client secret | Retrieved from Admin Console: **Clients → swagger → Credentials → Client secret** |
+| Client secret | Fixed in the imported realm; not used by the backend |
 | Redirect URIs | `/*` (no deployment-specific configuration needed) |
 | Web origins | `/*` |
 | Flows enabled | Standard flow, Direct access grants, Service accounts |
 | Authorization services | Enabled |
 
-The client secret must be set as the Swagger client secret in the backend Keycloak configuration.
+The backend does not use this client's secret: the Swagger UI's OAuth option is configured for the project's hosted identity provider, and in a local deployment the API is authorised with a bearer token (backend README, Section 5).
 
 ## 4.4 admin-cli
 
@@ -177,7 +173,7 @@ Confidential client with a service account used by the backend to call the Keycl
 |---|---|
 | Client ID | `admin-cli` |
 | Type | Confidential (client-secret) |
-| Client secret | Retrieved from Admin Console: **Clients → admin-cli → Credentials → Client secret** |
+| Client secret | Fixed in the imported realm and already set as `KEYCLOAK_ADMIN_CLIENT_SECRET` in `marketplace-be/.env.example`; regenerate it for any deployment beyond local evaluation (root README, Section 4.2.3) |
 | Flows enabled | Direct access grants, Service accounts |
 
 **Service account permissions** (granted on `realm-management`):
@@ -190,7 +186,7 @@ Confidential client with a service account used by the backend to call the Keycl
 | `manage-realm` | Update realm settings |
 | `view-realm` | Read realm configuration |
 
-The client secret must be set as `KEYCLOAK_ADMIN_CLIENT_SECRET` in `marketplace-be/.env.docker`.
+If you regenerate it, set the new value as `KEYCLOAK_ADMIN_CLIENT_SECRET` in `marketplace-be/.env.docker`.
 
 <br>
 
@@ -198,11 +194,13 @@ The client secret must be set as `KEYCLOAK_ADMIN_CLIENT_SECRET` in `marketplace-
 
 # 5. Pre-Created Users
 
-The realm import creates one user for testing and initial platform operation. 
+The realm import creates one user for initial platform operation: 
 
 | Username | Email | Role | Notes | Password |
-|---|---|---|---|
+|---|---|---|---|---|
 | `market_admin` | `market_admin@enpower.com` | `MARKETPLACE_ADMIN` | Main administrator — use this account for the first login after deployment | **Asdf1234!** |
+
+The realm also contains three accounts left from internal testing, one per participant role (`fmo_test`, `frp_test`, `fsp_test`). They are linked to a market that only existed in the development database, so they cannot be used in a new deployment and are not needed: the FMO/LMO, FRP and FSP participants are created through the invitation workflow described in the User Guide (Sections 4.4 and 5.5).
 
 
 > To reset a user's password: **Admin Console → Users → [user] → Credentials → Reset password**.

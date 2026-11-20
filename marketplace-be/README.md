@@ -2,8 +2,8 @@
 [1. Overview](#1-overview)<br>
 [2. Marketplace Lifecycle](#2-marketplace-lifecycle)<br>
 [3. Design Decisions](#3-design-decisions)<br>
-&nbsp;&nbsp;&nbsp;[3.1 PIN-Encrypted Custodial Wallets](#32-pin-encrypted-custodial-wallets)<br>
-&nbsp;&nbsp;&nbsp;[3.2 Multi-Market JWT Context](#33-multi-market-jwt-context)<br>
+&nbsp;&nbsp;&nbsp;[3.1 PIN-Encrypted Custodial Wallets](#31-pin-encrypted-custodial-wallets)<br>
+&nbsp;&nbsp;&nbsp;[3.2 Multi-Market JWT Context](#32-multi-market-jwt-context)<br>
 [4. Technology Stack](#4-technology-stack)<br>
 [5. API / Interface](#5-api--interface)<br>
 &nbsp;&nbsp;&nbsp;[5.1 Market Creation and Activation](#51-market-creation-and-activation)<br>
@@ -38,12 +38,31 @@ The module composition reflects the domain structure of the platform: Auth (regi
 # 2. Marketplace Lifecycle
 
 <p align="justify">
-Each flexibility trading cycle spans three days. The FRP prepares a MarketSession specifying the delivery day and the flexibility requirements for one or more time slots. Before <strong>Day D-1</strong>, if the MarketSession has been approved by the FRP, the FMO/LMO publishes the MarketSession on-chain. At the beginning of <strong>Day D-1</strong> the FMO/LMO opens the offers period. FSPs can then review the session and submit offers, locking FlexibilityToken collateral (5%) and a platform fee (2%) at submission time. Offer matching is performed automatically by entry order, and matched offers are represented as FlexibilityNFT tokens. On <strong>Day D</strong>, the FSP delivers the flexibility as committed; IoT metering data is ingested via the Energy Data Space integration layer and stored for verification. On <strong>Day D+1</strong> (or whenever this metering data is available), settlement is executed in two on-chain steps: <strong>submitSettlement</strong> validates the metered outcome against the committed quantities; then the FRP deposits the payment amount, and <strong>executeSettlement</strong> processes all token transfers, applies any penalty deductions for under-delivery, and makes the FlexibilityNFT soulbound — permanently recording the service delivery event on-chain. The MarketSession state machine enforces this lifecycle through six sequential phases:
+Each flexibility trading cycle spans three days. The FRP prepares a MarketSession specifying the delivery day and the flexibility requirements for one or more time slots. Before <strong>Day D-1</strong>, if the MarketSession has been approved by the FRP, the FMO/LMO publishes the MarketSession on-chain. At the beginning of <strong>Day D-1</strong> the FMO/LMO opens the offers period. FSPs can then review the session and submit offers, locking FlexibilityToken collateral (5%) and a platform fee (2%) at submission time. Offer matching is performed automatically by entry order, and matched offers are represented as FlexibilityNFT tokens. On <strong>Day D</strong>, the FSP delivers the flexibility as committed; IoT metering data is ingested via the Energy Data Space integration layer and stored for verification. On <strong>Day D+1</strong> (or whenever this metering data is available), the FMO/LMO computes each settlement off-chain from this data and records it on-chain in two steps: <strong>submitSettlement</strong> records the delivered quantity and the penalty with the hash of the meter readings; then, once the FRP has deposited the payment, <strong>executeSettlement</strong> processes all token transfers, applies any penalty deductions for under-delivery, and makes the FlexibilityNFT soulbound — permanently recording the service delivery event on-chain. The MarketSession contract enforces this lifecycle through five sequential on-chain states and a terminal cancelled state:
 </p>
 
 ```
-CREATED → OFFERS_OPEN → OFFERS_CLOSED → IN_DELIVERY → SETTLEMENT_PENDING → SETTLED
+CREATED → OFFERS_OPEN → IN_DELIVERY → SETTLEMENT_PENDING → SETTLED
+               │
+               └──→ CANCELLED
 ```
+
+<p align="justify">
+The backend tracks a finer lifecycle in MongoDB that includes stages without financial consequence: a session is drafted and approved before its contract exists. Only the transitions that lock collateral, release it or move tokens are recorded on-chain. The application statuses correspond to the on-chain states as follows:
+</p>
+
+| Application status (MongoDB) | Set when | On-chain state |
+|---|---|---|
+| `DRAFT` | The FRP creates the session | — (no contract yet) |
+| `APPROVED` | The FRP approves the session | — (no contract yet) |
+| `PUBLISHED` | The FMO/LMO deploys the session contract | `CREATED` |
+| `ACTIVE` | The FMO/LMO opens the offers period | `OFFERS_OPEN` |
+| `OFFERS_CLOSED` | The FMO/LMO closes the offers period | `IN_DELIVERY` |
+| `IN_DELIVERY` | Scheduled job, at midnight of the delivery day (database only) | `IN_DELIVERY` |
+| `SETTLEMENT_PENDING` | Scheduled job, at midnight of the day after delivery (database only) | `IN_DELIVERY` until the FMO/LMO submits the measurement hash, then `SETTLEMENT_PENDING` |
+| `SETTLED` | The FMO/LMO finalises the session after settlement | `SETTLED` |
+| `CANCELLED` | Scheduled job, if the offers period has not been opened 24 hours before the delivery day or has not been closed 2 hours before it (database only) | `CANCELLED` once the FMO/LMO returns the collateral to the FSPs, which is possible only from `OFFERS_OPEN` |
+| `COMPLETED` | Reserved for administrative closure after settlement; not assigned by any workflow in this release | — |
 
 <br>
 
@@ -54,7 +73,7 @@ CREATED → OFFERS_OPEN → OFFERS_CLOSED → IN_DELIVERY → SETTLEMENT_PENDING
 ## 3.1 PIN-Encrypted Custodial Wallets
 
 <p align="justify">
-The platform targets energy community prosumers who are not expected to manage an external wallet (e.g., MetaMask) or handle raw private keys. The wallet module therefore implements a <strong>custodial wallet system</strong>: when a user registers, an Ethereum wallet is generated and its private key is encrypted with a 6-digit PIN known only to the user. The encrypted keystore is stored in MongoDB; the private key is never persisted in plaintext and is only decrypted in memory at the moment a transaction must be signed, using the PIN provided in the request body. Once the transaction is sent, the decrypted key is discarded.
+The platform targets energy community prosumers who are not expected to manage an external wallet (e.g., MetaMask) or handle raw private keys. The wallet module therefore implements a <strong>custodial wallet system</strong>: when a user registers, an Ethereum wallet is generated and its private key is encrypted under two secrets: the user's 6-digit PIN, generated by the server and sent by email, and a server-held certificate. The certificate is read from the file set in <code>SERVER_CERTIFICATE_PATH</code>; if it is not set, a development default is used, which any production deployment must replace before the first wallet is created. The encrypted keystore is stored in MongoDB; the private key is never persisted in plaintext and is only decrypted in memory at the moment a transaction must be signed, using the PIN provided in the request body. Once the transaction is sent, the decrypted key is discarded.
 </p>
 
 <p align="justify">
@@ -94,7 +113,15 @@ The chosen mechanism injects the active market as a custom 'current_market' attr
 # 5. API / Interface
 
 <p align="justify">
-The complete API reference — all endpoints, request/response schemas, authentication requirements, and interactive testing — is available via Swagger UI at <code>http://SERVER_IP:3000/docs</code>. The Swagger UI is pre-configured to use the PKCE authorisation code flow with the swagger Keycloak client of the enpower-marketplace realm, so no manual token handling is required to test authenticated endpoints.
+The complete API reference — all endpoints, request/response schemas, authentication requirements, and interactive testing — is available via Swagger UI at <code>http://SERVER_IP:3000/docs</code> (disabled when <code>NODE_ENV=production</code>). To test authenticated endpoints in a local deployment, obtain an access token from the bundled Keycloak, for example for the <code>market_admin</code> user listed in the Keycloak README, and enter it under <strong>Authorize → bearer</strong>:
+
+```bash
+curl -s -X POST http://SERVER_IP:8088/realms/enpower-marketplace/protocol/openid-connect/token \
+  -d grant_type=password -d client_id=frontend \
+  -d username=<user> -d password=<password>
+```
+
+The <strong>keycloak</strong> OAuth2 option shown in the same dialog is configured for the project's hosted identity provider and does not work against a local deployment.
 </p>
 
 <p align="justify">
@@ -119,7 +146,7 @@ A market is first created off-chain by the MARKETPLACE_ADMIN, then accepted by i
 ## 5.2 MarketSession Lifecycle
 
 <p align="justify">
-A MarketSession progresses through ten backend statuses that map to the contract's five sequential states and its terminal cancelled state. The FRP creates the session off-chain and defines per-slot flexibility requests; the FMO/LMO then publishes the session on-chain. Two intermediate transitions — <code>OFFERS_CLOSED → IN_DELIVERY</code> and <code>IN_DELIVERY → SETTLEMENT_PENDING</code> — are performed automatically by the backend's own scheduled jobs, which are part of this project and unrelated to the external ingestion scheduler. Each transition that writes to the blockchain requires the caller's PIN to decrypt their wallet.
+A MarketSession progresses through ten backend statuses that map to the contract's five sequential states and its terminal cancelled state. The FRP creates the session off-chain and defines per-slot flexibility requests; the FMO/LMO then publishes the session on-chain. Two intermediate transitions — <code>OFFERS_CLOSED → IN_DELIVERY</code> and <code>IN_DELIVERY → SETTLEMENT_PENDING</code> — are applied to the database only by the backend's own scheduled jobs, which are part of this project and unrelated to the external ingestion scheduler; the same jobs cancel sessions whose offers period is not opened or closed in time. The correspondence with the on-chain states is given in Section 2. Each transition that writes to the blockchain requires the caller's PIN to decrypt their wallet.
 </p>
 
 | Method | Endpoint | Role | Description |
@@ -128,10 +155,11 @@ A MarketSession progresses through ten backend statuses that map to the contract
 | POST | `/sessions/:id/approve` | FRP | Transitions the session from `DRAFT` to `APPROVED` |
 | POST | `/sessions/:id/publish-with-pin` | FMO_LMO | Deploys the MarketSession smart contract on-chain — on-chain phase: `CREATED` |
 | POST | `/sessions/:id/open-offers` | FMO_LMO | Opens the offer submission window — on-chain phase: `OFFERS_OPEN` |
-| POST | `/sessions/:id/close-offers` | FMO_LMO | Closes the offer window; matched offers are locked and FlexibilityNFTs minted to accepted FSPs — session status: `OFFERS_CLOSED` |
-| CRON | — | Scheduled | `autoTransitionClosedSessionsToInDelivery()` — automatically advances sessions from `OFFERS_CLOSED` to `IN_DELIVERY` once the delivery window begins |
-| CRON | — | Scheduled | `autoTransitionInDeliverySessionsToSettlementPending()` — automatically advances sessions from `IN_DELIVERY` to `SETTLEMENT_PENDING` once the delivery window has closed and measurement data is available |
-| POST | `/sessions/:id/return-tokens` | FMO_LMO | Returns FlexibilityToken collateral to FSPs when the session reaches `CANCELLED` status (terminal phase; reached when the session cannot proceed, e.g. insufficient matched offers) |
+| POST | `/sessions/:id/close-offers` | FMO_LMO | Closes the offer window; no further offers are accepted (each FlexibilityNFT was already minted when its offer was published) — session status: `OFFERS_CLOSED`, on-chain state: `IN_DELIVERY` |
+| CRON | — | Scheduled | `autoTransitionClosedSessionsToInDelivery()` — at midnight of the delivery day, moves sessions from `OFFERS_CLOSED` to `IN_DELIVERY` in the database (the contract is already in `IN_DELIVERY`) |
+| CRON | — | Scheduled | `autoTransitionInDeliverySessionsToSettlementPending()` — at midnight of the day after delivery, moves sessions from `IN_DELIVERY` to `SETTLEMENT_PENDING` in the database; the contract follows when the FMO/LMO submits the measurement data (Section 5.4) |
+| CRON | — | Scheduled | `autoCancelLateSessionsAndNotify()` and `autoCancelActiveSessionsNotClosed2hBeforeAndNotify()` — every hour, cancel in the database the sessions whose offers period has not been opened 24 hours before the delivery day or has not been closed 2 hours before it, and notify the participants |
+| POST | `/sessions/:id/return-tokens` | FMO_LMO | For a session cancelled by the scheduled job while its offers period was still open, cancels it on-chain and returns the locked collateral and fees to the FSPs (on-chain cancellation is possible only from `OFFERS_OPEN`) |
 
 ## 5.3 Offer Creation and On-Chain Submission
 
@@ -147,7 +175,7 @@ FSP offers follow a two-phase pattern: the offer is first created as an off-chai
 ## 5.4 Settlement Process
 
 <p align="justify">
-Settlement is a two-step on-chain process executed on Day D+1. The FMO/LMO first requests the FRP to deposit payment into the Treasury, then submits IoT measurement data on-chain to advance the session to SETTLEMENT_PENDING. For each offer, <code>submitSettlement</code> validates the metered delivery against the commitment, and <code>executeSettlement</code> distributes tokens (payment to FSP, fee to FMO/LMO, penalty deductions if applicable) and makes the FlexibilityNFT soulbound.
+Settlement starts on Day D+1, once the metering data is available. The FMO/LMO calculates each offer's settlement off-chain from the ingested data and can then request the FRP's payment. It submits the measurement hash on-chain, which moves the contract to SETTLEMENT_PENDING, and records each settlement with <code>submitSettlement</code>: the delivered quantity and the penalty computed off-chain, which the contract does not recompute. Once the FRP has deposited the payment into the Treasury, <code>executeSettlement</code> distributes the tokens for each offer (payment to the FSP, fee to the FMO/LMO, forfeited collateral to the FRP) and makes the FlexibilityNFT soulbound; the session is then finalised.
 </p>
 
 | Method | Endpoint | Role | Description |
@@ -156,7 +184,7 @@ Settlement is a two-step on-chain process executed on Day D+1. The FMO/LMO first
 | POST | `/settlements/session/:sessionAddress/deposit-frp-payment` | FRP | FRP deposits FlexibilityTokens into the Treasury contract to fund all settlements for the session |
 | POST | `/settlements/session/:sessionAddress/submit-measurement-data` | FMO_LMO | Submits the IoT measurement hash on-chain |
 | GET | `/settlements/session/:sessionAddress/offer/:offerId/calculate` | Any | Preview of the settlement calculation for offers — delivery ratio, payment, penalty, and fee amounts — without writing to the blockchain |
-| POST | `/settlements/session/:sessionAddress/offer/:offerId/submit` | FMO_LMO | Calls `submitSettlement` on the MarketSession contract; validates metered delivery against the committed quantity |
+| POST | `/settlements/session/:sessionAddress/offer/:offerId/submit` | FMO_LMO | Calls `submitSettlement` on the MarketSession contract; records the delivered quantity and the penalty calculated off-chain, with the meter-readings hash |
 | POST | `/settlements/session/:sessionAddress/offer/:offerId/execute` | FMO_LMO | Calls `executeSettlement`; distributes FlexibilityTokens from the Treasury and makes the FlexibilityNFT soulbound |
 | POST | `/settlements/session/:sessionAddress/finalize` | FMO_LMO | Transitions the session to `SETTLED` status on-chain once all offers are settled |
 
@@ -179,11 +207,11 @@ Settlement is a two-step on-chain process executed on Day D+1. The FMO/LMO first
 </p>
 
 <p align="justify">
-<strong>Frontend</strong>: The Angular frontend consumes all REST endpoints. Real-time MarketSession state updates are propagated to the frontend via WebSocket events emitted by the session module. CORS is enabled globally; the <code>FRONTEND_URL</code> environment variable must match the Angular application's origin.
+<strong>Frontend</strong>: The Angular frontend consumes all REST endpoints, through which it also obtains the current MarketSession state; wallet and treasury balances are refreshed periodically. CORS is enabled globally; the <code>FRONTEND_URL</code> environment variable must match the Angular application's origin.
 </p>
 
 <p align="justify">
-<strong>Ingestion Microservice</strong>: The Dataspace File Ingestion Microservice (DFIM) calls the <code>/api/flexibility/consumption-data</code> endpoints to import translated energy metering files into MongoDB, where they are consumed by the actual flexibility calculation service during settlement.
+<strong>Ingestion Microservice</strong>: The ingestion pipeline does not call this backend over REST. The synchronisation task run by the external scheduler (documented in the Dataspace File Ingestion Microservice README) invokes the backend's seed scripts on each translated daily file; the scripts write the ACTUAL consumption directly into MongoDB, and can also be run by hand as described in <code>FLEXIBILITY_GUIDE.md</code>. The settlement service then uses these records to compute the delivered flexibility. The <code>/api/flexibility/consumption-data</code> endpoints remain available for loading or querying consumption data over REST.
 </p>
 
 <p align="justify">
@@ -251,7 +279,7 @@ The Dockerfile uses a two-stage build: the <strong>builder</strong> stage instal
 
 | Component | Path | Description |
 |---|---|---|
-| Marketplace Frontend | [`../marketplace-fe/`](../marketplace-fe/) | Angular frontend that consumes all REST endpoints and WebSocket events exposed by this backend |
+| Marketplace Frontend | [`../marketplace-fe/`](../marketplace-fe/) | Angular frontend that consumes all REST endpoints exposed by this backend |
 | Smart Contracts | [`../flexibility-market-smartcontracts/`](../flexibility-market-smartcontracts/) | Solidity contracts whose ABIs and deployed addresses are loaded by this backend at startup |
-| Ingestion Microservice | [`../dataspace-file-ingestion-microservice/`](../dataspace-file-ingestion-microservice/) | Imports translated energy metering files into the flexibility data collections consumed by settlement verification |
+| Ingestion Microservice | [`../dataspace-file-ingestion-microservice/`](../dataspace-file-ingestion-microservice/) | Tracks the Data Space files through the ingestion pipeline; its synchronisation task loads each translated daily file into the consumption collections, through this backend's seed scripts, for use in settlement calculation |
 | Ingestion Dashboard | [`../injection-dashboard/`](../injection-dashboard/) | Monitoring UI for the ingestion pipeline; does not interact with the backend directly |

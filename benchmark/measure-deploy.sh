@@ -3,9 +3,10 @@
 # Deployment timing for the ENPOWER Marketplace Toolkit.
 #
 # This script instruments the deployment procedure documented in README section
-# 4.2. That procedure has two automated phases separated by
-# a manual configuration step in the identity provider, so it 
-# cannot be reduced to a single figure, and this script does not pretend
+# 4.2. That procedure has two automated phases separated by a manual
+# configuration step in the identity provider, in which the deployment's
+# redirect URIs are registered, so it cannot be reduced to a single figure,
+# and this script does not pretend
 # otherwise: it reports image preparation, phase 1 and phase 2 separately, and
 # states where the human step falls.
 #
@@ -135,7 +136,7 @@ prepare)
   fi
 
   # README 4.2.2. Copying is idempotent: an existing file is never overwritten,
-  # because it may already hold the secrets retrieved in phase 1.
+  # because it may already hold the operator's settings.
   for pair in ".env.example:.env" "marketplace-be/.env.example:marketplace-be/.env.docker"; do
     src="${pair%%:*}"; dst="${pair##*:}"
     if [ -f "$dst" ]; then
@@ -186,10 +187,9 @@ phase1)
   time_startup "phase 1, identity provider" keycloak-db keycloak || exit 1
   note ""
   note "A manual configuration step follows phase 1: the deployment's redirect"
-  note "URIs are registered with the identity provider and two client secrets are"
-  note "retrieved from it and written into the backend environment. That step is"
-  note "operator time rather than machine time and is excluded from every figure"
-  note "reported here."
+  note "URIs are registered with the identity provider. That step is operator"
+  note "time rather than machine time and is excluded from every figure reported"
+  note "here."
 
   cat >&2 <<'MANUAL'
 
@@ -200,12 +200,10 @@ Now the manual steps, from README 4.2.3 and 4.2.4:
   2. Realm enpower-marketplace -> Clients -> frontend -> Settings
      Add http://<this-host>:4200/* to Valid redirect URIs
      Add http://<this-host>:4200   to Web origins, then Save
-  3. Clients -> backend   -> Credentials: copy the client secret
-     Clients -> admin-cli -> Credentials: copy the client secret
-  4. Edit marketplace-be/.env.docker and set:
-       KEYCLOAK_CLIENT_SECRET        the backend secret
-       KEYCLOAK_ADMIN_CLIENT_SECRET  the admin-cli secret
-       ADMIN_PK                      a private key from the Hardhat node
+  3. Only if you regenerate the client secrets (any deployment beyond
+     local evaluation): set the new values of KEYCLOAK_CLIENT_SECRET and
+     KEYCLOAK_ADMIN_CLIENT_SECRET in marketplace-be/.env.docker.
+     The template already holds the bundled realm's secrets and ADMIN_PK.
      Leave the contract addresses empty: Compose fills them on startup.
 
 Then: ./benchmark/measure-deploy.sh phase2
@@ -214,7 +212,8 @@ MANUAL
   ;;
 
 phase2)
-  # Fail before starting anything if the manual step was skipped. Without these
+  # Fail before starting anything if the backend environment lacks the client
+  # secrets or ADMIN_PK (e.g. copied from an older template). Without these
   # the backend starts and then refuses every request, which is a slow and
   # confusing way to discover the same thing.
   ENVF="marketplace-be/.env.docker"

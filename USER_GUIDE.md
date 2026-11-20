@@ -26,10 +26,9 @@
 [6. Flexibility Requesting Party (FRP)](#6-flexibility-requesting-party-frp)<br>
 &nbsp;&nbsp;&nbsp;[6.1 Dashboard Overview](#61-dashboard-overview)<br>
 &nbsp;&nbsp;&nbsp;[6.2 Creating a MarketSession](#62-creating-a-marketsession)<br>
-&nbsp;&nbsp;&nbsp;[6.3 Defining Flexibility Requests (Per-Hour Slots)](#63-defining-flexibility-requests-per-hour-slots)<br>
-&nbsp;&nbsp;&nbsp;[6.4 Approving a Session for Publication](#64-approving-a-session-for-publication)<br>
-&nbsp;&nbsp;&nbsp;[6.5 Depositing Payment for Settlement](#65-depositing-payment-for-settlement)<br>
-&nbsp;&nbsp;&nbsp;[6.6 Viewing Settlement Results](#66-viewing-settlement-results)<br>
+&nbsp;&nbsp;&nbsp;[6.3 Approving a Session for Publication](#63-approving-a-session-for-publication)<br>
+&nbsp;&nbsp;&nbsp;[6.4 Depositing Payment for Settlement](#64-depositing-payment-for-settlement)<br>
+&nbsp;&nbsp;&nbsp;[6.5 Viewing Settlement Results](#65-viewing-settlement-results)<br>
 [7. Flexibility Service Provider (FSP)](#7-flexibility-service-provider-fsp)<br>
 &nbsp;&nbsp;&nbsp;[7.1 Dashboard Overview](#71-dashboard-overview)<br>
 &nbsp;&nbsp;&nbsp;[7.2 Browsing Open Sessions](#72-browsing-open-sessions)<br>
@@ -67,15 +66,15 @@ This guide explains how to use the platform from the perspective of each user ro
 
 ## 2.1 Accessing the Platform
 
-Open your web browser and navigate to the Marketplace URL provided by your administrator (e.g., `http://SERVER_IP:4200`). You will see the public landing page with a **Acces Platform** button.
+Open your web browser and navigate to the Marketplace URL provided by your administrator (e.g., `http://SERVER_IP:4200`). You will see the public landing page with an **Access Platform** button.
 
 ## 2.2 First Login
 
-1. Click **Acces Platform** on the landing page.
+1. Click **Access Platform** on the landing page.
 2. You will be redirected to the Keycloak authentication screen.
 3. Enter the **username** and **password**.
    - If you are the first administrator, use the default credentials: username `market_admin`, password `Asdf1234!`.
-   - If you were invited as FMO, use the generated password for the first login, anf then, you will be able to change your password. 
+   - If you were invited as FMO, use the generated password for the first login; you can then change your password.
    - If you received an invitation email as FSP or FRP, use the credentials you created during registration.
 4. After successful authentication, you will be redirected to your role-specific **Dashboard** at `/home`.
 
@@ -110,7 +109,7 @@ The ENPOWER Marketplace has four roles, each with distinct responsibilities:
 
 | Role | Full Name | What You Do |
 |---|---|---|
-| **MARKETPLACE_ADMIN** | Marketplace Administrator | Create and manage energy community markets across the entire platform. Invite FMO/LMO users to manage those markets. Can invite FRP an FSP users to created markets. |
+| **MARKETPLACE_ADMIN** | Marketplace Administrator | Create and manage energy community markets across the entire platform. Invite FMO/LMO users to manage those markets. Can invite FRP and FSP users to created markets. |
 | **FMO/LMO** | Flexibility Market Operator / Local Market Operator | Manage your energy community market: accept the market, activate it on-chain, invite participants, publish MarketSessions, manage the session lifecycle, and execute settlements. |
 | **FRP** | Flexibility Requesting Party | Creates new market sessions and defines the flexibility needs for each session: specify how much energy flexibility needs per hour and at what price. Approve sessions for publication and deposit payment for final settlement. |
 | **FSP** | Flexibility Service Provider | Submit offers to provide flexibility in response to FRP requests. Lock collateral when publishing offers. Deliver the committed flexibility and receive payment after settlement. |
@@ -235,13 +234,13 @@ As FMO/LMO, you control the lifecycle of each MarketSession through the followin
 | 1 | **Open Offers** | Yes | Session moves to `ACTIVE` in the platform, `OFFERS_OPEN` on-chain. FSPs can now submit offers. |
 | 2 | **Close Offers** | Yes | Session moves to `OFFERS_CLOSED` in the platform; on-chain the contract moves directly to `IN_DELIVERY`. No more offers accepted and the matched commitments are locked. The FlexibilityNFT certificates were already minted when each offer was published; they are transferred to the FRP and become non-transferable at settlement. |
 | 3 | *(Automatic)* | No | The platform moves the session to `IN_DELIVERY` when the delivery window begins. The contract is already in that state from step 2. |
-| 4 | *(Automatic)* | No | Measurement data is submitted on-chain by the oracle once the delivery window closes, which moves both the platform and the contract to `SETTLEMENT_PENDING`. |
+| 4 | *(Automatic)* | No | The platform moves the session to `SETTLEMENT_PENDING` once the delivery day has ended. The contract stays in `IN_DELIVERY` until you submit the measurement data with your PIN (see [Section 5.8](#58-settlement-execution), step 2). |
 | 5 | **Execute Settlement** | Yes | See [Section 5.8](#58-settlement-execution). |
 | 6 | **Finalize Session** | Yes | Session moves to `SETTLED`. All offers must be settled before finalisation. |
 
-**Cancellation:** If offers are still open close to the delivery window, you can cancel the session. This refunds all FSP collateral automatically.
+**Cancellation:** The platform cancels a session automatically, and notifies the participants, if its offers period has not been opened 24 hours before the delivery day or has not been closed 2 hours before it. In the second case, FSPs have already locked collateral and fees: click **Return Tokens** on the session and enter your PIN to cancel the session on-chain and refund them to all FSPs.
 
-**NOTE:** In order to be able to complete the entire workflow without having to wait several days, the time restrictions remain disabled in this model. 
+**NOTE:** So that the entire workflow can be completed without waiting several days, the smart contract does not enforce the dates of the cycle in this release; the platform's scheduled cancellations described above still apply. Section 3.3.1 of the [smart-contract README](flexibility-market-smartcontracts/README.md#331-re-enabling-the-deadline-checks) explains how to restore the on-chain date checks for a production deployment.
 
 ## 5.8 Settlement Execution
 
@@ -309,10 +308,10 @@ You are responsible for defining the flexibility needs:
 3. Select the **delivery date** (the day when flexibility will be provided).
 4. For each hour of the delivery day, specify your flexibility requirements:
    -  For each time slot (hour), enter:
-      - **Quantity (MW):** How much flexibility you need for that hour.
+      - **Power (KW):** How much flexibility you need for that hour, in kW. Each slot lasts one hour, so this is also the energy in kWh.
       - **Price per unit:** The price you are willing to pay per unit of flexibility.
-      - **Flexibility Type:** The direction of the commitment (Upward for increase consume and Downward to decrease consume).
-5. Finalising the proccess, the session is created in `DRAFT` status.
+      - **Flexibility Type:** The direction of the commitment (Upward to increase consumption, Downward to decrease it).
+5. When you finish, the session is created in `DRAFT` status.
 6. You can edit the slots as many times as needed while the session is in `DRAFT` status.
 
 ## 6.3 Approving a Session for Publication
@@ -401,12 +400,12 @@ When you publish an offer, the platform locks tokens as a guarantee of your comm
 
 | Concept | Percentage | Description |
 |---|---|---|
-| **Collateral** | 5% of offer value | Returned after successful delivery. If you under-deliver, a portion is deducted as a penalty. |
+| **Collateral** | 5% of offer value | Returned after successful delivery. If you under-deliver, part or all of it is forfeited (see below). |
 | **Platform Fee** | 2% of offer value | Paid to the FMO/LMO as a market operation fee. |
 
 **What happens at settlement:**
 - **Full delivery:** You receive the agreed payment from the FRP, and your collateral is returned in full.
-- **Partial delivery:** You receive a proportional payment. A penalty is deducted from your collateral based on the shortfall. The remaining collateral is returned.
+- **Partial delivery:** You are paid for the quantity you delivered. If the shortfall is up to 25 % of your commitment, that same percentage of your collateral is forfeited and the rest is returned; above 25 %, the whole collateral is forfeited. Forfeited collateral goes to the FRP as compensation.
 - **Session cancellation:** Your full collateral and fee are refunded automatically.
 
 ## 7.6 Viewing Settlement Results and NFT Certificates
@@ -434,7 +433,7 @@ All users with a wallet can access the **Balance** from the navigation menu. It 
 - **ETH balance:** Your Ether balance (used for gas fees, managed transparently by the platform).
 - **FLEX balance:** Your FlexibilityToken balance — the tokens available for trading, collateral, and payments.
 
-Balances are read directly from the blockchain in real time, so that, **sometimes the page needs to be recharged to be aligned with the blockchain**.**
+Balances are read directly from the blockchain in real time, so **the page sometimes needs to be reloaded to show the latest on-chain balance**.
 
 ## 8.2 Transaction History
 
@@ -460,10 +459,9 @@ The Transaction History view lists all blockchain transactions associated with y
 Every matched and settled offer generates a **FlexibilityNFT** — a digital certificate on the blockchain that proves a flexibility service was committed and delivered.
 
 **The NFT lifecycle:**
-1. **Minted** — Created when an FSP's offer is accepted during offer matching. Held by the FSP.
-2. **Updated after matching** — Records the accepted quantity and the FMO/LMO address.
-3. **Updated after settlement validation** — Records the metered delivery, measurement hash, and delivery outcome.
-4. **Finalised (Soulbound)** — After settlement execution, the NFT is transferred from FSP to FRP and made **soulbound** — it can never be transferred again. This makes it a permanent, tamper-proof record.
+1. **Minted** — Created when the FSP publishes the offer on-chain. The offer is matched in the same transaction, and the NFT records the accepted quantity and the FMO/LMO address. Held by the FSP.
+2. **Updated at settlement execution** — Records the delivered quantity, the measurement hash, the final buyer and the payment, and is transferred from the FSP to the FRP.
+3. **Finalised (Soulbound)** — In the same step, the NFT is made **soulbound**: it can never be transferred again. This makes it a permanent, tamper-proof record.
 
 **Viewing a certificate:**
 1. Navigate to the **Settlements** section.
@@ -506,16 +504,16 @@ The platform does not store your PIN and cannot recover it. Contact your market 
 No. The platform uses a custodial wallet system. Your wallet is created and managed entirely within the platform. All blockchain transactions are signed on the server using your PIN.
 
 **Q: What happens if I don't deliver the full amount of flexibility I committed?**<br>
-If you (as FSP) deliver less than the committed quantity, a penalty is deducted from your 5% collateral proportional to the shortfall. You will still receive payment for the portion you did deliver.
+If you (as FSP) deliver less than the committed quantity, part of your 5% collateral is forfeited: the same percentage as the shortfall if it is up to 25 % of your commitment, and the whole collateral if it is larger. You will still receive payment for the portion you did deliver.
 
 **Q: Can I cancel a published offer?**<br>
-Once published, an individual offer cannot be cancelled by the FSP. However, if the FMO/LMO cancels the entire session (e.g., due to insufficient offers), all locked collateral and fees are refunded automatically.
+Once published, an individual offer cannot be cancelled by the FSP. However, if the session is cancelled because its offers period was not closed in time, the FMO/LMO returns all locked collateral and fees to the FSPs (see [Section 5.7](#57-managing-the-marketsession-lifecycle)).
 
 **Q: When do I receive payment as an FSP?**<br>
 Payment is distributed during the settlement execution phase (Day D+1 or later), after the FRP has deposited the required payment and the FMO/LMO has executed the settlement for your offer.
 
 **Q: How do I know the settlement is fair?**<br>
-Settlement is verified on-chain against IoT metering data. The FlexibilityNFT certificate records the exact committed and delivered quantities, the measurement hash, and all payment calculations — all immutably stored on the blockchain.
+Settlement is calculated by the FMO/LMO from the metering data of the Energy Data Space, and its result is recorded on-chain together with a hash of the measurements, so that any later alteration of the data is detectable. The FlexibilityNFT certificate records the committed and delivered quantities, the measurement hash and the payment, all immutably stored on the blockchain. The contract does not recompute the settlement, and there is no on-chain procedure to contest it.
 
 **Q: Can I participate in multiple markets simultaneously?**<br>
 Yes. If you are invited to multiple markets, you can switch between them using the market selection modal. Your wallet works across all markets.

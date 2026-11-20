@@ -17,17 +17,19 @@ npm ci
 MARKETS=3 SESSIONS=2 FSPS=5 npm run benchmark
 ```
 
-Reports gas per operation and per phase across concurrent markets, sessions and
-providers. Gas is invariant across EVM-compatible networks, so these figures do
-not depend on the host. The wall-clock column of that script is **not**
+Reports gas per operation and per phase for the configured markets, sessions and
+providers, run in sequence. Gas does not depend on the host: across runs and hosts
+it varied by at most 504 out of 94.57 M in the reference workload, owing only to
+the calldata cost of contract addresses, and it transfers to other EVM-compatible
+networks with the standard gas schedule. The wall-clock column of that script is **not**
 reportable: the in-process Hardhat network has no block time.
 
 ## 2. Deployment time
 
 This script **instruments the procedure in README section 4.2**. That procedure has two automated phases separated by a
-manual configuration step in the identity provider — redirect URIs are
-registered and two client secrets are copied into the backend environment — so
-deployment cannot honestly be reduced to a single number.
+manual configuration step in the identity provider, in which the deployment's
+redirect URIs are registered, so deployment cannot honestly be reduced to a
+single number.
 
 ```bash
 ./benchmark/measure-deploy.sh prepare --reset
@@ -45,8 +47,9 @@ Three figures are reported, and they mean different things:
 | Phase 2, remaining services | Every start |
 
 The manual step between the phases is operator time, not machine time, and is
-excluded from all three. `phase2` refuses to start if that step was skipped,
-rather than letting the backend come up and reject every request.
+excluded from all three. `phase2` refuses to start if the backend environment
+lacks the client secrets or `ADMIN_PK`, rather than letting the backend come up
+and reject every request.
 
 `--reset` removes containers **and volumes** before preparing, for a true cold
 start. It deletes all platform data and waits five seconds first. Without it the

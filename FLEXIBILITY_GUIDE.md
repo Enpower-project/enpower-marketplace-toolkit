@@ -12,7 +12,7 @@ Reference guide for understanding how the ENPOWER system calculates, stores, and
 4. [Theoretical vs Actual Flexibility](#4-theoretical-vs-actual-flexibility)
 5. [Supported Pilots and Format Differences](#5-supported-pilots-and-format-differences)
 6. [Ingestion Commands](#6-ingestion-commands)
-7. [Where to Find Things in the Code](#7-where-to-find-things-in-the-code)
+7. [Data Flow: External Scheduler & Ingestion Microservice](#7-data-flow-external-scheduler--ingestion-microservice)
 
 ---
 
@@ -247,7 +247,7 @@ docker cp marketplace-be/test-data/demo/datos_historicos_MIN.csv backend:/usr/sr
 docker cp marketplace-be/test-data/demo/datos_historicos_MAX.csv backend:/usr/src/app/test-data/demo/
 
 # 4. Load reference profiles (run from project root, executes inside container)
-docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_STD.csv --reference=STD
+docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_STD.csv --reference=STANDARD
 docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_MIN.csv --reference=MIN
 docker compose exec -w /usr/src/app backend node dist/scripts/seed-flexibility-data-v2.js --market=<ID> --fsp=<ID> --file=test-data/demo/datos_historicos_MAX.csv --reference=MAX
 
@@ -273,8 +273,9 @@ flexibility computation pipeline end to end.
 To run either of the other two pipelines, place the source data in the
 directory listed above and follow the same five steps documented for the
 demonstration dataset, substituting the script and file names accordingly. The
-expected input is a single time series at 15-minute resolution; see the bundled
-CSV files for the exact column layout.
+expected input is a single time series at the pilot's native resolution (30
+minutes for the Greek pilot, 15 minutes for the Portuguese pilot), with the
+columns listed in Section 5.
 
 > Steps 1–3 run on the host. Steps 4–5 run inside the `backend` container via `docker compose exec` (always from the project root).
 
@@ -334,13 +335,12 @@ Output files per entry:
 Ingests the translated CSV files into the marketplace backend database.
 
 - Fetches all entries with status `TRANSLATED` that also have a valid FSP mapping (`GET /api/file-ingestion-entries/translated-for-marketplace`). Entries without a mapping in `FspDataspaceMapping` are skipped with a warning.
-- For each eligible entry, runs the seed script four times using the `marketplaceFspId` and `marketplaceMarketId` from the FSP mapping:
+- For each eligible entry (one file per FSP and day), selects the pilot-specific seed script (`seed-flexibility-data-v2.ts`, `seed-greek-flexibility-data.ts` or `seed-portuguese-flexibility-data.ts`) and runs it once on the base CSV, using the `marketplaceFspId` and `marketplaceMarketId` from the FSP mapping:
   ```bash
-  npx ts-node ... seed-flexibility-data-v2.ts --market={marketId} --fsp={fspId} --file={basename}.csv
-  npx ts-node ... seed-flexibility-data-v2.ts --market={marketId} --fsp={fspId} --file={basename}_STD.csv --reference=STD
-  npx ts-node ... seed-flexibility-data-v2.ts --market={marketId} --fsp={fspId} --file={basename}_MIN.csv --reference=MIN
-  npx ts-node ... seed-flexibility-data-v2.ts --market={marketId} --fsp={fspId} --file={basename}_MAX.csv --reference=MAX
+  npx ts-node ... <seed script> --market={marketId} --fsp={fspId} --file={basename}.csv
   ```
+  This creates the `ACTUAL` consumption document for that day and computes its actual flexibility, i.e. its deviation from the FSP's standard profile.
+- This task does not load the reference profiles (STD, MIN, MAX): they must already be in the database for that FSP, loaded once with step 4 of Section 6.
 - On success: marks the entry as `SYNCHRONIZED` and moves the folder to `/data/dfim/files/SYNCHRONIZED/{entryId}/`.
 - On error: marks the entry as `ERROR`.
 
@@ -368,7 +368,8 @@ ENPOWER Dataspace
          │
          ▼
  ③ MarketplaceIngestionTask
-  Runs seed script × 4 (base, STD, MIN, MAX)
+  Runs the pilot's seed script on the base CSV
+  (reference profiles loaded beforehand, Section 6)
   → POST /api/file-ingestion-entries/{entryId}/synchronize
   → FileIngestionEntry status: SYNCHRONIZED
   → Files moved to /data/dfim/files/SYNCHRONIZED/{entryId}/
@@ -376,7 +377,7 @@ ENPOWER Dataspace
          ▼
   MongoDB (marketplace-be)
   ConsumptionData (ACTUAL + REFERENCE_STANDARD/MIN/MAX)
-  FlexibilityData (THEORETICAL, calculated at seed time)
+  FlexibilityData (ACTUAL, calculated at seed time against the STANDARD profile)
 ```
 
 Every status transition is recorded in the `status_history_item` table with a timestamp, the actor (`changedBy`) and the source task name (`changeSource`), providing a full audit trail.

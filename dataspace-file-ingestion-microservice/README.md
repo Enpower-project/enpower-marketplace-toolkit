@@ -663,7 +663,7 @@ def boolean csvFilesExist(String fileDir, String baseName) {
 
 <p align=justify><strong>DSTechScheduler</strong> runs the three Groovy tasks on cron schedules and shares the same PostgreSQL instance as the DFIM. Task parameters (API URLs, credentials, paths) are stored in the Scheduler database, not in the DFIM. </p>
 
-<p align=justify><strong>Energy Data Space middleware</strong> (operated by European Dynamics) is called by the ingestion task via REST with JWT authentication. The middleware URL and credentials are Scheduler job parameters, allowing per-pilot reconfiguration. </p>
+<p align=justify><strong>Energy Data Space middleware</strong> (operated by European Dynamics) is reached through the DFIM's consume-data proxy (Section 3.1.1), which authenticates against it with a JWT and lists and downloads the data offerings; the ingestion task itself only calls the DFIM. The middleware endpoint and its credentials are configured in the DFIM, not in the Scheduler. </p>
 
 <p align=justify><strong>Marketplace backend</strong> is called by the synchronization task via <code>npx ts-node</code> directly — not via REST — passing the CSV file path and the FSP/market IDs resolved from the <code>fsp_dataspace_mapping</code> table. </p>
 
@@ -676,7 +676,7 @@ def boolean csvFilesExist(String fileDir, String baseName) {
 # 5. Environment Variables
 
 <p align="justify">
-The DFIM has no <code>application.yml</code> — all configuration is injected via Docker Compose environment variables. Scheduler task parameters are stored in the Scheduler database.
+The DFIM's <code>application.yaml</code> sets the file storage path (<code>/data/dfim/files</code>); the database connection is injected through the Docker Compose environment variables below. Scheduler task parameters are stored in the Scheduler database.
 </p>
 
 | Variable | Description | Example |
@@ -692,10 +692,9 @@ The DFIM has no <code>application.yml</code> — all configuration is injected v
 # 6. Development Setup
 
 ```bash
-cd dataspace-file-ingestion-microservice
-
-# With Docker Compose
-docker compose up -d postgres ingestion-microservice
+# From the repository root, where the Compose file is; PostgreSQL and the
+# init container are started as dependencies
+docker compose up -d ingestion-microservice
 
 # Swagger UI: http://SERVER_IP:8082/swagger-ui.html
 ```

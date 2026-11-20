@@ -52,15 +52,11 @@ The application uses a shell layout (DashboardComponent) with a persistent sideb
 The home view provides an at-a-glance overview of the entire ingestion pipeline. Four stat cards display the total entry count and per-status counts (NEW, TRANSLATED, SYNCHRONIZED, ERROR). An <strong>Attention Required</strong> panel highlights the oldest entry in NEW status and the oldest entry in TRANSLATED status — entries that may be stuck waiting for the next Scheduler task run. A <strong>Recent Activity</strong> panel shows the most recent entry per status. An <strong>Offering Performance</strong> table lists all data offerings with their total ingestion count and number of errors, sorted by volume.
 </p>
 
-{SCREENSHOT: Home dashboard showing four stat cards (total, NEW, TRANSLATED, SYNCHRONIZED, ERROR counts), the Attention Required panel with oldest stalled entries, Recent Activity list, and the Offering Performance table.}
-
 ## 3.2 Archive — File Registry
 
 <p align="justify">
 The archive view is the primary operational interface. It displays all DFIM entries in a paginated, sortable table with the following columns: entry ID, offering name, original filename, creation timestamp, status badge, and an actions column. Operators can filter the table by filename (text search), status (NEW / TRANSLATED / SYNCHRONIZED / ERROR / all), and creation date range. Sorting is available on all columns. The view can be pre-filtered by navigating to it with a <code>?status=ERROR</code> query parameter — used by the Home view's stat cards to deep-link directly to error entries. Clicking any row navigates to the entry detail view.
 </p>
-
-{SCREENSHOT: Archive view showing the filterable entry table with status badges in different colours (NEW, TRANSLATED, SYNCHRONIZED, ERROR), the filter bar with status selector and date range picker, and the pagination controls.}
 
 ## 3.3 Archive Details — Entry Inspection and Manual Controls
 
@@ -71,8 +67,6 @@ The detail view shows the complete metadata of a single entry: offering name, or
 <p align="justify">
 The header section exposes four manual action buttons: <strong>Download original</strong> (retrieves the raw XLSX file stored in the DFIM), <strong>Download translated</strong> (retrieves the processed CSV file), <strong>Change status</strong> (opens a dialog that allows the operator to set any valid status and provide a message — used to retry a failed entry or mark it as resolved), and <strong>Delete</strong> (opens a confirmation dialog before permanently removing the entry).
 </p>
-
-{SCREENSHOT: Archive details view showing entry metadata panel, status badge, the four action buttons (download original, download translated, change status, delete), and the chronological status history timeline below.}
 
 <br>
 

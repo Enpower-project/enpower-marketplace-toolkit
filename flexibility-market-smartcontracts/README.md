@@ -5,6 +5,7 @@
 &nbsp;&nbsp;&nbsp;[3.1 MarketFactory](#31-marketfactory)<br>
 &nbsp;&nbsp;&nbsp;[3.2 Market](#32-market)<br>
 &nbsp;&nbsp;&nbsp;[3.3 MarketSession](#33-marketsession)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[3.3.1 Re-enabling the deadline checks](#331-re-enabling-the-deadline-checks)<br>
 &nbsp;&nbsp;&nbsp;[3.4 FlexibilityToken](#34-flexibilitytoken)<br>
 &nbsp;&nbsp;&nbsp;[3.5 FlexibilityNFT](#35-flexibilitynft)<br>
 &nbsp;&nbsp;&nbsp;[3.6 ParticipantRegistry](#36-participantregistry)<br>
@@ -108,14 +109,35 @@ The most complex contract. Governs a single trading day through five sequential 
 |---|---|---|
 | `openOffers()` | DEFAULT_ADMIN (FMO/LMO wallet) | CREATED → OFFERS_OPEN |
 | `createOffer(hourSlot, quantity)` | FSP + qualified | Locks collateral + fee in Treasury; mints FlexibilityNFT to FSP; FIFO matching |
-| `closeOffers()` | FMO_LMO + qualified | OFFERS_OPEN → OFFERS_CLOSED |
+| `closeOffers()` | FMO_LMO + qualified | OFFERS_OPEN → IN_DELIVERY |
 | `cancelIfOffersStillOpenTwoHoursBefore()` | FMO_LMO + qualified | OFFERS_OPEN → CANCELLED; refunds all FSP collateral via Treasury |
 | `submitMeasurementData(hash)` | ORACLE | Records IoT measurement hash; IN_DELIVERY → SETTLEMENT_PENDING |
-| `submitSettlement(offerId, deliveredQty, penalty, meterHash)` | ORACLE | Validates settlement; calculates payment and penalty; does not transfer tokens |
+| `submitSettlement(offerId, deliveredQty, penalty, meterHash)` | ORACLE | Records the delivered quantity and the penalty computed off-chain by the oracle, with the meter-readings hash; calculates the payment for the delivered quantity and marks the offer as validated; does not transfer tokens |
 | `executeSettlement(offerId)` | ORACLE | Calls Treasury to distribute tokens; updates NFT; transfers NFT FSP→FRP; makes NFT soulbound |
 | `finalizeSession()` | DEFAULT_ADMIN (FMO/LMO wallet) | SETTLEMENT_PENDING → SETTLED (all offers must be settled) |
 | `setNFTContract(address)` | DEFAULT_ADMIN | Configures FlexibilityNFT reference |
 | `setParticipantRegistry(address)` | DEFAULT_ADMIN | Configures ParticipantRegistry reference |
+
+### 3.3.1 Re-enabling the deadline checks
+
+<p align="justify">
+MarketSession enforces the order of the market cycle but, in this release, not its dates. The four checks (temporal guards) that would tie each transition to the delivery day, <code>deliveryDay</code>, set at construction, are kept in the source as commented-out <code>require</code> statements, so that a complete cycle can be reproduced in minutes (root README, Section 6.2). A deployment operating a real market should restore them.
+</p>
+
+| Function | Check (commented out) | Effect when restored | Location in `contracts/MarketSession.sol` |
+|---|---|---|---|
+| `openOffers()` | `block.timestamp < deliveryDay - 1 days` | Offers must be opened before D-1 | Lines 328–331 |
+| `closeOffers()` | `block.timestamp >= deliveryDay - 1 days` | Offers cannot be closed before D-1 | Line 569 |
+| `submitMeasurementData()` | `block.timestamp >= deliveryDay + 1 days` | Measurements cannot be submitted before D+1 | Lines 581–584 |
+| `cancelIfOffersStillOpenTwoHoursBefore()` | `block.timestamp >= deliveryDay - 2 hours` | A session can only be cancelled in the last two hours before D | Lines 780–783 |
+
+<p align="justify">
+<strong>How to restore them.</strong> The checks are a compile-time switch, not a configuration flag: uncomment the four statements and deploy the contracts again. In the Docker Compose deployment, the Hardhat service compiles the contracts from source every time it starts (<code>scripts/start-and-deploy.sh</code>), so restoring them before the first start is enough; for a manual deployment, run <code>npm run build</code> and <code>npm run deploy:localhost</code> (Section 6). The contract interfaces do not change, so the backend needs no change. The compiled bytecode does change, so the gas figures measured for this release no longer apply exactly.
+</p>
+
+<p align="justify">
+<strong>What the tests cover.</strong> The test suite (<code>npm test</code>, 92 tests) is written for the configuration distributed in this release. Four tests, under <em>temporal guards disabled for reproducibility</em> in <code>test/state-machine.test.ts</code>, assert explicitly that the checks are disabled, so that restoring one cannot go unnoticed. With the four checks restored, 54 of the 92 tests fail: those four and the tests that reach a time-dependent transition (closing offers, submitting measurements or cancelling) without advancing the clock. A deployment that restores the checks must adapt those tests to move the clock forward, for example with the <code>time</code> helpers of <code>@nomicfoundation/hardhat-network-helpers</code>, already used in <code>test/helpers/fixtures.ts</code>.
+</p>
 
 <br>
 
@@ -135,7 +157,7 @@ ERC-20 token (name: "Flexibility Token", symbol: FLEX) with minting, burning, an
 ## 3.5 FlexibilityNFT
 
 <p align="justify">
-ERC-1155 token representing individual flexibility commitments. Each token is minted to the FSP at offer creation and accumulates metadata through three lifecycle updates: after matching (accepted quantity, FMO/LMO address), after settlement data validation (delivered quantity, meter hash), and after settlement execution (final buyer, actual payment). The overridden <code>safeTransferFrom</code> reverts if <code>isSoulbound[tokenId]</code> is true — set permanently by <code>finalizeNFT</code> during <code>executeSettlement</code>.
+ERC-1155 token representing individual flexibility commitments. Each token is minted to the FSP at offer creation, when the matching data (accepted quantity, FMO/LMO address) are also recorded. At settlement execution, a single update records the delivered quantity, meter hash, final buyer and actual payment, and the token is transferred from the FSP to the FRP. The overridden <code>safeTransferFrom</code> reverts if <code>isSoulbound[tokenId]</code> is true — set permanently by <code>finalizeNFT</code> during <code>executeSettlement</code>.
 </p>
 
 **Roles:** `MINTER_ROLE`, `UPDATER_ROLE` (granted to deployer; must also be granted to each MarketSession contract).
@@ -174,7 +196,7 @@ On-chain identity and qualification layer. Every wallet that interacts with the 
 ## 3.7 Treasury
 
 <p align="justify">
-Custodial escrow for all FlexibilityToken flows. Uses internal balance mappings rather than immediate transfers — tokens move between internal balances during offer creation and settlement validation, and are auto-transferred to participant wallets at settlement execution via <code>processSettlementPayment</code>. Uses ReentrancyGuard on all state-modifying functions. The offer key is computed as <code>keccak256(sessionContract, sessionId, offerId)</code>, scoping records per MarketSession address to prevent cross-market collisions.
+Custodial escrow for all FlexibilityToken flows. Uses internal balance mappings rather than immediate transfers — tokens are locked in the Treasury at offer creation (FSP collateral and fee) and when the FRP deposits the payment, and are transferred to participant wallets at settlement execution via <code>processSettlementPayment</code>. Uses ReentrancyGuard on all state-modifying functions. The offer key is computed as <code>keccak256(sessionContract, sessionId, offerId)</code>, scoping records per MarketSession address to prevent cross-market collisions.
 </p>
 
 **Roles:** `SESSION_CONTRACT` (must be granted to each MarketSession), `FRP_ROLE` (must be granted to each FRP wallet), `TREASURY_MANAGER` (deployer).

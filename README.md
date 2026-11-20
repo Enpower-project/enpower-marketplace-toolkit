@@ -9,14 +9,20 @@
 &nbsp;&nbsp;&nbsp;[4.2 Deployment on a Linux Server](#42-deployment-on-a-linux-server)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.1 Prerequisites](#421-prerequisites)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.2 Clone and Initial Configuration](#422-clone-and-initial-configuration)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.3 Phase 1 — Start Keycloak and Retrieve Client Secrets](#423-phase-1--start-keycloak-and-retrieve-client-secrets)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.3 Phase 1 — Start Keycloak and Register the Server's Address](#423-phase-1--start-keycloak-and-register-the-servers-address)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.4 Configure the Backend Environment](#424-configure-the-backend-environment)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.5 Configure the Frontend Environment](#425-configure-the-frontend-environment)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.6 Configure the Ingestion Dashboard Environment](#426-configure-the-ingestion-dashboard-environment)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.7 Phase 2 — Start All Remaining Services](#427-phase-2--start-all-remaining-services)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.8 Post-Deployment: Frontend Contract Addresses](#428-post-deployment-frontend-contract-addresses)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.9 Verify](#429-verify)<br>
-[5. Related ENPOWER Repositories](#5-related-enpower-repositories)<br>
+[5. Related ENPOWER WP4 Components](#5-related-enpower-wp4-components)<br>
+[6. Reproducibility](#6-reproducibility)<br>
+&nbsp;&nbsp;&nbsp;[6.1 Archived version](#61-archived-version)<br>
+&nbsp;&nbsp;&nbsp;[6.2 Scope of the automated deployment](#62-scope-of-the-automated-deployment)<br>
+&nbsp;&nbsp;&nbsp;[6.3 Components outside the reproducible scope](#63-components-outside-the-reproducible-scope)<br>
+&nbsp;&nbsp;&nbsp;[6.4 Measuring a deployment](#64-measuring-a-deployment)<br>
+&nbsp;&nbsp;&nbsp;[6.5 Running the smart-contract tests](#65-running-the-smart-contract-tests)<br>
 
 ---
 
@@ -45,7 +51,7 @@ The following role abbreviations are used throughout this documentation and with
 | **MARKETPLACE_ADMIN** | Marketplace Administrator | Platform-level administration across all markets and tenants, creates energy community markets |
 | **FRP** | Flexibility Requesting Party | Plans and approves flexibility needs with per-slot quantity and pricing; deposits payment before settlement execution |
 | **FMO / LMO** | Flexibility Market Operator / Local Market Operator | Publishes MarketSessions on-chain, and manages MarketSession lifecycle |
-| **FSP** | Flexibility Service Provider | Submits offers to provide flexibility; deposits collateral and a platform fees when creating offers |
+| **FSP** | Flexibility Service Provider | Submits offers to provide flexibility; deposits collateral and a platform fee when creating offers |
 
 <br>
 
@@ -56,7 +62,7 @@ The following role abbreviations are used throughout this documentation and with
 ## 2.1 High-Level Architecture
 
 <p align="justify">
-The platform follows a layered architecture fully containerised via Docker Compose. The <strong>Presentation Layer</strong> is an Angular 19+ frontend providing role-aware dashboards, market exploration views, an offer submission and final settlement wizards. The <strong>Application Layer</strong> is a NestJS backend exposing RESTful APIs (documented via Swagger) and WebSocket channels for real-time events, handling MarketSession orchestration, offer validation, and blockchain transaction execution via Ethers.js. The <strong>Data Layer</strong> uses MongoDB for off-chain persistence with a write-through strategy: every critical on-chain operation is captured and persisted to MongoDB at the moment it is performed, maintaining an up-to-date replica without requiring blockchain polling or event-listening.
+The platform follows a layered architecture fully containerised via Docker Compose. The <strong>Presentation Layer</strong> is an Angular 19+ frontend providing role-aware dashboards, market exploration views, an offer submission and final settlement wizards. The <strong>Application Layer</strong> is a NestJS backend exposing RESTful APIs (documented via Swagger), handling MarketSession orchestration, offer validation, and blockchain transaction execution via Ethers.js. The <strong>Data Layer</strong> uses MongoDB for off-chain persistence with a write-through strategy: every critical on-chain operation is captured and persisted to MongoDB at the moment it is performed, maintaining an up-to-date replica without requiring blockchain polling or event-listening.
 </p>
 
 <p align="justify">
@@ -71,16 +77,19 @@ The <strong>Blockchain Layer</strong> consists of Solidity smart contracts deplo
 
 ## 2.2 Technology Stack
 
-| Component | Technology |
-|---|---|
-| Frontend | Angular 19+, TypeScript, Ethers.js |
-| Backend | NestJS 11, TypeScript, Node.js, Ethers.js |
-| Database | MongoDB 4.4 |
-| Blockchain / DLT | Solidity 0.8.20, Hardhat 2, OpenZeppelin |
-| IAM | Keycloak, OAuth 2.0, OpenID Connect |
-| Data Space Connector | OneNet / TRUE Connector |
-| Semantic Layer | ENCOM Ontology (Protégé, SAREF, QUDT), SEMAPTIC data model |
-| Deployment | Docker, Docker Compose, NGINX |
+| Component | Technology and version | In this release |
+|---|---|---|
+| Frontend | Angular 19.0, TypeScript 5.6, Ethers.js 6; served by NGINX 1.27 | Yes |
+| Backend | NestJS 11.0, Node.js 20 LTS, Ethers.js 6.15 | Yes |
+| Database | MongoDB 4.4 | Yes |
+| Data Space ingestion microservice | Spring Boot 4.0.5, Java 17 | Yes |
+| Relational store (ingestion registry and scheduler state) | PostgreSQL 15 | Yes |
+| Blockchain / DLT | Solidity 0.8.20, Hardhat 2.27, OpenZeppelin 5.4 | Yes |
+| IAM | Keycloak 25.0.2 (OAuth 2.0, OpenID Connect), PostgreSQL 16 | Yes (pre-configured realm) |
+| Data Space connector | OneNet / TRUE Connector | No — external (see Section 6.3) |
+| Semantic layer | ENCOM ontology 1.0.0 (Protégé, SAREF, QUDT), SEMAPTIC data model | No — external (see Section 6.3) |
+| Deployment | Docker Engine ≥ 24, Docker Compose v2 | Yes |
+| SMTP relay (development) | MailHog | Yes |
 
 <br>
 
@@ -119,7 +128,7 @@ This monorepo contains the complete ENPOWER Marketplace Toolkit. The core of the
 ## 4.1 Quick Start
 
 <p align="justify">
-To run a local demonstration of the ENPOWER Marketplace Toolkit, follow the deployment instructions in section 4.2. The deployment is split into two phases: Keycloak is started first so that its client secrets can be retrieved and configured into the backend before starting the remaining services.
+To run a local demonstration of the ENPOWER Marketplace Toolkit, follow the deployment instructions in section 4.2. The deployment is split into two phases: Keycloak is started first, so that the server's address can be registered with it before the remaining services are started. The client secrets need no manual step: the backend environment template already contains those of the bundled realm.
 </p>
 
 <br>
@@ -134,16 +143,18 @@ The entire platform is containerised and orchestrated via Docker Compose. No sof
 
 The hardware and operating system prerequisites are:
 
-- A 2-core processor (4-core recommended)
-- 8 GB RAM memory
-- 50 GB of disk space or more
+- A Linux host
+- Minimum: 2 CPU cores and 4 GB of RAM, as measured with the benchmark described in Section 6.4
+- Recommended: 4 CPU cores, 8 GB of RAM and 50 GB of disk space
 
-> The platform runs several Docker containers simultaneously (2 Java services, 2 Node.js runtimes, 2 databases, Keycloak, Hardhat, MailHog), which justifies the memory requirements.
+> The deployment runs eleven containers simultaneously: the backend, the frontend (NGINX), the Hardhat node, MongoDB, Keycloak and its PostgreSQL database, the ingestion microservice and its PostgreSQL database, the ingestion dashboard, MailHog, and a one-off container that copies the profile scripts to the shared volume and exits.
 
-The software prerequisites include:
+The software prerequisites are:
 
-- Docker and docker-compose
+- Docker Engine ≥ 24 and Docker Compose v2
 - Git (any version, to clone the repository)
+
+All other components run in containers and require no host installation. Python 3 with `pandas` and `openpyxl` is needed only to regenerate the reference profiles from new source data (see `FLEXIBILITY_GUIDE.md`, Section 6).
 
 <br>
 
@@ -167,10 +178,10 @@ cp marketplace-be/.env.example marketplace-be/.env.docker
 > **Changing server?** Edit only `.env` and set the new `SERVER_URL`. The frontend uses relative paths (`/api`, `/blockchain/`) that nginx routes internally — no other file needs to change. On a running deployment, apply the change with `docker compose up -d backend`, which recreates the backend with the new value.
 
 
-### 4.2.3 Phase 1 — Start Keycloak and Retrieve Client Secrets
+### 4.2.3 Phase 1 — Start Keycloak and Register the Server's Address
 
 <p align="justify">
-The backend requires valid Keycloak client secrets to start. Since these secrets are generated by Keycloak on first launch, Keycloak must be started and configured before the remaining services.
+Keycloak is started first so that the frontend's address can be registered with it before the first login. The client secrets need no action: the imported realm sets them, and the backend environment template (<code>marketplace-be/.env.example</code>) already contains the same values.
 </p>
 
 **Start Keycloak and its database:**
@@ -210,10 +221,7 @@ The imported <code>enpower-marketplace</code> realm includes all required client
 2. Select realm **enpower-marketplace** → **Clients → frontend → Settings**
 3. Add `http://SERVER_IP:4200/*` to **Valid redirect URIs** and `http://SERVER_IP:4200` to **Web origins** → **Save**
 
-**Retrieve the client secrets:**
-
-1. In the Admin Console, navigate to **Clients → backend → Credentials** and copy the **Client secret**
-2. Navigate to **Clients → admin-cli → Credentials** and copy the **Client secret**
+**Client secrets (only if you regenerate them).** The bundled realm and the backend environment template share fixed development secrets, so a local evaluation needs no action here. Any deployment beyond local evaluation should regenerate them: in the Admin Console, open **Clients → backend → Credentials** and **Clients → admin-cli → Credentials**, click **Regenerate**, and set the new values as `KEYCLOAK_CLIENT_SECRET` and `KEYCLOAK_ADMIN_CLIENT_SECRET` in `marketplace-be/.env.docker` before Phase 2.
 
 See the <a href="./marketplace-keycloak/README.md">marketplace-keycloak README</a> for full details on the realm configuration.
 
@@ -222,24 +230,24 @@ See the <a href="./marketplace-keycloak/README.md">marketplace-keycloak README</
 ### 4.2.4 Configure the Backend Environment
 
 <p align="justify">
-With the Keycloak client secrets retrieved in the previous step, edit <code>marketplace-be/.env.docker</code> and set all required variables. Contract addresses are populated automatically by Docker Compose on startup and must be left empty for the initial deployment.
+The template copied in Section 4.2.2 is ready for a local evaluation: the Keycloak client secrets and <code>ADMIN_PK</code> are already set, and only <code>SERVER_IP</code> has to be replaced in the two Keycloak URLs. Contract addresses are populated automatically by Docker Compose on startup and must be left empty for the initial deployment.
 </p>
 
 | Variable | Description | **NEED REPLACE OR MODIFICATION** | Example Value |
 |---|---|---|---|
 | **Blockchain** | | | |
-| `ADMIN_PK` | Private key of the admin account used to sign smart contract transactions. Use one of the accounts provided by the Hardhat node. | **YES** | `0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d` |
+| `ADMIN_PK` | Private key of the backend admin account, which signs the platform-level transactions. It must be Hardhat account #1, to which the deployment script grants the admin roles. Already set in the template. | **NO** | `0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d` |
 | `RPC_PROVIDER_URL` | JSON-RPC endpoint of the Ethereum node. Within Docker Compose, use the internal service name. | **NO** | `http://hardhat:8545` |
 | **MongoDB** | | | |
 | `MONGO_URI` | MongoDB connection string. Use the Docker service name within Docker Compose. | **NO** | `mongodb://root:password@mongodb:27017/enpower?authSource=admin` |
 | **Keycloak** | | | |
-| `KEYCLOAK_AUTH_SERVER_URL` | Base URL of the Keycloak instance. Pre-configured for Docker Compose internal networking. | **YES** | `http://SERVER_IP:8088` |
+| `KEYCLOAK_AUTH_SERVER_URL` | Base URL of the Keycloak instance. Replace `SERVER_IP` with the server's address. | **YES** | `http://SERVER_IP:8088` |
 | `KEYCLOAK_REALM` | Keycloak realm name. | **NO** | `enpower-marketplace` |
 | `KEYCLOAK_CLIENT_ID` | Keycloak client ID for the backend service. | **NO** | `backend` |
-| `KEYCLOAK_CLIENT_SECRET` | Backend client secret retrieved from the Admin Console in section 4.2.3. | **YES** | `your-backend-client-secret` |
-| `KEYCLOAK_ISSUER` | Full token issuer URL. Pre-configured for Docker Compose internal networking. | **YES** | `http://SERVER_IP:8088/realms/enpower-marketplace` |
+| `KEYCLOAK_CLIENT_SECRET` | Secret of the `backend` client. Already set to the value of the imported realm; replace it only if you regenerate it (Section 4.2.3). | **NO** | `V1kRIM9vlB7ZhF3tyspPKq9NIgwCayDA` |
+| `KEYCLOAK_ISSUER` | Full token issuer URL. Replace `SERVER_IP` with the server's address. | **YES** | `http://SERVER_IP:8088/realms/enpower-marketplace` |
 | `KEYCLOAK_ADMIN_CLIENT_ID` | Admin client ID for user management operations. | **NO** | `admin-cli` |
-| `KEYCLOAK_ADMIN_CLIENT_SECRET` | Admin client secret retrieved from the Admin Console in section 4.2.3. | **YES** | `your-admin-client-secret` |
+| `KEYCLOAK_ADMIN_CLIENT_SECRET` | Secret of the `admin-cli` client. Already set to the value of the imported realm; replace it only if you regenerate it (Section 4.2.3). | **NO** | `qHfvhPKe1nMiTcUnAkpwdG7ZwPceyYYh` |
 | **Frontend URL** | | | |
 | `FRONTEND_URL` | URL of the frontend, used for email links. Set automatically from `SERVER_URL` in the root `.env` — do not set manually here. | **NO** | _(set via root `.env`)_ |
 | **Email (SMTP)** | | | |
@@ -345,8 +353,8 @@ docker compose logs hardhat
 If the addresses already match, no action is needed. If any address differs, update <code>environment.prod.ts</code> with the correct values, then rebuild and restart the frontend:
 </p>
 
-# After updating environment.prod.ts:
 ```bash
+# After updating environment.prod.ts:
 docker compose build frontend
 docker compose up -d frontend
 ```
@@ -401,23 +409,23 @@ The Marketplace Toolkit integrates with several components developed by other EN
 
 ## 6.1 Archived version
 
-The version of the toolkit described in the accompanying manuscript is
-published as release **v1.0.2**, permanently pinned to commit `baab0e17ce6cae14d4f157657ea11e0c04833cb8`:
+The version of the toolkit described in the accompanying manuscript is release **v1.0.3**:
 
 | | |
 |---|---|
-| Release | https://github.com/Enpower-project/enpower-marketplace-toolkit/releases/tag/v1.0.2 |
-| Immutable source tree | https://github.com/Enpower-project/enpower-marketplace-toolkit/tree/baab0e17ce6cae14d4f157657ea11e0c04833cb8 |
-| Source archive | `enpower-marketplace-toolkit-1.0.2.tar.gz` (attached to the release) |
-| SHA-256 | `9c7701b71b55c72c8214a5fbc38b60c5125a3effc4f6fcb9efaf2cdfc7ff6387` |
+| Release | https://github.com/Enpower-project/enpower-marketplace-toolkit/releases/tag/v1.0.3 |
+| Source archive | `enpower-marketplace-toolkit-1.0.3.tar.gz` (attached to the release) |
 
-The commit-pinned URL above is a content-addressed reference: unlike a branch
-or tag, it cannot be reassigned to different content. The `v1.0.2` tag is
-additionally protected against modification and deletion by repository
-rulesets. Readers verifying the archive can confirm its integrity with:
+The release page records the commit that the tag points to and the SHA-256 digest
+of the source archive. They are not repeated here, because a file cannot contain
+the hash of its own commit. The commit is a content-addressed reference: unlike a
+branch or a tag, it cannot be reassigned to different content. Release tags are
+additionally protected against modification and deletion by repository rulesets.
+To verify the archive, compare the output of the following command with the digest
+on the release page:
 
 ```bash
-sha256sum enpower-marketplace-toolkit-1.0.2.tar.gz
+sha256sum enpower-marketplace-toolkit-1.0.3.tar.gz
 ```
 
 To obtain exactly this version:
@@ -425,8 +433,21 @@ To obtain exactly this version:
 ```bash
 git clone https://github.com/Enpower-project/enpower-marketplace-toolkit.git
 cd enpower-marketplace-toolkit
-git checkout v1.0.2
+git checkout v1.0.3
 ```
+
+Release v1.0.3 has the same smart contracts and application code as release
+**v1.0.2**, on which the measurements reported in the manuscript were taken. It
+differs only in its documentation, deployment configuration and version numbers,
+and in the removal of files that the toolkit does not use. Release v1.0.2 is
+archived on Zenodo, and its identifiers are final:
+
+| | |
+|---|---|
+| Release | https://github.com/Enpower-project/enpower-marketplace-toolkit/releases/tag/v1.0.2 |
+| Commit | [`baab0e17ce6cae14d4f157657ea11e0c04833cb8`](https://github.com/Enpower-project/enpower-marketplace-toolkit/tree/baab0e17ce6cae14d4f157657ea11e0c04833cb8) |
+| Source archive | `enpower-marketplace-toolkit-1.0.2.tar.gz`, SHA-256 `9c7701b71b55c72c8214a5fbc38b60c5125a3effc4f6fcb9efaf2cdfc7ff6387` |
+| Zenodo | https://doi.org/10.5281/zenodo.24365801 |
 
 The earlier release v1.0.1 remains available at its protected tag.
 
@@ -441,7 +462,7 @@ community market creation, participant registration, MarketSession publication, 
 
 A demonstration dataset is bundled under `marketplace-be/test-data/demo/`, comprising the source spreadsheet, a time series at 15-minute resolution, and the corresponding `_STD` / `_MIN` / `_MAX` daily reference profiles. The ingestion and flexibility computation pipeline can therefore be exercised without access to live pilot systems; the commands are documented in `FLEXIBILITY_GUIDE.md`, Section 6. Ingestion scripts for the Greek and Portuguese data formats are also included, but no pilot datasets are distributed with this repository: pilot data is held by the respective pilot operators.
 
-**Two manual configuration steps are required**, both documented step by step in Section 4.2: retrieval of the Keycloak client secrets, which are generated by Keycloak on its first launch and therefore cannot be pre-provisioned, and the corresponding configuration of the backend environment file. This is why the deployment is split into two phases.
+**The manual configuration is limited to the server's address**, documented step by step in Section 4.2: it is set in the configuration files before the first start and registered with Keycloak as a redirect URI of the frontend client. Keycloak is therefore started first, which is why the deployment is split into two phases. The Keycloak client secrets need no manual step: the bundled realm imports them with fixed development values, which the backend environment template already contains; deployments beyond local evaluation should regenerate them (Section 4.2.3).
 
 ### Temporal guards and full-cycle simulation
 
@@ -473,7 +494,9 @@ instead.
 
 The four guards are retained in the contract source at their enforcement points,
 so a production deployment can restore them without redesign. Any deployment
-operating a real market should do so.
+operating a real market should do so. Section 3.3.1 of the
+[smart-contract README](flexibility-market-smartcontracts/README.md#331-re-enabling-the-deadline-checks)
+explains how to restore them and what the test suite covers.
 
 ### Data protection
 
@@ -511,8 +534,9 @@ npm ci
 MARKETS=3 SESSIONS=2 FSPS=5 npm run benchmark
 ```
 
-Gas figures transfer between EVM-compatible networks; timing, memory and latency
-are properties of the host they were measured on and should be reported with it.
+Gas figures do not depend on the host and transfer to other EVM-compatible networks
+with the standard gas schedule; timing, memory and latency are properties of the
+host they were measured on and should be reported with it.
 
 ## 6.5 Running the smart-contract tests
 
